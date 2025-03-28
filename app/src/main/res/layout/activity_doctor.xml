@@ -5,8 +5,8 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FCF8EA"
-    tools:context=".GroomingActivity">
+    android:background="#FFFBEF"
+    tools:context=".DoctorActivity">
 
     <ScrollView
         android:id="@+id/scrollView"
@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:padding="24dp">
 
-            <!-- Tombol Back -->
+            <!-- Back Button -->
             <ImageView
                 android:id="@+id/btnBack"
                 android:layout_width="30dp"
@@ -29,9 +29,9 @@
                 android:clickable="true"
                 android:focusable="true" />
 
-            <!-- Judul -->
+            <!-- Title -->
             <TextView
-                android:text="Grooming"
+                android:text="Doctor"
                 android:textSize="24sp"
                 android:textStyle="bold"
                 android:layout_marginBottom="4dp"
@@ -45,7 +45,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
-            <!-- Filter Kategori -->
+            <!-- Service Filter -->
             <HorizontalScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -58,20 +58,20 @@
                     android:orientation="horizontal"/>
             </HorizontalScrollView>
 
-            <!-- Recommended (nanti bisa ditambah) -->
+            <!-- Recommended Vet -->
             <TextView
-                android:text="Recommended Salon"
+                android:text="Recommended Vet"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:layout_marginBottom="12dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
-            <!-- Sementara kosong -->
+            <!-- Bisa ditambah layout khusus -->
 
-            <!-- Daftar Salon -->
+            <!-- Vet List -->
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerSalon"
+                android:id="@+id/recyclerVet"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="100dp" />

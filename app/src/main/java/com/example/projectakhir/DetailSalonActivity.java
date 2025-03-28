@@ -15,7 +15,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import java.util.ArrayList;
 
-public class SalonDetailActivity extends AppCompatActivity {
+public class DetailSalonActivity extends AppCompatActivity {
 
     String nama, kota, jam;
     int gambarResId;

@@ -16,47 +16,44 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
-public class GroomingActivity extends AppCompatActivity {
+public class DoctorActivity extends AppCompatActivity {
 
     LinearLayout kategoriContainer;
-    RecyclerView recyclerSalon;
+    RecyclerView recyclerVet;
     SalonAdapter adapter;
 
-    ArrayList<Salon> semuaSalon = new ArrayList<>();
-    ArrayList<Salon> tampilkanSalon = new ArrayList<>();
+    ArrayList<Salon> semuaVet = new ArrayList<>();
+    ArrayList<Salon> tampilkanVet = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_grooming);
+        setContentView(R.layout.activity_doctor);
         EdgeToEdge.enable(this);
 
         kategoriContainer = findViewById(R.id.kategoriContainer);
-        recyclerSalon = findViewById(R.id.recyclerSalon);
+        recyclerVet = findViewById(R.id.recyclerVet);
 
-        // Tombol back
         findViewById(R.id.btnBack).setOnClickListener(v -> finish());
 
-        // Dummy salon
-        semuaSalon.add(new Salon("Barber Pet", "Surabaya", "Open • Close at 20:00",
-                new String[]{"Wash", "Brush", "Cut", "Spa"}, R.drawable.grace));
+        // Dummy data vet
+        semuaVet.add(new Salon("Paw Vet", "Surabaya", "Open • Close at 20:00",
+                new String[]{"Vaccine", "GCU", "Medicine"}, R.drawable.grace));
 
-        semuaSalon.add(new Salon("Pet Zone", "Surabaya", "Open • Close at 18:00",
-                new String[]{"Wash", "Spa"}, R.drawable.grace));
+        semuaVet.add(new Salon("Happy Paw Clinic", "Surabaya", "Open • Close at 18:00",
+                new String[]{"Check-up", "Vaccine"}, R.drawable.anomali));
 
-        semuaSalon.add(new Salon("Clean Tails", "Surabaya", "Open • Close at 21:00",
-                new String[]{"Brush", "Cut"}, R.drawable.claire));
+        semuaVet.add(new Salon("VetCare Center", "Surabaya", "Open • Close at 21:00",
+                new String[]{"Emergency", "Medicine"}, R.drawable.amat));
 
-        // Setup RecyclerView
-        recyclerSalon.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new SalonAdapter(this, tampilkanSalon, "grooming");
-        recyclerSalon.setAdapter(adapter);
+        recyclerVet.setLayoutManager(new LinearLayoutManager(this));
+        adapter = new SalonAdapter(this, tampilkanVet, "doctor");
 
-        // Filter awal: Semua
-        filterSalon("Semua");
+        recyclerVet.setAdapter(adapter);
 
-        // Setup filter kategori
-        String[] kategoriList = {"Semua", "Wash", "Brush", "Spa", "Cut"};
+        filterVet("Semua");
+
+        String[] kategoriList = {"Semua", "Vaccine", "GCU", "Medicine", "Check-up", "Emergency"};
         for (String kategori : kategoriList) {
             TextView txt = new TextView(this);
             txt.setText(kategori);
@@ -73,7 +70,7 @@ public class GroomingActivity extends AppCompatActivity {
             lp.setMargins(12, 0, 12, 0);
             txt.setLayoutParams(lp);
 
-            txt.setOnClickListener(v -> filterSalon(kategori));
+            txt.setOnClickListener(v -> filterVet(kategori));
             kategoriContainer.addView(txt);
         }
 
@@ -84,12 +81,11 @@ public class GroomingActivity extends AppCompatActivity {
         });
     }
 
-    // Filter salon berdasarkan layanan
-    private void filterSalon(String kategori) {
-        tampilkanSalon.clear();
-        for (Salon s : semuaSalon) {
+    private void filterVet(String kategori) {
+        tampilkanVet.clear();
+        for (Salon s : semuaVet) {
             if (kategori.equals("Semua") || s.menyediakanLayanan(kategori)) {
-                tampilkanSalon.add(s);
+                tampilkanVet.add(s);
             }
         }
         adapter.notifyDataSetChanged();

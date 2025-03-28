@@ -5,8 +5,8 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FCF8EA"
-    tools:context=".DetailSalonActivity">
+    android:background="#FFFBEF"
+    tools:context=".DetailVetActivity">
 
     <ScrollView
         android:id="@+id/scrollView"
@@ -30,9 +30,9 @@
                 android:clickable="true"
                 android:focusable="true" />
 
-            <!-- Gambar Salon -->
+            <!-- Gambar Vet -->
             <ImageView
-                android:id="@+id/imgSalon"
+                android:id="@+id/imgVet"
                 android:layout_width="match_parent"
                 android:layout_height="220dp"
                 android:scaleType="centerCrop"
@@ -40,15 +40,15 @@
 
             <!-- Info -->
             <TextView
-                android:id="@+id/namaSalon"
-                android:text="Barber Pet"
+                android:id="@+id/namaVet"
+                android:text="Paw Vet"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
             <TextView
-                android:id="@+id/kotaSalon"
+                android:id="@+id/kotaVet"
                 android:text="Surabaya"
                 android:textSize="14sp"
                 android:textColor="#777"
@@ -57,41 +57,80 @@
                 android:layout_marginBottom="8dp" />
 
             <TextView
-                android:id="@+id/descSalon"
-                android:text="Deskripsi salon grooming..."
+                android:id="@+id/descVet"
+                android:text="Deskripsi klinik dokter hewan..."
                 android:textSize="14sp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="24dp" />
 
-            <!-- Layanan -->
+            <!-- Jenis Hewan -->
             <TextView
-                android:text="Pilih Layanan"
+                android:text="Jenis Hewan"
                 android:textSize="16sp"
                 android:textStyle="bold"
+                android:layout_marginBottom="8dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <LinearLayout
+                android:orientation="horizontal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp" />
+                android:layout_marginBottom="16dp">
 
-            <HorizontalScrollView
+                <TextView
+                    android:text="Dog"
+                    android:padding="16dp"
+                    android:background="@drawable/bg_tag_kuning"
+                    android:textColor="#000"
+                    android:textSize="14sp"
+                    android:layout_marginEnd="12dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:text="Cat"
+                    android:padding="16dp"
+                    android:background="@drawable/bg_tag_kuning"
+                    android:textColor="#000"
+                    android:textSize="14sp"
+                    android:layout_marginEnd="12dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:text="Others"
+                    android:padding="16dp"
+                    android:background="@drawable/bg_tag_kuning"
+                    android:textColor="#000"
+                    android:textSize="14sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+
+            <!-- Layanan -->
+            <TextView
+                android:text="Services"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <com.google.android.flexbox.FlexboxLayout
+                android:id="@+id/layananContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp"
-                android:scrollbars="none">
+                android:layout_marginBottom="32dp"
+                app:flexWrap="wrap"
+                app:justifyContent="flex_start"
+                app:flexDirection="row"
+                app:alignItems="flex_start"
+                android:paddingEnd="8dp"
+                android:paddingStart="8dp" />
 
-                <LinearLayout
-                    android:id="@+id/layananContainer"
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="32dp"
-                    android:layout_gravity="start"
-                    android:layoutDirection="ltr"
-                    android:gravity="start"
-                    android:baselineAligned="false" />
-            </HorizontalScrollView>
-
-            <!-- Tombol Book -->
+            <!-- Book Now -->
             <Button
                 android:id="@+id/btnBook"
                 android:layout_width="match_parent"

@@ -19,10 +19,12 @@ public class SalonAdapter extends RecyclerView.Adapter<SalonAdapter.ViewHolder> 
 
     Context context;
     List<Salon> list;
+    String tipe; // "grooming" atau "doctor"
 
-    public SalonAdapter(Context context, List<Salon> list) {
+    public SalonAdapter(Context context, List<Salon> list, String tipe) {
         this.context = context;
         this.list = list;
+        this.tipe = tipe;
     }
 
     @NonNull
@@ -62,7 +64,14 @@ public class SalonAdapter extends RecyclerView.Adapter<SalonAdapter.ViewHolder> 
 
         // Klik salon → ke halaman detail
         holder.itemView.setOnClickListener(v -> {
-            Intent intent = new Intent(context, SalonDetailActivity.class);
+            Intent intent;
+
+            if (tipe.equals("grooming")) {
+                intent = new Intent(context, DetailSalonActivity.class);
+            } else {
+                intent = new Intent(context, DetailVetActivity.class);
+            }
+
             intent.putExtra("nama", s.nama);
             intent.putExtra("kota", s.kota);
             intent.putExtra("jam", s.jam);

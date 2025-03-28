@@ -42,7 +42,8 @@ public class HeartActivity extends AppCompatActivity {
         });
 
         btnDoctor.setOnClickListener(v -> {
-            Toast.makeText(this, "Fitur Doctor coming soon!", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(this, DoctorActivity.class);
+            startActivity(intent);
         });
 
         // Dummy data grooming
