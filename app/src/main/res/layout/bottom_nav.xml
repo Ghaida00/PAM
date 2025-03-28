@@ -1,0 +1,47 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="60dp"
+    android:orientation="horizontal"
+    android:background="#C6EAD9"
+    android:gravity="center">
+
+    <ImageView
+        android:id="@+id/navHome"
+        android:src="@drawable/ic_home"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:padding="8dp" />
+
+    <ImageView
+        android:id="@+id/navPaw"
+        android:src="@drawable/ic_paw"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:padding="8dp" />
+
+    <ImageView
+        android:id="@+id/navShop"
+        android:src="@drawable/ic_shop"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:padding="8dp" />
+
+    <ImageView
+        android:id="@+id/navHeart"
+        android:src="@drawable/ic_heart"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:padding="8dp" />
+
+    <ImageView
+        android:id="@+id/navFood"
+        android:src="@drawable/ic_food"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:padding="8dp" />
+</LinearLayout>
