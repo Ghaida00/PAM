@@ -24,6 +24,30 @@ public class MainActivity extends AppCompatActivity {
 
         gridKota = findViewById(R.id.gridKota);
         listBaru = findViewById(R.id.listBaru);
+        ImageView navHeart = findViewById(R.id.navHeart);
+        navHeart.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, HeartActivity.class);
+            startActivity(intent);
+        });
+//        navHome.setOnClickListener(v -> {
+//            // stay di MainActivity atau refresh
+//        });
+//
+//        navPaw.setOnClickListener(v -> {
+//            // Intent ke fitur adopsi
+//        });
+//
+//        navHeart.setOnClickListener(v -> {
+//            // Intent ke fitur Grooming & Doctor
+//        });
+//
+//        navShop.setOnClickListener(v -> {
+//
+//        });
+//
+//        navFood.setOnClickListener(v -> {
+//
+//        });
 
         // Grid Kota (Rounded Pastel Card)
         tambahKota("Jakarta", R.drawable.jakarta, R.drawable.bg_kota_jakarta);

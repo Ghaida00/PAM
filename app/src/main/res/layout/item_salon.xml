@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="12dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_hewan_rounded"
+    android:layout_marginBottom="16dp">
+
+    <ImageView
+        android:id="@+id/imgSalon"
+        android:layout_width="match_parent"
+        android:layout_height="180dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/grace" />
+
+    <TextView
+        android:id="@+id/namaSalon"
+        android:layout_marginTop="8dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Barber Pet"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/kotaSalon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Surabaya"
+        android:textSize="14sp"
+        android:textColor="#666" />
+
+    <!-- TAG layanan (Wash, Spa, dll) -->
+    <LinearLayout
+        android:id="@+id/tagLayanan"
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp" />
+
+</LinearLayout>
