@@ -15,18 +15,18 @@
         android:layout_above="@+id/bottomNav">
         <LinearLayout
             android:orientation="vertical"
-            android:padding="24dp"
+            android:paddingStart="24dp" android:paddingEnd="24dp"
+            android:paddingTop="24dp"
+            android:clipToPadding="false" android:paddingBottom="24dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <!-- Header -->
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:layout_marginBottom="16dp">
-
                 <ImageView
                     android:src="@drawable/profile"
                     android:layout_width="40dp"
@@ -49,7 +49,6 @@
                     android:layout_height="24dp" />
             </LinearLayout>
 
-            <!-- Judul & tombol -->
             <TextView
                 android:text="Grooming and Doctor"
                 android:textSize="24sp"
@@ -57,7 +56,6 @@
                 android:layout_marginBottom="8dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
-
             <TextView
                 android:text="✨ Semua berhak disayang!"
                 android:textSize="14sp"
@@ -65,14 +63,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
-            <!-- Tombol Layanan -->
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:layout_marginBottom="24dp">
-
                 <Button
                     android:id="@+id/btnGrooming"
                     android:layout_width="0dp"
@@ -96,7 +92,6 @@
                     android:textStyle="bold" />
             </LinearLayout>
 
-            <!-- Grooming Appointment -->
             <TextView
                 android:text="Grooming Appointment"
                 android:textSize="18sp"
@@ -105,38 +100,34 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="12dp" />
 
-            <com.google.android.flexbox.FlexboxLayout
-                android:id="@+id/groomingAppointmentContainer"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerGroomingAppointments"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:flexWrap="wrap"
-                app:justifyContent="flex_start"
-                android:layout_marginBottom="24dp"
-                android:paddingBottom="8dp" />
+                android:orientation="horizontal" app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" android:clipToPadding="false" android:paddingEnd="12dp" android:paddingStart="0dp"
+                android:layout_marginBottom="24dp" />
 
-            <!-- Doctor Appointment -->
             <TextView
                 android:text="Doctor Appointment"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:layout_marginTop="32dp"
-                android:layout_marginBottom="12dp"
+                android:layout_marginTop="16dp" android:layout_marginBottom="12dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
-            <com.google.android.flexbox.FlexboxLayout
-                android:id="@+id/doctorAppointmentContainer"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerDoctorAppointments"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:flexWrap="wrap"
-                app:justifyContent="flex_start"
-                android:layout_marginBottom="24dp"
-                android:paddingBottom="8dp" />
+                android:orientation="horizontal" app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" android:clipToPadding="false"
+                android:paddingEnd="12dp"
+                android:paddingStart="0dp"
+                android:layout_marginBottom="24dp" />
+
 
         </LinearLayout>
     </ScrollView>
 
-    <!-- Bottom Nav -->
     <include
         android:id="@+id/bottomNav"
         layout="@layout/bottom_nav"
