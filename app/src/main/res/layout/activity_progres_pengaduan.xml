@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFBEF"
+    android:padding="24dp"
+    tools:context=".ProgresPengaduanActivity">
+
+    <RelativeLayout
+        android:id="@+id/headerLayoutPengaduan"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp">
+
+        <ImageView
+            android:id="@+id/btnBackProgresPengaduan"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/ic_back_circle"
+            android:contentDescription="Kembali"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:clickable="true"
+            android:focusable="true"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Progres Pengaduan"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_centerInParent="true"
+            android:textColor="#000000"/>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_below="@id/headerLayoutPengaduan"
+        android:background="@drawable/bg_hewan_rounded"
+        android:padding="16dp"
+        android:elevation="4dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nama Pelapor"
+            android:textSize="14sp"
+            android:textColor="#555555"/>
+        <TextView
+            android:id="@+id/txtNamaPelaporProgres"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="DirtyCat"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#000000"
+            android:layout_marginBottom="12dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Jenis Hewan Dilaporkan"
+            android:textSize="14sp"
+            android:textColor="#555555"/>
+        <TextView
+            android:id="@+id/txtJenisHewanPengaduanProgres"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Anjing"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#000000"
+            android:layout_marginBottom="12dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Alamat / Lokasi Terakhir Hewan Terlihat"
+            android:textSize="14sp"
+            android:textColor="#555555"/>
+        <TextView
+            android:id="@+id/txtAlamatPengaduanProgres"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Surabaya"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#000000"
+            android:layout_marginBottom="12dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Status Pengaduan"
+            android:textSize="14sp"
+            android:textColor="#555555"/>
+        <TextView
+            android:id="@+id/txtStatusProgresPengaduan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Diproses"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#FFA000"
+            android:layout_marginBottom="24dp"/>
+
+
+        <Button
+            android:id="@+id/btnBatalkanPengaduan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Batalkan Pengaduan"
+            android:backgroundTint="#E57373"
+            android:textColor="@color/white"
+            android:textStyle="bold"/>
+
+    </LinearLayout>
+
+</RelativeLayout>

@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFBEF"
+    tools:context=".FormPengaduanActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp">
+
+            <ImageView
+                android:id="@+id/btnBackPengaduan"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/ic_back_circle"
+                android:contentDescription="Kembali"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:clickable="true"
+                android:focusable="true"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Form Pengaduan"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:layout_centerInParent="true"
+                android:textColor="#000000"/>
+        </RelativeLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Laporkan hewan liar yang terlantar/terluka disini"
+            android:textSize="14sp"
+            android:layout_marginBottom="24dp"
+            android:textColor="#555555"/>
+
+        <EditText
+            android:id="@+id/inputNamaPelapor"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Nama Pelapor"
+            android:inputType="textPersonName"
+            android:layout_marginBottom="12dp"/>
+
+        <EditText
+            android:id="@+id/inputJenisHewan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Jenis Hewan (Kucing/Anjing/Lainnya)"
+            android:inputType="text"
+            android:layout_marginBottom="12dp"/>
+
+        <EditText
+            android:id="@+id/inputAlamatLokasi"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Alamat Pelapor / Lokasi Terakhir Hewan Terlihat"
+            android:inputType="textPostalAddress"
+            android:minLines="2"
+            android:gravity="top"
+            android:layout_marginBottom="12dp"/>
+
+        <EditText
+            android:id="@+id/inputNoHpPelapor"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="No HP"
+            android:inputType="phone"
+            android:layout_marginBottom="12dp"/>
+
+        <EditText
+            android:id="@+id/inputDeskripsiHewan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Deskripsi Keadaan Hewan"
+            android:inputType="textMultiLine"
+            android:minLines="3"
+            android:gravity="top"
+            android:layout_marginBottom="16dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Gambar Keadaan Hewan"
+            android:textSize="14sp"
+            android:layout_marginBottom="8dp"
+            android:textColor="#555555"/>
+
+        <LinearLayout
+            android:id="@+id/layoutUploadGambar"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:background="#E0E0E0"
+            android:layout_marginBottom="24dp"
+            android:clickable="true"
+            android:focusable="true">
+
+            <ImageView
+                android:id="@+id/imgPreview"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:src="@android:drawable/ic_menu_camera"
+                app:tint="#757575" />
+
+            <TextView
+                android:id="@+id/txtUploadHint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Upload Foto Hewan"
+                android:textColor="#757575"
+                android:layout_marginTop="8dp"/>
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btnKonfirmasiPengaduan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Konfirmasi"
+            android:backgroundTint="#FFD447"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+</ScrollView>

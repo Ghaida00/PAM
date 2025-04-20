@@ -16,6 +16,9 @@ public class MainActivity extends AppCompatActivity {
 
     GridLayout gridKota;
     LinearLayout listBaru;
+    // Tambahkan referensi untuk card baru
+    LinearLayout cardFormPengaduan, cardProgres;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,37 +28,36 @@ public class MainActivity extends AppCompatActivity {
         gridKota = findViewById(R.id.gridKota);
         listBaru = findViewById(R.id.listBaru);
         ImageView navHeart = findViewById(R.id.navHeart);
+
+        // === TAMBAHAN BARU START ===
+        cardFormPengaduan = findViewById(R.id.cardFormPengaduan);
+        cardProgres = findViewById(R.id.cardProgres);
+
+        cardFormPengaduan.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, FormPengaduanActivity.class);
+            startActivity(intent);
+        });
+
+        cardProgres.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, ProgresMainActivity.class);
+            startActivity(intent);
+        });
+        // === TAMBAHAN BARU END ===
+
+
         navHeart.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, HeartActivity.class);
             startActivity(intent);
         });
-//        navHome.setOnClickListener(v -> {
-//            // stay di MainActivity atau refresh
-//        });
-//
-//        navPaw.setOnClickListener(v -> {
-//            // Intent ke fitur adopsi
-//        });
-//
-//        navHeart.setOnClickListener(v -> {
-//            // Intent ke fitur Grooming & Doctor
-//        });
-//
-//        navShop.setOnClickListener(v -> {
-//
-//        });
-//
-//        navFood.setOnClickListener(v -> {
-//
-//        });
+        // ... (kode navigasi bottom nav lainnya jika ada) ...
 
-        // Grid Kota (Rounded Pastel Card)
+        // Grid Kota (Existing Code)
         tambahKota("Jakarta", R.drawable.jakarta, R.drawable.bg_kota_jakarta);
         tambahKota("Surabaya", R.drawable.surabaya, R.drawable.bg_kota_surabaya);
         tambahKota("Yogyakarta", R.drawable.yogyakarta, R.drawable.bg_kota_yogyakarta);
         tambahKota("Bali", R.drawable.bali, R.drawable.bg_kota_bali);
 
-        // Hewan Baru Ditambahkan (Card Rounded + Tag)
+        // Hewan Baru Ditambahkan (Existing Code)
         // Anggap datanya sama dengan di DaftarHewanActivity
         tambahHewanBaru(new Hewan("Grace", "Surabaya", "Kucing", "2 Tahun", "Betina", "4kg",
                 new String[]{"Spoiled", "Lazy", "Smart"}, R.drawable.grace, R.drawable.grace_no_background,
@@ -66,7 +68,9 @@ public class MainActivity extends AppCompatActivity {
                 "Claire agak penakut sama suara keras, tapi sekali kenal kamu, dia bakal lengket banget. Suka duduk di kaki orang dan ngikutin ke mana pun."));
     }
 
+    // ... (Fungsi tambahKota dan tambahHewanBaru existing code) ...
     private void tambahKota(String nama, int iconResId, int bgDrawableResId) {
+        // ... implementasi Anda ...
         LinearLayout card = new LinearLayout(this);
         card.setOrientation(LinearLayout.VERTICAL);
         card.setPadding(32, 32, 32, 32);
@@ -113,6 +117,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void tambahHewanBaru(Hewan h) {
+        // ... implementasi Anda ...
         LinearLayout card = new LinearLayout(this);
         card.setOrientation(LinearLayout.VERTICAL);
         card.setBackgroundResource(R.drawable.bg_hewan_rounded);
@@ -186,7 +191,6 @@ public class MainActivity extends AppCompatActivity {
 
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                 380,
-                LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
         );
         lp.setMargins(12, 0, 12, 0);

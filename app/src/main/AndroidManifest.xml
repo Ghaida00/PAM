@@ -12,6 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ProjectAkhir"
         tools:targetApi="31" >
+
         <activity
             android:name=".DetailVetActivity"
             android:exported="false" />
@@ -38,10 +39,22 @@
             android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".FormPengaduanActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ProgresMainActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ProgresAdopsiActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ProgresPengaduanActivity"
+            android:exported="false" />
     </application>
 
 </manifest>
