@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFBEF" tools:context=".ui.grooming.DetailVetFragment">
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:padding="24dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/btnBack"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/ic_back_circle" android:layout_marginBottom="16dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:contentDescription="Kembali"/>
+
+            <ImageView
+                android:id="@+id/imgVet"
+                android:layout_width="match_parent"
+                android:layout_height="220dp"
+                android:scaleType="centerCrop"
+                android:layout_marginBottom="16dp"
+                tools:src="@drawable/anomali"/>
+
+            <TextView
+                android:id="@+id/namaVet"
+                tools:text="Nama Vet"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/kotaVet"
+                tools:text="Kota Vet"
+                android:textSize="14sp"
+                android:textColor="#777"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:id="@+id/descVet"
+                tools:text="Deskripsi klinik dokter hewan..."
+                android:textSize="14sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp" />
+
+            <TextView
+                android:text="Jenis Hewan"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:id="@+id/txtJenisDog"
+                    android:text="Dog"
+                    android:padding="16dp"
+                    android:background="@drawable/bg_tag_kuning"
+                    android:textColor="#000"
+                    android:textSize="14sp"
+                    android:layout_marginEnd="12dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:id="@+id/txtJenisCat"
+                    android:text="Cat"
+                    android:padding="16dp"
+                    android:background="@drawable/bg_tag_kuning"
+                    android:textColor="#000"
+                    android:textSize="14sp"
+                    android:layout_marginEnd="12dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:id="@+id/txtJenisOthers"
+                    android:text="Others"
+                    android:padding="16dp"
+                    android:background="@drawable/bg_tag_kuning"
+                    android:textColor="#000"
+                    android:textSize="14sp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+
+            <TextView
+                android:text="Services"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <com.google.android.flexbox.FlexboxLayout
+                android:id="@+id/layananContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="32dp"
+                app:flexWrap="wrap"
+                app:alignItems="flex_start">
+            </com.google.android.flexbox.FlexboxLayout>
+
+            <Button
+                android:id="@+id/btnBook"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="50dp"
+                android:text="Book Now"
+                android:textColor="#000000"
+                android:textStyle="bold"
+                android:backgroundTint="#FFD447" />
+        </LinearLayout>
+    </ScrollView>
+
+</RelativeLayout>

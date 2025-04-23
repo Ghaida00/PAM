@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="hewan_baru_image_height">180dp</dimen>
+    <dimen name="hewan_baru_card_width">150dp</dimen>
+    <dimen name="trait_horizontal_margin">8dp</dimen>
+    <dimen name="trait_icon_size">40dp</dimen>
+</resources>
