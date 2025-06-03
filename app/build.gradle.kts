@@ -60,7 +60,7 @@ dependencies {
     // Java language implementation
     implementation(libs.androidx.navigation.fragment)
     implementation(libs.androidx.navigation.ui)
-    implementation ("de.hdodenhof:circleimageview:3.1.0")
+    implementation (libs.circleimageview)
 
     // Import the Firebase BoM (Bill of Materials)
     implementation(platform(libs.firebase.bom))
