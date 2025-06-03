@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Project Akhir</string>
+    <string name="detail_hewan_format">%1$s  •  %2$s  •  %3$s</string>
 </resources>

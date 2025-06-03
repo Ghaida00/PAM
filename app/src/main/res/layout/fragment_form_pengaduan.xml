@@ -158,6 +158,15 @@
 
         </LinearLayout>
 
+        <ProgressBar
+            android:id="@+id/progressBarFormPengaduan"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            android:layout_marginBottom="16dp"/>
+
         <Button
             android:id="@+id/btnKonfirmasiPengaduan"
             android:layout_width="match_parent"

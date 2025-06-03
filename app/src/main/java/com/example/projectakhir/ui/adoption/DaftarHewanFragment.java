@@ -10,6 +10,9 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+// Import ProgressBar jika belum ada
+import android.widget.ProgressBar;
+
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -20,7 +23,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.projectakhir.R;
 import com.example.projectakhir.adapters.HewanAdapter;
-import com.example.projectakhir.data.Hewan; // Pastikan import Hewan benar
+import com.example.projectakhir.data.Hewan;
 import com.example.projectakhir.databinding.FragmentDaftarHewanBinding; // Nama binding
 
 import java.util.ArrayList;
@@ -31,18 +34,18 @@ public class DaftarHewanFragment extends Fragment {
     private HewanAdapter adapter;
     private DaftarHewanViewModel viewModel;
     private String kotaTerpilih;
+    // Tidak perlu ProgressBar di sini karena sudah ada di binding
+    // private ProgressBar progressBar;
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Ambil argumen "kota" yang dikirim via NavController
         if (getArguments() != null) {
-            // Menggunakan Safe Args (jika sudah di-generate setelah rebuild)
             try {
                 kotaTerpilih = DaftarHewanFragmentArgs.fromBundle(getArguments()).getKota();
             } catch (IllegalArgumentException e) {
-                // Fallback jika Safe Args belum siap atau ada masalah
-                kotaTerpilih = getArguments().getString("kota"); // Ambil manual
+                kotaTerpilih = getArguments().getString("kota");
                 if (kotaTerpilih == null) {
                     handleArgumentError();
                 }
@@ -54,8 +57,7 @@ public class DaftarHewanFragment extends Fragment {
 
     private void handleArgumentError() {
         Toast.makeText(requireContext(), "Error: Argumen kota tidak ditemukan!", Toast.LENGTH_SHORT).show();
-        // Navigasi kembali jika argumen tidak valid
-        if (NavHostFragment.findNavController(this).getCurrentDestination() != null &&
+        if (getView() != null && NavHostFragment.findNavController(this).getCurrentDestination() != null &&
                 NavHostFragment.findNavController(this).getCurrentDestination().getId() == R.id.daftarHewanFragment) {
             NavHostFragment.findNavController(this).popBackStack();
         }
@@ -66,6 +68,7 @@ public class DaftarHewanFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = FragmentDaftarHewanBinding.inflate(inflater, container, false);
+        // progressBar = binding.progressBarDaftarHewan; // Inisialisasi ProgressBar dari binding
         return binding.getRoot();
     }
 
@@ -73,112 +76,138 @@ public class DaftarHewanFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Inisialisasi ViewModel
         viewModel = new ViewModelProvider(this).get(DaftarHewanViewModel.class);
 
-        // Setup RecyclerView
         setupRecyclerView();
 
         // Observe LiveData dari ViewModel
         viewModel.hewanList.observe(getViewLifecycleOwner(), hewanList -> {
-            if (hewanList != null) {
+            // Sembunyikan ProgressBar karena data sudah diterima (atau gagal)
+            // binding.progressBarDaftarHewan.setVisibility(View.GONE); // Kita handle di observer isLoading
+            if (hewanList != null && !hewanList.isEmpty()) {
                 adapter.updateData(hewanList);
+                binding.recyclerHewan.setVisibility(View.VISIBLE);
+                // Mungkin ada TextView untuk pesan "tidak ada data" yang perlu disembunyikan
+                // binding.txtNoData.setVisibility(View.GONE);
+            } else if (hewanList != null && hewanList.isEmpty() && !viewModel.isLoading.getValue()){ // Cek jika list kosong dan tidak sedang loading
+                adapter.updateData(new ArrayList<>()); // Kosongkan adapter
+                binding.recyclerHewan.setVisibility(View.GONE);
+                // Tampilkan pesan "tidak ada data"
+                Toast.makeText(getContext(), "Tidak ada hewan yang ditemukan untuk filter ini.", Toast.LENGTH_SHORT).show();
+                // binding.txtNoData.setVisibility(View.VISIBLE);
+                // binding.txtNoData.setText("Tidak ada hewan ditemukan.");
+            }
+            // Jika hewanList null, error akan ditangani oleh observer error
+        });
+
+        viewModel.isLoading.observe(getViewLifecycleOwner(), isLoading -> {
+            if (isLoading) {
+                binding.progressBarDaftarHewan.setVisibility(View.VISIBLE);
+                binding.recyclerHewan.setVisibility(View.GONE); // Sembunyikan list saat loading
+                // binding.txtNoData.setVisibility(View.GONE);
+            } else {
+                binding.progressBarDaftarHewan.setVisibility(View.GONE);
+                // Visibilitas recyclerHewan diatur oleh observer hewanList
             }
         });
 
-        // Load data awal berdasarkan kota yang diterima sebagai argumen
+        viewModel.error.observe(getViewLifecycleOwner(), errorMsg -> {
+            if (errorMsg != null && !errorMsg.isEmpty()) {
+                // binding.progressBarDaftarHewan.setVisibility(View.GONE); // Pastikan progressbar hilang saat error
+                binding.recyclerHewan.setVisibility(View.GONE);
+                Toast.makeText(requireContext(), errorMsg, Toast.LENGTH_LONG).show();
+                // Tampilkan pesan error di UI jika perlu, misal di TextView
+                // binding.txtNoData.setVisibility(View.VISIBLE);
+                // binding.txtNoData.setText(errorMsg);
+                viewModel.clearError(); // Bersihkan error setelah ditampilkan agar tidak muncul lagi saat re-orientasi
+            }
+        });
+
+
         if (kotaTerpilih != null && !kotaTerpilih.isEmpty()) {
             viewModel.loadHewanForCity(kotaTerpilih);
         } else {
-            // Seharusnya sudah ditangani di onCreate, tapi sebagai fallback
-            if (NavHostFragment.findNavController(this).getCurrentDestination() != null &&
+            if (getView() != null && NavHostFragment.findNavController(this).getCurrentDestination() != null &&
                     NavHostFragment.findNavController(this).getCurrentDestination().getId() == R.id.daftarHewanFragment) {
                 NavHostFragment.findNavController(this).popBackStack();
             }
         }
 
-
-        // Setup tombol filter kategori
-        String[] kategoriList = {"Semua", "Kucing", "Anjing", "Reptil", "Burung"}; // Sesuaikan kategori
+        String[] kategoriList = {"Semua", "Kucing", "Anjing", "Reptil", "Burung"};
         setupCategoryButtons(binding.kategoriContainer, kategoriList);
 
-        // Setup tombol back (otomatis ditangani oleh NavController jika menggunakan Toolbar AppActivity)
-        // Jika tidak pakai Toolbar AppActivity atau perlu custom back:
-        // binding.btnBack.setOnClickListener(v -> NavHostFragment.findNavController(this).popBackStack());
+        // Tombol back (jika tidak menggunakan NavController otomatis dari AppActivity Toolbar)
+        // ImageView btnBack = view.findViewById(R.id.btnBackDaftarHewan); // Jika ada tombol back manual
+        // if (btnBack != null) {
+        //     btnBack.setOnClickListener(v -> NavHostFragment.findNavController(this).popBackStack());
+        // }
     }
 
     private void setupRecyclerView() {
         binding.recyclerHewan.setLayoutManager(new LinearLayoutManager(requireContext()));
-        // Modifikasi adapter untuk menerima listener klik
         adapter = new HewanAdapter(requireContext(), new ArrayList<>(), hewan -> {
-            // Handle klik item hewan -> Navigasi ke DetailHewanFragment
             try {
                 // Pastikan action dan argumen sudah didefinisikan di nav_graph.xml
-                DaftarHewanFragmentDirections.ActionDaftarHewanFragmentToDetailHewanFragment action =
-                        DaftarHewanFragmentDirections.actionDaftarHewanFragmentToDetailHewanFragment(hewan.nama); // Kirim nama/ID hewan
+                // Kirim ID hewan (jika tersedia dan unik) atau nama hewan sebagai identifier
+                String hewanIdentifier = hewan.getId(); // Prioritaskan ID dari Firestore
+                if (hewanIdentifier == null || hewanIdentifier.isEmpty()) {
+                    hewanIdentifier = hewan.getNama(); // Fallback ke nama jika ID tidak ada
+                }
 
-                // Jika ingin mengirim data lain, tambahkan argumen di nav_graph dan set di sini
-                // action.setJenisHewan(hewan.jenis); // Contoh
+                DaftarHewanFragmentDirections.ActionDaftarHewanFragmentToDetailHewanFragment action =
+                        DaftarHewanFragmentDirections.actionDaftarHewanFragmentToDetailHewanFragment(hewanIdentifier);
 
                 NavHostFragment.findNavController(DaftarHewanFragment.this).navigate(action);
             } catch (IllegalArgumentException e) {
-                Toast.makeText(requireContext(), "Navigasi ke Detail Hewan belum siap.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Navigasi ke Detail Hewan belum siap atau argumen salah.", Toast.LENGTH_SHORT).show();
+                // Log errornya juga untuk debugging
+                // Log.e("DaftarHewanFragment", "Error navigasi: ", e);
             }
         });
         binding.recyclerHewan.setAdapter(adapter);
     }
 
-    // Fungsi untuk setup tombol kategori
     private void setupCategoryButtons(LinearLayout container, String[] categories) {
-        container.removeAllViews(); // Hapus view lama jika ada
-        LayoutInflater inflater = LayoutInflater.from(requireContext()); // Untuk inflate layout tag jika perlu
+        container.removeAllViews();
+        // ... (kode setupCategoryButtons tetap sama) ...
+        // Pastikan saat tombol kategori diklik, ia memanggil viewModel.filterHewan(kategori);
 
         for (String kategori : categories) {
-            // Menggunakan TextView biasa seperti di Activity sebelumnya
             TextView txt = new TextView(requireContext());
             txt.setText(kategori);
             txt.setTextSize(14f);
             txt.setPadding(32, 16, 32, 16);
-            // Default background (non-selected)
-            txt.setBackgroundResource(R.drawable.bg_tag_kuning); // Atau drawable lain untuk non-selected
+            txt.setBackgroundResource(R.drawable.bg_tag_kuning); //
             txt.setTextColor(Color.BLACK);
             txt.setTypeface(null, Typeface.BOLD);
             txt.setGravity(Gravity.CENTER);
             txt.setClickable(true);
             txt.setFocusable(true);
-            // Tambahkan foreground ripple
-            // ...
 
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.WRAP_CONTENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
             );
-            lp.setMargins(0, 0, 16, 0); // Margin kanan antar tag
+            lp.setMargins(0, 0, 16, 0);
             txt.setLayoutParams(lp);
 
             txt.setOnClickListener(v -> {
-                // Optional: Implementasi visual untuk menandai tag yang aktif
-                // Reset background semua tag
                 for (int i = 0; i < container.getChildCount(); i++) {
                     View child = container.getChildAt(i);
-                    child.setBackgroundResource(R.drawable.bg_tag_kuning); // Non-selected state
+                    child.setBackgroundResource(R.drawable.bg_tag_kuning); //
                     if (child instanceof TextView) {
                         ((TextView) child).setTextColor(Color.BLACK);
                     }
                 }
-                // Set background tag yang diklik
-                txt.setBackgroundResource(R.drawable.bg_tag_hijau); // Selected state
-                txt.setTextColor(Color.WHITE); // Warna teks selected state
-
-                // Filter data melalui ViewModel
-                viewModel.filterHewan(kategori);
+                txt.setBackgroundResource(R.drawable.bg_tag_hijau); //
+                txt.setTextColor(Color.WHITE);
+                viewModel.filterHewan(kategori); // Panggil filter di ViewModel
             });
             container.addView(txt);
         }
-        // Set tag "Semua" sebagai default selected saat pertama kali
         if (container.getChildCount() > 0) {
             View firstChild = container.getChildAt(0);
-            firstChild.setBackgroundResource(R.drawable.bg_tag_hijau);
+            firstChild.setBackgroundResource(R.drawable.bg_tag_hijau); //
             if (firstChild instanceof TextView) {
                 ((TextView) firstChild).setTextColor(Color.WHITE);
             }
@@ -188,6 +217,6 @@ public class DaftarHewanFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        binding = null; // Penting untuk memory safety
+        binding = null;
     }
 }

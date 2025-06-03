@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     id("androidx.navigation.safeargs")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -59,4 +60,17 @@ dependencies {
     // Java language implementation
     implementation(libs.androidx.navigation.fragment)
     implementation(libs.androidx.navigation.ui)
+
+    // Import the Firebase BoM (Bill of Materials)
+    implementation(platform(libs.firebase.bom))
+
+    // Add the Firebase SDKs for the products you want to use
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.auth)
+    implementation(libs.firebase.firestore)
+    implementation(libs.firebase.storage)
+
+    // Glide
+    implementation(libs.glide)
+
 }
