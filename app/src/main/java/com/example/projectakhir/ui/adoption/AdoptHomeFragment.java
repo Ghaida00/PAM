@@ -60,6 +60,16 @@ public class AdoptHomeFragment extends Fragment {
             }
         });
 
+        // --- Implementasi Navigasi Header Profile Picture ---
+        binding.ivHeaderUserProfile.setOnClickListener(v -> {
+            try {
+                NavHostFragment.findNavController(this).navigate(R.id.action_adoptHomeFragment_to_profileFragment);
+            } catch (IllegalArgumentException e) {
+                Toast.makeText(requireContext(), "Navigasi ke Profil belum siap.", Toast.LENGTH_SHORT).show();
+            }
+        });
+        // --- Akhir Implementasi Navigasi Header Profile Picture ---
+
         binding.cardProgres.setOnClickListener(v -> {
             try {
                 NavHostFragment.findNavController(this)
