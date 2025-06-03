@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFBEF"
+    tools:context=".ui.profile.ProfileFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Profile"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/black"
+            android:layout_marginBottom="24dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="32dp">
+
+            <ImageView
+                android:id="@+id/imgUserProfile"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:src="@drawable/bambang" />
+            <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_marginStart="16dp">
+
+            <TextView
+                android:id="@+id/txtUserName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Ayam Oyen"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/black"/>
+
+            <TextView
+                android:id="@+id/txtUserEmail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ayamoyen@gmail.com"
+                android:textSize="14sp"
+                android:textColor="@android:color/darker_gray"/>
+        </LinearLayout>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/itemPersonalDetail"
+            style="@style/ProfileMenuItem"
+            android:text="Personal Detail"
+            app:drawableEndCompat="@drawable/ic_arrow_right" />
+
+        <View style="@style/Divider"/>
+
+        <TextView
+            android:id="@+id/itemYourPet"
+            style="@style/ProfileMenuItem"
+            android:text="Your Pet"
+            app:drawableEndCompat="@drawable/ic_arrow_right" />
+
+        <View style="@style/Divider"/>
+
+        <TextView
+            android:id="@+id/itemDeliveryAddress"
+            style="@style/ProfileMenuItem"
+            android:text="Delivery Adress"
+            app:drawableEndCompat="@drawable/ic_arrow_right" />
+
+        <View style="@style/Divider"/>
+
+        <TextView
+            android:id="@+id/itemPaymentMethod"
+            style="@style/ProfileMenuItem"
+            android:text="Payment Method"
+            app:drawableEndCompat="@drawable/ic_arrow_right" />
+
+        <View style="@style/Divider"/>
+
+        <TextView
+            android:id="@+id/itemAbout"
+            style="@style/ProfileMenuItem"
+            android:text="About"
+            app:drawableEndCompat="@drawable/ic_arrow_right" />
+
+        <View style="@style/Divider"/>
+
+        <TextView
+            android:id="@+id/itemHelp"
+            style="@style/ProfileMenuItem"
+            android:text="Help"
+            app:drawableEndCompat="@drawable/ic_arrow_right" />
+
+        <View style="@style/Divider"/>
+
+        <TextView
+            android:id="@+id/itemLogout"
+            style="@style/ProfileMenuItem"
+            android:text="Logout"
+            android:textColor="@android:color/holo_red_dark"/>
+
+    </LinearLayout>
+</ScrollView>

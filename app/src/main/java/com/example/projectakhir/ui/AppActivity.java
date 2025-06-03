@@ -12,6 +12,7 @@ import com.example.projectakhir.R; // R file Anda
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 public class AppActivity extends AppCompatActivity {
@@ -28,6 +29,7 @@ public class AppActivity extends AppCompatActivity {
         // 1. Temukan Toolbar dan set sebagai ActionBar
         Toolbar toolbar = findViewById(R.id.toolbar); // ID dari activity_app.xml
         setSupportActionBar(toolbar);
+        Objects.requireNonNull(getSupportActionBar()).hide();
 
         // 2. Temukan NavHostFragment dan dapatkan NavController
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
@@ -48,6 +50,8 @@ public class AppActivity extends AppCompatActivity {
         // topLevelDestinations.add(R.id.homeFragment); // Jika ada fragment home
         topLevelDestinations.add(R.id.adoptHomeFragment); // ID dari nav_graph & menu [cite: 53, 50]
         topLevelDestinations.add(R.id.heartFragment);    // ID dari nav_graph & menu [cite: 53, 50]
+        topLevelDestinations.add(R.id.profileFragment);  // <-- Add ProfileFragment ID here
+
         // Tambahkan ID fragment top-level lainnya jika ada (misal: shop, profile)
 
         // 5. Buat AppBarConfiguration

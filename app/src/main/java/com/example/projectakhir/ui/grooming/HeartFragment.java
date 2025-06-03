@@ -1,31 +1,34 @@
 package com.example.projectakhir.ui.grooming;
 
 import android.os.Bundle;
+import android.util.Log; // Import Log
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast; // Import Toast untuk fallback navigasi
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.fragment.NavHostFragment; // Untuk Navigasi
+import androidx.navigation.NavController; // Import NavController
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.projectakhir.R;
 import com.example.projectakhir.adapters.AppointmentAdapter;
-import com.example.projectakhir.data.AppointmentData; // Import data model
-import com.example.projectakhir.databinding.FragmentHeartBinding; // Nama class binding
+import com.example.projectakhir.data.AppointmentData;
+import com.example.projectakhir.databinding.FragmentHeartBinding;
 
 import java.util.ArrayList;
 
 public class HeartFragment extends Fragment {
 
-    private FragmentHeartBinding binding; // View Binding
+    private FragmentHeartBinding binding;
     private AppointmentAdapter groomingAdapter;
     private AppointmentAdapter doctorAdapter;
     private HeartViewModel viewModel;
+    // Tidak perlu NavController instance variabel jika menggunakan NavHostFragment.findNavController(this) secara langsung
 
     @Nullable
     @Override
@@ -38,92 +41,103 @@ public class HeartFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Inisialisasi ViewModel
         viewModel = new ViewModelProvider(this).get(HeartViewModel.class);
 
-        // --- Kode dari onCreate HeartActivity dipindahkan ke sini ---
+        // --- Setup Navigasi Profil (JIKA ADA ELEMEN UI-NYA) ---
+        // Pastikan Anda memiliki ImageView dengan ID ivHeaderUserProfile di fragment_heart.xml
+        // dan action action_heartFragment_to_profileFragment di nav_graph.xml
+        // Contoh jika ImageView profil ada langsung di binding FragmentHeartBinding:
+        if (binding.ivHeaderUserProfile != null) { // Ganti ivHeaderUserProfile dengan ID yang benar
+            binding.ivHeaderUserProfile.setOnClickListener(v -> {
+                try {
+                    NavHostFragment.findNavController(HeartFragment.this)
+                            .navigate(R.id.action_heartFragment_to_profileFragment);
+                } catch (IllegalArgumentException e) {
+                    Toast.makeText(requireContext(), "Navigasi ke Profil belum siap.", Toast.LENGTH_SHORT).show();
+                    Log.e("HeartFragment", "Navigasi ke profil gagal. Action ID 'action_heartFragment_to_profileFragment' mungkin hilang atau salah.", e);
+                }
+            });
+        } else {
+            // Jika ivHeaderUserProfile ada di dalam layout yang di-include (misal, custom_header.xml)
+            // dan custom_header.xml memiliki ID, Anda mungkin perlu mengaksesnya melalui:
+            // if (binding.namaIdIncludeLayout.ivHeaderUserProfile != null) { ... }
+            // Atau jika tidak ada elemen UI profil di layout ini, bagian ini bisa diabaikan.
+            Log.d("HeartFragment", "ImageView untuk navigasi profil (ivHeaderUserProfile) tidak ditemukan di layout.");
+        }
+        // --- Akhir Setup Navigasi Profil ---
 
-        // Setup Tombol Navigasi (Grooming & Doctor)
+
         binding.btnGrooming.setOnClickListener(v -> {
             try {
-                // Navigasi ke GroomingFragment (pastikan action ada di nav_graph.xml)
                 NavHostFragment.findNavController(HeartFragment.this)
-                        .navigate(R.id.action_heartFragment_to_groomingFragment); // Ganti ID jika perlu
+                        .navigate(R.id.action_heartFragment_to_groomingFragment);
             } catch (IllegalArgumentException e) {
                 Toast.makeText(requireContext(), "Navigasi ke Grooming belum siap.", Toast.LENGTH_SHORT).show();
+                Log.e("HeartFragment", "Navigasi ke grooming gagal.", e);
             }
         });
 
         binding.btnDoctor.setOnClickListener(v -> {
             try {
-                // Navigasi ke DoctorFragment (pastikan action ada di nav_graph.xml)
                 NavHostFragment.findNavController(HeartFragment.this)
-                        .navigate(R.id.action_heartFragment_to_doctorFragment); // Ganti ID jika perlu
+                        .navigate(R.id.action_heartFragment_to_doctorFragment);
             } catch (IllegalArgumentException e) {
                 Toast.makeText(requireContext(), "Navigasi ke Doctor belum siap.", Toast.LENGTH_SHORT).show();
+                Log.e("HeartFragment", "Navigasi ke doctor gagal.", e);
             }
         });
 
-        // Setup RecyclerViews
         setupRecyclerViews();
 
-        // Observe LiveData dari ViewModel
         viewModel.groomingList.observe(getViewLifecycleOwner(), appointments -> {
-            groomingAdapter.updateData(appointments);
+            if (appointments != null) { // Tambahkan pengecekan null
+                groomingAdapter.updateData(appointments);
+            }
         });
 
         viewModel.doctorList.observe(getViewLifecycleOwner(), appointments -> {
-            doctorAdapter.updateData(appointments);
+            if (appointments != null) { // Tambahkan pengecekan null
+                doctorAdapter.updateData(appointments);
+            }
         });
-
-        // --- Akhir kode dari onCreate HeartActivity ---
     }
 
-    // Fungsi setup RecyclerViews dipindahkan ke sini
     private void setupRecyclerViews() {
-        // Penting: Modifikasi AppointmentAdapter untuk menerima listener klik
-        // agar navigasi ditangani oleh Fragment, bukan Adapter.
-
-        // Setup RecyclerView Grooming
-        groomingAdapter = new AppointmentAdapter(requireContext(), new ArrayList<>(), appointment -> {
-            // Handle klik item grooming -> Navigasi ke AppointmentDetailFragment
-            navigateToDetail(appointment);
-        });
+        groomingAdapter = new AppointmentAdapter(requireContext(), new ArrayList<>(), this::navigateToDetail); // Menggunakan method reference
         binding.recyclerGroomingAppointments.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
         binding.recyclerGroomingAppointments.setAdapter(groomingAdapter);
 
-        // Setup RecyclerView Doctor
-        doctorAdapter = new AppointmentAdapter(requireContext(), new ArrayList<>(), appointment -> {
-            // Handle klik item doctor -> Navigasi ke AppointmentDetailFragment
-            navigateToDetail(appointment);
-        });
+        doctorAdapter = new AppointmentAdapter(requireContext(), new ArrayList<>(), this::navigateToDetail); // Menggunakan method reference
         binding.recyclerDoctorAppointments.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
         binding.recyclerDoctorAppointments.setAdapter(doctorAdapter);
     }
 
-    // Fungsi helper untuk navigasi ke detail
     private void navigateToDetail(AppointmentData appointment) {
+        if (appointment == null || appointment.getPetName() == null) { // Pengecekan null untuk data appointment
+            Toast.makeText(requireContext(), "Data appointment tidak lengkap.", Toast.LENGTH_SHORT).show();
+            Log.w("HeartFragment", "Gagal navigasi ke detail: data appointment tidak lengkap.");
+            return;
+        }
         try {
-            // Buat action di nav_graph.xml dari heartFragment ke appointmentDetailFragment
-            // Kirim data yang diperlukan sebagai argumen (contoh: ID atau data Parcelable/Serializable)
+            // Pastikan argumen di nav_graph.xml untuk action ini sesuai (misal: android:name="appointmentId" atau "petName")
             HeartFragmentDirections.ActionHeartFragmentToAppointmentDetailFragment action =
-                    HeartFragmentDirections.actionHeartFragmentToAppointmentDetailFragment(appointment.getPetName()); // Contoh kirim nama saja, sesuaikan argumen
+                    HeartFragmentDirections.actionHeartFragmentToAppointmentDetailFragment(appointment.getPetName()); // Mengirim nama hewan sebagai contoh
 
-            // Jika mengirim data lengkap, pastikan AppointmentData Parcelable/Serializable
-            // action.setAppointmentData(appointment);
+            // Jika Anda ingin mengirim ID unik:
+            // HeartFragmentDirections.ActionHeartFragmentToAppointmentDetailFragment action =
+            //        HeartFragmentDirections.actionHeartFragmentToAppointmentDetailFragment(appointment.getId()); // Pastikan AppointmentData punya getId()
 
             NavHostFragment.findNavController(HeartFragment.this).navigate(action);
 
         } catch (IllegalArgumentException e) {
             Toast.makeText(requireContext(), "Navigasi ke Detail Appointment belum siap.", Toast.LENGTH_SHORT).show();
+            Log.e("HeartFragment", "Navigasi ke detail appointment gagal.", e);
         }
-        // TODO: Hapus intent lama di dalam AppointmentAdapter
     }
-
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        binding = null; // Penting: Bersihkan referensi binding
+        binding = null;
     }
 }

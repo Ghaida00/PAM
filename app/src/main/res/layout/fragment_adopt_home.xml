@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:background="#FFFBEF"
     tools:context=".ui.adoption.AdoptHomeFragment">
+
     <ScrollView
         android:id="@+id/mainScroll"
         android:layout_width="match_parent"
@@ -19,76 +20,78 @@
             android:padding="16dp">
 
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:id="@+id/custom_adopt_header"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:layout_marginBottom="16dp"> <ImageView
+                android:paddingBottom="16dp"> <ImageView
+                android:id="@+id/ivHeaderUserProfile"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:src="@drawable/profile" android:scaleType="centerCrop"
+                android:src="@drawable/profile"
+                android:scaleType="centerCrop"
                 android:background="@drawable/circle_bg"
-                android:layout_marginEnd="8dp" />
-
-                <TextView
-                    android:text="DirtyCat" android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:layout_weight="1"
-                    android:layout_width="0dp" android:layout_height="wrap_content" />
-
-                <ImageView
-                    android:src="@drawable/ic_menu" android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:contentDescription="Menu" /> </LinearLayout>
+                android:layout_marginEnd="8dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:contentDescription="User Profile" /> <TextView
+                android:id="@+id/tvHeaderUsername"
+                android:text="DirtyCat"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/black"/> </LinearLayout>
 
             <TextView
                 android:text="Kami Hadir"
                 android:textSize="24sp"
                 android:textStyle="bold"
-                android:layout_marginTop="16dp"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/black"/> <TextView
+            android:text="🐾 Temukan hewan adopsi terdekat di kota pilihanmu!"
+            android:textSize="14sp"
+            android:layout_marginBottom="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#333333"/> <GridLayout
+            android:id="@+id/gridKota"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:columnCount="2"
+            android:alignmentMode="alignMargins"
+            android:useDefaultMargins="false" />
 
             <TextView
-                android:text="🐾 Temukan hewan adopsi terdekat di kota pilihanmu!"
-                android:textSize="14sp"
-                android:layout_marginBottom="16dp"
+                android:text="Baru Ditambahkan"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_marginTop="24dp"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <GridLayout
-                android:id="@+id/gridKota"
-                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:columnCount="2"
-                android:alignmentMode="alignMargins"
-                android:useDefaultMargins="false" /> <TextView
-            android:text="Baru Ditambahkan"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:layout_marginTop="24dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-            <HorizontalScrollView
-                android:layout_marginTop="8dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:scrollbars="none"  android:clipToPadding="false" android:paddingStart="0dp"
-                android:paddingEnd="16dp"> <LinearLayout
+                android:textColor="@android:color/black"/> <HorizontalScrollView
+            android:layout_marginTop="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="none"
+            android:clipToPadding="false"
+            android:paddingEnd="16dp"
+            tools:ignore="RtlSymmetry">
+            <LinearLayout
                 android:id="@+id/listBaru"
                 android:orientation="horizontal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
-            </HorizontalScrollView>
+        </HorizontalScrollView>
 
             <LinearLayout
                 android:id="@+id/cardFormPengaduan"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:background="@drawable/bg_hewan_rounded"
-                android:padding="16dp"
+                android:background="@drawable/bg_hewan_rounded" android:padding="16dp"
                 android:layout_marginTop="24dp"
                 android:elevation="4dp"
                 android:clickable="true"
@@ -117,10 +120,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:background="@drawable/bg_hewan_rounded"
-                android:padding="16dp"
+                android:background="@drawable/bg_hewan_rounded" android:padding="16dp"
                 android:layout_marginTop="16dp"
-                android:layout_marginBottom="16dp" android:elevation="4dp"
+                android:layout_marginBottom="16dp"
+                android:elevation="4dp"
                 android:gravity="center_vertical"
                 android:clickable="true"
                 android:focusable="true"
@@ -152,16 +155,12 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Pengaduan\nDiproces"
-                    android:textSize="12sp"
+                    android:text="Pengaduan\nDiproces" android:textSize="12sp"
                     android:gravity="end"
                     android:textColor="#000000"
                     android:paddingStart="16dp"
-                    android:paddingLeft="16dp" />
-
+                    tools:ignore="RtlSymmetry" />
             </LinearLayout>
-
         </LinearLayout>
     </ScrollView>
-
 </RelativeLayout>

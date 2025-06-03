@@ -3,24 +3,79 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/adoptHomeFragment"> <fragment
-    android:id="@+id/adoptHomeFragment"
-    android:name="com.example.projectakhir.ui.adoption.AdoptHomeFragment"
-    android:label="fragment_adopt_home"
-    tools:layout="@layout/fragment_adopt_home" >
-    <action
-        android:id="@+id/action_adoptHomeFragment_to_daftarHewanFragment"
-        app:destination="@id/daftarHewanFragment" />
-    <action
-        android:id="@+id/action_adoptHomeFragment_to_formPengaduanFragment"
-        app:destination="@id/formPengaduanFragment" />
-    <action
-        android:id="@+id/action_adoptHomeFragment_to_progresMainFragment"
-        app:destination="@id/progresMainFragment" />
-    <action
-        android:id="@+id/action_adoptHomeFragment_to_detailHewanFragment"
-        app:destination="@id/detailHewanFragment" />
-</fragment>
+    app:startDestination="@id/adoptHomeFragment">
+
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.example.projectakhir.ui.profile.ProfileFragment"
+        android:label="fragment_profile"
+        tools:layout="@layout/fragment_profile" >
+        <action
+            android:id="@+id/action_profileFragment_to_personalDetailFragment"
+            app:destination="@id/personalDetailFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_yourPetListFragment"
+            app:destination="@id/yourPetListFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_deliveryAddressFragment"
+            app:destination="@id/deliveryAddressFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_paymentMethodFragment"
+            app:destination="@id/paymentMethodFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_aboutAppFragment"
+            app:destination="@id/aboutAppFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/personalDetailFragment"
+        android:name="com.example.projectakhir.ui.profile.PersonalDetailFragment"
+        android:label="Personal Detail"
+        tools:layout="@layout/fragment_personal_detail" />
+    <fragment
+        android:id="@+id/yourPetListFragment"
+        android:name="com.example.projectakhir.ui.profile.YourPetListFragment"
+        android:label="Your Pets"
+        tools:layout="@layout/fragment_your_pet_list" />
+    <fragment
+        android:id="@+id/deliveryAddressFragment"
+        android:name="com.example.projectakhir.ui.profile.DeliveryAddressFragment"
+        android:label="Delivery Address"
+        tools:layout="@layout/fragment_delivery_address" />
+
+    <fragment
+        android:id="@+id/paymentMethodFragment"
+        android:name="com.example.projectakhir.ui.profile.PaymentMethodFragment"
+        android:label="Payment Method"
+        tools:layout="@layout/fragment_payment_method" />
+
+    <fragment
+        android:id="@+id/aboutAppFragment"
+        android:name="com.example.projectakhir.ui.profile.AboutAppFragment"
+        android:label="About PawPal"
+        tools:layout="@layout/fragment_about_app" />
+
+    <fragment
+        android:id="@+id/adoptHomeFragment"
+        android:name="com.example.projectakhir.ui.adoption.AdoptHomeFragment"
+        android:label="fragment_adopt_home"
+        tools:layout="@layout/fragment_adopt_home" >
+        <action
+            android:id="@+id/action_adoptHomeFragment_to_daftarHewanFragment"
+            app:destination="@id/daftarHewanFragment" />
+        <action
+            android:id="@+id/action_adoptHomeFragment_to_formPengaduanFragment"
+            app:destination="@id/formPengaduanFragment" />
+        <action
+            android:id="@+id/action_adoptHomeFragment_to_progresMainFragment"
+            app:destination="@id/progresMainFragment" />
+        <action
+            android:id="@+id/action_adoptHomeFragment_to_detailHewanFragment"
+            app:destination="@id/detailHewanFragment" />
+        <action
+            android:id="@+id/action_adoptHomeFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/daftarHewanFragment"
@@ -87,7 +142,6 @@
         android:label="fragment_progres_pengaduan"
         tools:layout="@layout/fragment_progres_pengaduan" />
 
-
     <fragment
         android:id="@+id/heartFragment"
         android:name="com.example.projectakhir.ui.grooming.HeartFragment"
@@ -102,6 +156,9 @@
         <action
             android:id="@+id/action_heartFragment_to_appointmentDetailFragment"
             app:destination="@id/appointmentDetailFragment" />
+        <action
+            android:id="@+id/action_heartFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
     </fragment>
 
     <fragment

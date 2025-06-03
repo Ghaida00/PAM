@@ -22,30 +22,29 @@
             android:layout_height="wrap_content">
 
             <LinearLayout
+                android:id="@+id/custom_adopt_header"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:layout_marginBottom="16dp">
-                <ImageView
-                    android:src="@drawable/profile" android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:background="@drawable/circle_bg"
-                    android:scaleType="centerCrop"
-                    android:layout_marginEnd="8dp" />
-
-                <TextView
-                    android:text="DirtyCat" android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:layout_weight="1"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content" />
-
-                <ImageView
-                    android:src="@drawable/ic_menu" android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:contentDescription="Menu" />
-            </LinearLayout>
+                android:paddingBottom="16dp"> <ImageView
+                android:id="@+id/ivHeaderUserProfile"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/profile"
+                android:scaleType="centerCrop"
+                android:background="@drawable/circle_bg"
+                android:layout_marginEnd="8dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:contentDescription="User Profile" /> <TextView
+                android:id="@+id/tvHeaderUsername"
+                android:text="DirtyCat"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/black"/> </LinearLayout>
 
             <TextView
                 android:text="Grooming and Doctor"
