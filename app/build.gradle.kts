@@ -59,4 +59,5 @@ dependencies {
     // Java language implementation
     implementation(libs.androidx.navigation.fragment)
     implementation(libs.androidx.navigation.ui)
+    implementation ("de.hdodenhof:circleimageview:3.1.0")
 }
