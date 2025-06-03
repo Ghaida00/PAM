@@ -36,17 +36,20 @@ public class ProfileFragment extends Fragment {
             if (user != null) {
                 binding.txtUserName.setText(user.name);
                 binding.txtUserEmail.setText(user.email);
-                // For avatar, you'd use a library like Glide or Picasso, or set a local drawable
-                // For now, assuming 'kucing_oren_profile' is in drawables
+                // Untuk avatar, kamu bisa menggunakan library seperti Glide atau Picasso
+                // Untuk saat ini, diasumsikan user.avatarUrl adalah nama drawable resource
                 if (user.avatarUrl != null && !user.avatarUrl.isEmpty()){
+                    // Pastikan avatarUrl adalah nama file drawable yang valid tanpa ekstensi
                     int imageResource = getResources().getIdentifier(user.avatarUrl, "drawable", requireContext().getPackageName());
                     if (imageResource != 0) {
                         binding.imgUserProfile.setImageResource(imageResource);
                     } else {
-                        binding.imgUserProfile.setImageResource(R.drawable.agus); // Fallback
+                        // Fallback jika resource tidak ditemukan
+                        binding.imgUserProfile.setImageResource(R.drawable.agus); // Ganti 'agus' dengan drawable fallback defaultmu
                     }
                 } else {
-                    binding.imgUserProfile.setImageResource(R.drawable.agus); // Fallback
+                    // Fallback jika avatarUrl kosong atau null
+                    binding.imgUserProfile.setImageResource(R.drawable.agus); // Ganti 'agus' dengan drawable fallback defaultmu
                 }
             }
         });
@@ -62,17 +65,24 @@ public class ProfileFragment extends Fragment {
     }
 
     private void setupNavigationListeners() {
-        binding.itemPersonalDetail.setOnClickListener(v -> viewModel.onPersonalDetailClicked());
-        binding.itemYourPet.setOnClickListener(v -> viewModel.onYourPetClicked());
-        binding.itemDeliveryAddress.setOnClickListener(v -> viewModel.onDeliveryAddressClicked());
-        binding.itemPaymentMethod.setOnClickListener(v -> viewModel.onPaymentMethodClicked());
-        binding.itemAbout.setOnClickListener(v -> viewModel.onAboutClicked());
-        binding.itemHelp.setOnClickListener(v -> viewModel.onHelpClicked());
-        binding.itemLogout.setOnClickListener(v -> viewModel.onLogoutClicked());
+        // Pastikan ID CardView di XML kamu adalah itemPersonalDetailCard, itemYourPetCard, dst.
+        // Jika berbeda, sesuaikan nama variabel binding di bawah ini.
+        binding.itemPersonalDetailCard.setOnClickListener(v -> viewModel.onPersonalDetailClicked());
+        binding.itemYourPetCard.setOnClickListener(v -> viewModel.onYourPetClicked());
+        binding.itemDeliveryAddressCard.setOnClickListener(v -> viewModel.onDeliveryAddressClicked());
+        binding.itemPaymentMethodCard.setOnClickListener(v -> viewModel.onPaymentMethodClicked());
+        binding.itemAboutCard.setOnClickListener(v -> viewModel.onAboutClicked());
+        binding.itemHelpCard.setOnClickListener(v -> viewModel.onHelpClicked());
+        binding.itemLogoutCard.setOnClickListener(v -> viewModel.onLogoutClicked());
+
+        // Listener untuk tombol kembali di header (jika diperlukan)
+        // binding.btnBack.setOnClickListener(v -> {
+        //     // Aksi untuk tombol kembali, misalnya NavHostFragment.findNavController(this).popBackStack();
+        // });
     }
 
     private void handleNavigation(ProfileViewModel.NavigationTarget target) {
-        // Ensure you have defined these destinations and actions in your nav_graph.xml
+        // Pastikan destinasi dan action sudah didefinisikan di nav_graph.xml
         try {
             switch (target) {
                 case PERSONAL_DETAIL:
@@ -91,34 +101,44 @@ public class ProfileFragment extends Fragment {
                     NavHostFragment.findNavController(this).navigate(R.id.action_profileFragment_to_aboutAppFragment);
                     break;
                 case HELP:
-                    // Potentially navigate to a HelpFragment or show a dialog/WebView
-                    Toast.makeText(getContext(), "Help clicked (Not implemented)", Toast.LENGTH_SHORT).show();
+                    // Bisa navigasi ke HelpFragment atau tampilkan dialog/WebView
+                    Toast.makeText(getContext(), "Help clicked (Fitur belum diimplementasi)", Toast.LENGTH_SHORT).show();
                     break;
                 case LOGOUT:
                     showLogoutConfirmationDialog();
                     break;
             }
         } catch (IllegalArgumentException e) {
-            Toast.makeText(getContext(), "Navigation for " + target.name() + " not yet implemented or action ID is wrong.", Toast.LENGTH_LONG).show();
+            // Tangani jika action ID salah atau destinasi belum ada
+            String message = "Navigasi untuk " + target.name() + " belum diimplementasi atau ID action salah.";
+            if (getContext() != null) {
+                Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
+            }
+            // Log error untuk debugging
+            // Log.e("ProfileFragment", message, e);
         }
     }
 
     private void showLogoutConfirmationDialog() {
+        if (getContext() == null) return; // Hindari crash jika fragment detached
+
         new AlertDialog.Builder(requireContext())
                 .setTitle("Logout")
-                .setMessage("Are you sure you want to logout?")
+                .setMessage("Apakah kamu yakin ingin logout?")
                 .setPositiveButton("Logout", (dialog, which) -> {
-                    // TODO: Implement actual logout logic (clear user session, navigate to login screen)
-                    Toast.makeText(getContext(), "Logged out successfully!", Toast.LENGTH_SHORT).show();
-                    // Example: NavHostFragment.findNavController(this).navigate(R.id.action_profileFragment_to_loginFragment);
+                    // TODO: Implementasikan logika logout sebenarnya
+                    // (bersihkan sesi pengguna, navigasi ke layar login, dll.)
+                    Toast.makeText(getContext(), "Berhasil logout!", Toast.LENGTH_SHORT).show();
+                    // Contoh navigasi ke LoginFragment (pastikan action ID ada di nav_graph):
+                    // NavHostFragment.findNavController(this).navigate(R.id.action_profileFragment_to_loginFragment);
                 })
-                .setNegativeButton("Cancel", null)
+                .setNegativeButton("Batal", null)
                 .show();
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        binding = null;
+        binding = null; // Penting untuk menghindari memory leak dengan ViewBinding pada Fragment
     }
 }

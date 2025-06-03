@@ -409,7 +409,7 @@
                         android:id="@+id/arrow_logout"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/ic_"
+                        android:src="@drawable/ic_arrow_right"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
                         app:tint="#D32F2F" /> </RelativeLayout>
