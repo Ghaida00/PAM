@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFBEF"
+    android:fillViewport="true"
+    tools:context=".ui.profile.DeliveryAddressFragment"> <androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="16dp"> <RelativeLayout
+    android:id="@+id/toolbar_delivery_section"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:padding="16dp"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintEnd_toEndOf="parent">
+
+    <ImageView
+        android:id="@+id/btnBackDelivery"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:src="@drawable/ic_back_circle"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:padding="4dp"
+        android:contentDescription="Tombol Kembali" />
+
+    <TextView
+        android:id="@+id/tvDeliveryTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="Delivery Adress"
+        android:textColor="@android:color/black"
+        android:textSize="22sp"
+        android:textStyle="bold" />
+</RelativeLayout>
+
+    <TextView
+        android:id="@+id/tvInProgressMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sorry we\ncurrently develop\nthis feature"
+        android:textSize="20sp"
+        android:textColor="@android:color/black"
+        android:textAlignment="center"
+        android:gravity="center"
+        android:lineSpacingExtra="4dp"
+        app:layout_constraintTop_toBottomOf="@id/toolbar_delivery_section" app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <ImageView
+        android:id="@+id/ivIconCloseDecorative"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginBottom="44dp"
+        android:alpha="0.8"
+        android:src="@drawable/ic_x"
+        app:layout_constraintBottom_toTopOf="@+id/tvInProgressMessage"
+        app:layout_constraintEnd_toEndOf="@+id/tvInProgressMessage"
+        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintStart_toStartOf="@+id/tvInProgressMessage"
+        app:tint="@android:color/black" />
+
+    <ImageView
+        android:id="@+id/ivIconSettingsDecorative"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_marginEnd="20dp"
+        android:alpha="0.8"
+        android:src="@drawable/ic_settings"
+        app:layout_constraintBottom_toBottomOf="@+id/tvInProgressMessage"
+        app:layout_constraintEnd_toStartOf="@+id/tvInProgressMessage"
+        app:layout_constraintTop_toTopOf="@+id/tvInProgressMessage"
+        app:layout_constraintVertical_bias="0.0"
+        app:tint="@android:color/black" />
+
+    <ImageView
+        android:id="@+id/ivIconWrenchDecorative"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="88dp"
+        android:alpha="0.8"
+        android:src="@drawable/ic_wrench"
+        app:layout_constraintStart_toStartOf="@+id/ivIconSettingsDecorative"
+        app:layout_constraintTop_toBottomOf="@+id/ivIconSettingsDecorative"
+        app:tint="@android:color/black" />
+
+    <ImageView
+        android:id="@+id/ivIconLoc1Decorative"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginStart="8dp"
+        android:alpha="0.8"
+        android:rotation="-30"
+        android:src="@drawable/ic_loc"
+        app:layout_constraintBottom_toBottomOf="@+id/tvInProgressMessage"
+        app:layout_constraintStart_toEndOf="@+id/tvInProgressMessage"
+        app:layout_constraintTop_toTopOf="@+id/tvInProgressMessage"
+        app:layout_constraintVertical_bias="0.0"
+        app:tint="@android:color/black" />
+
+    <ImageView
+        android:id="@+id/ivIconLoc2Decorative"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="64dp"
+        android:alpha="0.8"
+        android:rotation="20"
+        android:src="@drawable/ic_loc"
+        app:layout_constraintStart_toStartOf="@+id/ivIconLoc1Decorative"
+        app:layout_constraintTop_toBottomOf="@+id/ivIconLoc1Decorative"
+        app:tint="@android:color/black" />
+
+    <ImageView
+        android:id="@+id/ivIconUserXDecorative"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginTop="60dp"
+        android:alpha="0.8"
+        android:src="@drawable/ic_userx"
+        app:layout_constraintEnd_toEndOf="@+id/tvInProgressMessage"
+        app:layout_constraintHorizontal_bias="0.651"
+        app:layout_constraintStart_toStartOf="@+id/tvInProgressMessage"
+        app:layout_constraintTop_toBottomOf="@+id/tvInProgressMessage"
+        app:tint="@android:color/black" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>
