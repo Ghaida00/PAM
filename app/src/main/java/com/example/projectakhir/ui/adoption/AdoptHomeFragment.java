@@ -1,5 +1,6 @@
 package com.example.projectakhir.ui.adoption;
 
+// Import yang diperlukan
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -12,25 +13,28 @@ import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast; // Ditambahkan untuk feedback
+import android.widget.Toast;
+import android.widget.ProgressBar; // Import ProgressBar
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController; // Import NavController
-import androidx.navigation.Navigation; // Import Navigation helper
-// NavHostFragment sudah diimport di kode Anda, tidak perlu diubah jika sudah ada
-// import androidx.navigation.fragment.NavHostFragment;
+import androidx.lifecycle.ViewModelProvider; // Import ViewModelProvider
+import androidx.navigation.fragment.NavHostFragment;
 
-
+import com.bumptech.glide.Glide; // Import Glide
 import com.example.projectakhir.R;
 import com.example.projectakhir.data.Hewan;
 import com.example.projectakhir.databinding.FragmentAdoptHomeBinding;
 
+import java.util.ArrayList; // Untuk list kosong
+import java.util.List;     // Untuk tipe data list
+
+
 public class AdoptHomeFragment extends Fragment {
 
     private FragmentAdoptHomeBinding binding;
-    private NavController navController; // Deklarasi NavController
+    private AdoptHomeViewModel adoptHomeViewModel; // ViewModel
 
     @Nullable
     @Override
@@ -43,87 +47,142 @@ public class AdoptHomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Inisialisasi NavController
-        navController = Navigation.findNavController(view);
+        // Inisialisasi ViewModel
+        adoptHomeViewModel = new ViewModelProvider(this).get(AdoptHomeViewModel.class);
 
-        // Listener untuk cardFormPengaduan (dari kode Anda)
-        // Pastikan binding.cardFormPengaduan ada di layout fragment_adopt_home.xml
-        if (binding.cardFormPengaduan != null) {
-            binding.cardFormPengaduan.setOnClickListener(v -> {
-                try {
-                    // Navigasi ke FormPengaduanFragment
-                    navController.navigate(R.id.action_adoptHomeFragment_to_formPengaduanFragment);
-                } catch (IllegalArgumentException e) {
-                    Toast.makeText(requireContext(), "Navigasi ke Form Pengaduan belum siap.", Toast.LENGTH_SHORT).show();
-                }
-            });
-        }
-
-        // Listener untuk cardProgres (dari kode Anda)
-        // Pastikan binding.cardProgres ada di layout fragment_adopt_home.xml
-        if (binding.cardProgres != null) {
-            binding.cardProgres.setOnClickListener(v -> {
-                try {
-                    // Navigasi ke ProgresMainFragment
-                    navController.navigate(R.id.action_adoptHomeFragment_to_progresMainFragment);
-                } catch (IllegalArgumentException e) {
-                    Toast.makeText(requireContext(), "Navigasi ke Progres belum siap.", Toast.LENGTH_SHORT).show();
-                }
-            });
-        }
+        // Setup Listener Navigasi (tetap sama)
+        binding.cardFormPengaduan.setOnClickListener(v -> {
+            try {
+                NavHostFragment.findNavController(this)
+                        .navigate(R.id.action_adoptHomeFragment_to_formPengaduanFragment);
+            } catch (IllegalArgumentException e) {
+                Toast.makeText(requireContext(), "Navigasi ke Form Pengaduan belum siap.", Toast.LENGTH_SHORT).show();
+            }
+        });
 
         // --- Implementasi Navigasi Header Profile Picture ---
-        // Pastikan fragment_adopt_home.xml sudah diupdate dengan header custom
-        // dan ImageView profil pengguna memiliki ID "ivHeaderUserProfile"
-        // (Akses view binding.ivHeaderUserProfile mungkin perlu disesuaikan jika header di-include secara terpisah)
-        if (binding.ivHeaderUserProfile != null) { // Mengasumsikan ID ini ada di fragment_adopt_home.xml
-            binding.ivHeaderUserProfile.setOnClickListener(v -> {
-                try {
-                    // Navigasi ke ProfileFragment menggunakan action ID yang benar
-                    navController.navigate(R.id.action_adoptHomeFragment_to_profileFragment);
-                } catch (IllegalArgumentException e) {
-                    Toast.makeText(requireContext(), "Navigasi ke Profil belum siap.", Toast.LENGTH_SHORT).show();
-                }
-            });
-        } else {
-            // Jika Anda ingin memastikan header ada, Anda bisa tambahkan Toast di sini untuk debug
-            // Toast.makeText(requireContext(), "DEBUG: ivHeaderUserProfile tidak ditemukan.", Toast.LENGTH_LONG).show();
-        }
+        binding.ivHeaderUserProfile.setOnClickListener(v -> {
+            try {
+                NavHostFragment.findNavController(this).navigate(R.id.action_adoptHomeFragment_to_profileFragment);
+            } catch (IllegalArgumentException e) {
+                Toast.makeText(requireContext(), "Navigasi ke Profil belum siap.", Toast.LENGTH_SHORT).show();
+            }
+        });
         // --- Akhir Implementasi Navigasi Header Profile Picture ---
 
+        binding.cardProgres.setOnClickListener(v -> {
+            try {
+                NavHostFragment.findNavController(this)
+                        .navigate(R.id.action_adoptHomeFragment_to_progresMainFragment);
+            } catch (IllegalArgumentException e) {
+                Toast.makeText(requireContext(), "Navigasi ke Progres belum siap.", Toast.LENGTH_SHORT).show();
+            }
+        });
 
-        // Panggil fungsi untuk mengisi Grid Kota dan List Hewan Baru
-        setupGridKota();
-        setupHewanBaru();
+        setupGridKota(); // Grid kota bisa tetap statis atau dinamis dari Firestore nanti
+
+        // Observe LiveData dari ViewModel untuk hewan terbaru
+        adoptHomeViewModel.newestHewanList.observe(getViewLifecycleOwner(), hewans -> {
+            if (hewans != null) {
+                setupHewanBaruList(hewans); // Panggil method untuk menampilkan hewan
+            }
+        });
+
+        adoptHomeViewModel.isLoading.observe(getViewLifecycleOwner(), isLoading -> {
+            if (isLoading) {
+                if (binding.progressBarNewestHewan != null) { // Cek null untuk ProgressBar
+                    binding.progressBarNewestHewan.setVisibility(View.VISIBLE);
+                }
+                binding.scrollViewNewestHewan.setVisibility(View.GONE); // Sembunyikan list saat loading
+            } else {
+                if (binding.progressBarNewestHewan != null) {
+                    binding.progressBarNewestHewan.setVisibility(View.GONE);
+                }
+                binding.scrollViewNewestHewan.setVisibility(View.VISIBLE);
+            }
+        });
+
+        adoptHomeViewModel.error.observe(getViewLifecycleOwner(), errorMsg -> {
+            if (errorMsg != null && !errorMsg.isEmpty()) {
+                if (binding.progressBarNewestHewan != null) {
+                    binding.progressBarNewestHewan.setVisibility(View.GONE);
+                }
+                binding.scrollViewNewestHewan.setVisibility(View.VISIBLE); // Atau sembunyikan dan tampilkan pesan error
+                Toast.makeText(requireContext(), errorMsg, Toast.LENGTH_LONG).show();
+                adoptHomeViewModel.clearError();
+            }
+        });
     }
 
-    // Fungsi helper setupGridKota (dari kode Anda)
     private void setupGridKota() {
-        if (binding.gridKota == null || getContext() == null) return;
+        // Kode setupGridKota tetap sama, karena ini statis
         binding.gridKota.removeAllViews();
-        tambahKota("Jakarta", R.drawable.jakarta, R.drawable.bg_kota_jakarta);
-        tambahKota("Surabaya", R.drawable.surabaya, R.drawable.bg_kota_surabaya);
-        tambahKota("Yogyakarta", R.drawable.yogyakarta, R.drawable.bg_kota_yogyakarta);
-        tambahKota("Bali", R.drawable.bali, R.drawable.bg_kota_bali);
+        tambahKota("Jakarta", R.drawable.jakarta, R.drawable.bg_kota_jakarta); //
+        tambahKota("Surabaya", R.drawable.surabaya, R.drawable.bg_kota_surabaya); //
+        tambahKota("Yogyakarta", R.drawable.yogyakarta, R.drawable.bg_kota_yogyakarta); //
+        tambahKota("Bali", R.drawable.bali, R.drawable.bg_kota_bali); //
     }
 
-    // Fungsi helper setupHewanBaru (dari kode Anda)
-    private void setupHewanBaru() {
-        if (binding.listBaru == null || getContext() == null) return;
-        binding.listBaru.removeAllViews();
-        tambahHewanBaru(new Hewan("Grace", "Surabaya", "Kucing", "2 Tahun", "Betina", "4kg",
-                new String[]{"Spoiled", "Lazy", "Smart"}, R.drawable.grace, R.drawable.grace_no_background,
-                "Grace manja parah. Suka nempel terus kayak perangko, tapi juga pinter buka lemari sendiri kalau laper."));
-        tambahHewanBaru(new Hewan("Claire", "Jakarta", "Anjing", "4 Tahun", "Jantan", "4.6kg",
-                new String[]{"Smart", "Fearful", "Lazy"}, R.drawable.claire, R.drawable.claire_no_background,
-                "Claire agak penakut sama suara keras, tapi sekali kenal kamu, dia bakal lengket banget. Suka duduk di kaki orang dan ngikutin ke mana pun."));
+    // Modifikasi setupHewanBaru menjadi setupHewanBaruList
+    private void setupHewanBaruList(List<Hewan> hewanList) {
+        binding.listBaru.removeAllViews(); // Bersihkan view lama
+        if (hewanList == null || hewanList.isEmpty()) {
+            // Opsional: Tampilkan pesan jika tidak ada hewan baru
+            TextView noDataMsg = new TextView(requireContext());
+            noDataMsg.setText("Belum ada hewan baru.");
+            noDataMsg.setPadding(16,16,16,16);
+            binding.listBaru.addView(noDataMsg);
+            return;
+        }
+        for (Hewan h : hewanList) {
+            tambahHewanBaruCard(h); // Panggil method untuk membuat card per hewan
+        }
+    }
+
+    // Modifikasi tambahHewanBaru menjadi tambahHewanBaruCard
+    private void tambahHewanBaruCard(Hewan h) {
+        LinearLayout card = (LinearLayout) LayoutInflater.from(requireContext())
+                .inflate(R.layout.item_hewan_baru_card, binding.listBaru, false); // Buat layout XML terpisah jika lebih kompleks
+
+        ImageView imgHewan = card.findViewById(R.id.imgHewanBaru); // Ganti dengan ID dari item_hewan_baru_card.xml
+        TextView namaHewan = card.findViewById(R.id.txtNamaHewanBaru); // Ganti dengan ID
+        TextView infoHewan = card.findViewById(R.id.txtInfoHewanBaru);   // Ganti dengan ID
+        TextView tagUmur = card.findViewById(R.id.tagUmurHewanBaru);     // Ganti dengan ID
+        TextView tagGender = card.findViewById(R.id.tagGenderHewanBaru); // Ganti dengan ID
+
+        if (h.getThumbnailImageUrl() != null && !h.getThumbnailImageUrl().isEmpty()) {
+            Glide.with(requireContext())
+                    .load(h.getThumbnailImageUrl())
+                    .placeholder(R.drawable.grace) // Placeholder
+                    .error(R.drawable.ic_paw)       // Error image
+                    .centerCrop()
+                    .into(imgHewan);
+        } else {
+            imgHewan.setImageResource(R.drawable.grace); // Default jika URL tidak ada
+        }
+
+        namaHewan.setText(h.getNama());
+        infoHewan.setText(h.getKota() + "  •  " + h.getJenis()); // Sesuaikan info yang ingin ditampilkan
+        tagUmur.setText(h.getUmur());
+        tagGender.setText(h.getGender());
+
+
+        card.setOnClickListener(v -> {
+            try {
+                String hewanIdentifier = h.getId() != null && !h.getId().isEmpty() ? h.getId() : h.getNama();
+                AdoptHomeFragmentDirections.ActionAdoptHomeFragmentToDetailHewanFragment action =
+                        AdoptHomeFragmentDirections.actionAdoptHomeFragmentToDetailHewanFragment(hewanIdentifier);
+                NavHostFragment.findNavController(AdoptHomeFragment.this).navigate(action);
+            } catch (IllegalArgumentException e) {
+                Toast.makeText(requireContext(), "Navigasi ke Detail Hewan belum siap.", Toast.LENGTH_SHORT).show();
+            }
+        });
+        binding.listBaru.addView(card);
     }
 
 
-    // Fungsi tambahKota (dari kode Anda, dengan penyesuaian navigasi jika perlu)
+    // Metode tambahKota tetap sama
     private void tambahKota(String nama, int iconResId, int bgDrawableResId) {
-        if (getContext() == null || binding.gridKota == null) return;
-
         LinearLayout card = new LinearLayout(requireContext());
         card.setOrientation(LinearLayout.VERTICAL);
         card.setPadding(32, 32, 32, 32);
@@ -165,111 +224,14 @@ public class AdoptHomeFragment extends Fragment {
 
         card.setOnClickListener(v -> {
             try {
-                // Menggunakan Directions class dari kode Anda, pastikan ini sesuai dengan nav_graph.xml yang baru
                 AdoptHomeFragmentDirections.ActionAdoptHomeFragmentToDaftarHewanFragment action =
                         AdoptHomeFragmentDirections.actionAdoptHomeFragmentToDaftarHewanFragment(nama);
-                navController.navigate(action);
-            } catch (Exception e) { // Lebih baik tangkap Exception spesifik jika mungkin
-                Toast.makeText(requireContext(), "Navigasi ke Daftar Hewan (kota) belum siap.", Toast.LENGTH_SHORT).show();
+                NavHostFragment.findNavController(AdoptHomeFragment.this).navigate(action);
+            } catch (IllegalArgumentException e) {
+                Toast.makeText(requireContext(), "Navigasi ke Daftar Hewan belum siap.", Toast.LENGTH_SHORT).show();
             }
         });
         binding.gridKota.addView(card);
-    }
-
-    // Fungsi tambahHewanBaru (dari kode Anda, dengan penyesuaian navigasi jika perlu)
-    private void tambahHewanBaru(Hewan h) {
-        if (getContext() == null || binding.listBaru == null) return;
-
-        LinearLayout card = new LinearLayout(requireContext());
-        card.setOrientation(LinearLayout.VERTICAL);
-        card.setBackgroundResource(R.drawable.bg_hewan_rounded);
-        card.setElevation(8f);
-        card.setPadding(0, 0, 0, 16);
-        card.setClickable(true);
-        card.setFocusable(true);
-
-        ImageView img = new ImageView(requireContext());
-        // Pastikan field seperti gambarThumbnailResId ada di class Hewan Anda
-        img.setImageResource(h.gambarThumbnailResId);
-        img.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        img.setBackgroundResource(R.drawable.bg_hewan_rounded);
-        img.setClipToOutline(true);
-
-        LinearLayout.LayoutParams imgParams = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                getResources().getDimensionPixelSize(R.dimen.hewan_baru_image_height)
-        );
-        img.setLayoutParams(imgParams);
-
-        TextView namaHewan = new TextView(requireContext());
-        namaHewan.setText(h.nama);
-        namaHewan.setTextSize(14f);
-        namaHewan.setTypeface(null, Typeface.BOLD);
-        namaHewan.setPadding(12, 8, 12, 0);
-
-        TextView info = new TextView(requireContext());
-        info.setText(h.kota + "  •  " + h.gender);
-        info.setTextSize(12f);
-        info.setPadding(12, 0, 12, 4);
-
-        LinearLayout tagLayout = new LinearLayout(requireContext());
-        tagLayout.setOrientation(LinearLayout.HORIZONTAL);
-        tagLayout.setPadding(12, 4, 12, 0);
-
-        TextView tagUmur = new TextView(requireContext());
-        tagUmur.setText(h.umur);
-        tagUmur.setTextSize(12f);
-        tagUmur.setTextColor(Color.BLACK);
-        tagUmur.setPadding(24, 8, 24, 8);
-        tagUmur.setBackgroundResource(R.drawable.bg_tag_kuning);
-        LinearLayout.LayoutParams tagParamsUmur = new LinearLayout.LayoutParams( // Ganti nama variabel agar unik
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-        );
-        tagParamsUmur.setMarginEnd(8);
-        tagUmur.setLayoutParams(tagParamsUmur);
-
-        TextView tagGender = new TextView(requireContext());
-        tagGender.setText(h.gender);
-        tagGender.setTextSize(12f);
-        tagGender.setTextColor(Color.WHITE);
-        tagGender.setPadding(24, 8, 24, 8);
-        tagGender.setBackgroundResource(R.drawable.bg_tag_hijau);
-        // Jika Anda ingin tagGender juga memiliki margin, tambahkan layout params untuknya
-        // LinearLayout.LayoutParams tagParamsGender = new LinearLayout.LayoutParams(
-        //         LinearLayout.LayoutParams.WRAP_CONTENT,
-        //         LinearLayout.LayoutParams.WRAP_CONTENT
-        // );
-        // tagGender.setLayoutParams(tagParamsGender);
-
-
-        tagLayout.addView(tagUmur);
-        tagLayout.addView(tagGender);
-
-        card.addView(img);
-        card.addView(namaHewan);
-        card.addView(info);
-        card.addView(tagLayout);
-
-        card.setOnClickListener(v -> {
-            try {
-                // Menggunakan Directions class dari kode Anda
-                AdoptHomeFragmentDirections.ActionAdoptHomeFragmentToDetailHewanFragment action =
-                        AdoptHomeFragmentDirections.actionAdoptHomeFragmentToDetailHewanFragment(h.nama);
-                navController.navigate(action);
-            } catch (Exception e) {
-                Toast.makeText(requireContext(), "Navigasi ke Detail Hewan belum siap.", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                getResources().getDimensionPixelSize(R.dimen.hewan_baru_card_width),
-                LinearLayout.LayoutParams.WRAP_CONTENT
-        );
-        lp.setMargins(0, 0, 16, 0);
-        card.setLayoutParams(lp);
-
-        binding.listBaru.addView(card);
     }
 
     @Override

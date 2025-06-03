@@ -1,31 +1,34 @@
+// In main/java/com/example/projectakhir/ui/progress/ProgresAdopsiFragment.java
 package com.example.projectakhir.ui.progress;
 
-import android.content.DialogInterface; // Import DialogInterface
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog; // Import AlertDialog
-import androidx.core.content.ContextCompat; // Import ContextCompat for colors
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider; // Import ViewModelProvider
 import androidx.navigation.fragment.NavHostFragment;
-
 import com.example.projectakhir.R;
-import com.example.projectakhir.databinding.FragmentProgresAdopsiBinding; // Nama binding
+import com.example.projectakhir.databinding.FragmentProgresAdopsiBinding;
+import com.google.firebase.firestore.DocumentSnapshot; // Import DocumentSnapshot
 
 public class ProgresAdopsiFragment extends Fragment {
 
-    private FragmentProgresAdopsiBinding binding; // View Binding
-    private String currentStatusAdopsi = ""; // Variabel untuk menyimpan status
+    private FragmentProgresAdopsiBinding binding;
+    private ProgresAdopsiViewModel viewModel; // ViewModel
+    // Hapus: private String currentStatusAdopsi = "";
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = FragmentProgresAdopsiBinding.inflate(inflater, container, false);
+        viewModel = new ViewModelProvider(this).get(ProgresAdopsiViewModel.class); // Inisialisasi ViewModel
         return binding.getRoot();
     }
 
@@ -33,122 +36,147 @@ public class ProgresAdopsiFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // --- Kode dari onCreate ProgresAdopsiActivity ---
-
-        // Setup tombol back
         binding.btnBackProgresAdopsi.setOnClickListener(v -> NavHostFragment.findNavController(this).popBackStack());
 
-        // TODO: Load actual progress data based on user/submission ID from ViewModel/Repository
-        // Menggunakan data dummy untuk saat ini
-        String namaHewan = "Claire";
-        String jenisHewan = "Anjing";
-        String kota = "Surabaya";
-        // Simulasikan status dari data yang di-load
-        currentStatusAdopsi = "Diterima"; // Ganti ini dengan data asli ("Diproses", "Ditolak", dll.)
+        observeViewModel();
 
-        // Tampilkan data dummy/aktual
-        binding.txtNamaHewanProgres.setText(namaHewan);
-        binding.txtJenisHewanProgres.setText(jenisHewan);
-        binding.txtKotaProgres.setText(kota);
-        updateStatusUI(currentStatusAdopsi); // Gunakan fungsi helper untuk update UI status
-
-
-        // Setup tombol batalkan adopsi
         binding.btnBatalkanAdopsi.setOnClickListener(v -> {
-            // Pengecekan status sebelum membatalkan
-            if (currentStatusAdopsi.equalsIgnoreCase("Diterima") || currentStatusAdopsi.equalsIgnoreCase("Dibatalkan")) {
-                // Jika status "Diterima" atau sudah "Dibatalkan", tampilkan info
-                showInfoDialog("Pengajuan yang sudah " + currentStatusAdopsi.toLowerCase() + " tidak dapat dibatalkan lagi.");
+            String currentStatus = viewModel.status.getValue();
+            if (currentStatus != null) {
+                if ("Diterima".equalsIgnoreCase(currentStatus) || "Dibatalkan".equalsIgnoreCase(currentStatus)) {
+                    showInfoDialog("Pengajuan yang sudah " + currentStatus.toLowerCase() + " tidak dapat dibatalkan lagi.");
+                } else {
+                    showConfirmationDialog(
+                            "Konfirmasi Pembatalan",
+                            "Apakah Anda yakin ingin membatalkan pengajuan adopsi ini?",
+                            (dialog, which) -> viewModel.cancelAdoption()
+                    );
+                }
             } else {
-                // Jika status BUKAN "Diterima" (misal: Diproses, Diajukan), tampilkan konfirmasi
-                showConfirmationDialog(
-                        "Konfirmasi Pembatalan",
-                        "Apakah Anda yakin ingin membatalkan pengajuan adopsi ini?",
-                        (dialog, which) -> {
-                            // Aksi jika user menekan "Ya, Batalkan"
-                            // TODO: Implement logic to cancel adoption submission in ViewModel/Repository
-                            Toast.makeText(requireContext(), "Pengajuan adopsi dibatalkan!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Status pengajuan belum dimuat.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 
-                            // Update UI setelah pembatalan
-                            currentStatusAdopsi = "Dibatalkan";
-                            updateStatusUI(currentStatusAdopsi);
-                            binding.btnBatalkanAdopsi.setEnabled(false); // Disable tombol setelah dibatalkan
-                            // finish(); // Tidak perlu finish() di Fragment, cukup update UI
-                        }
-                );
+    private void observeViewModel() {
+        viewModel.isLoading.observe(getViewLifecycleOwner(), isLoading -> {
+            // Tampilkan/sembunyikan ProgressBar jika ada di layout
+            // binding.progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+            binding.btnBatalkanAdopsi.setEnabled(!isLoading); // Nonaktifkan tombol saat loading
+        });
+
+        viewModel.error.observe(getViewLifecycleOwner(), error -> {
+            if (error != null && !error.isEmpty()) {
+                Toast.makeText(requireContext(), error, Toast.LENGTH_LONG).show();
+                // Kosongkan field jika ada error signifikan (misal, tidak ada data)
+                if (error.equals("Belum ada pengajuan adopsi.")) {
+                    binding.txtNamaHewanProgres.setText("-");
+                    binding.txtJenisHewanProgres.setText("-");
+                    binding.txtKotaProgres.setText("-");
+                    binding.txtStatusProgresAdopsi.setText("Tidak Ada Pengajuan");
+                    binding.txtStatusProgresAdopsi.setTextColor(ContextCompat.getColor(requireContext(), R.color.default_text_color));
+                    binding.btnBatalkanAdopsi.setEnabled(false);
+                }
+                viewModel.clearError(); // Bersihkan error setelah ditampilkan
             }
         });
 
-        // --- Akhir kode dari onCreate ProgresAdopsiActivity ---
+        // Observe nama hewan dari ViewModel
+        viewModel.hewanNama.observe(getViewLifecycleOwner(), nama -> {
+            binding.txtNamaHewanProgres.setText(nama != null ? nama : "-");
+        });
+
+        // Observe jenis hewan dari ViewModel
+        viewModel.hewanJenis.observe(getViewLifecycleOwner(), jenis -> {
+            binding.txtJenisHewanProgres.setText(jenis != null ? jenis : "-");
+        });
+
+        // Observe kota hewan dari ViewModel
+        viewModel.hewanKota.observe(getViewLifecycleOwner(), kota -> {
+            binding.txtKotaProgres.setText(kota != null ? kota : "-");
+        });
+
+
+        viewModel.adoptionRequest.observe(getViewLifecycleOwner(), snapshot -> {
+            if (snapshot != null && snapshot.exists()) {
+                // Data sudah di-set oleh observer status, nama, jenis, kota
+            } else if (viewModel.error.getValue() == null || !viewModel.error.getValue().equals("Belum ada pengajuan adopsi.")){
+                // Handle jika snapshot null tapi bukan karena "Belum ada pengajuan"
+                // Ini bisa terjadi jika fetch awal gagal karena alasan lain
+                // binding.txtNamaHewanProgres.setText("-");
+                // binding.txtJenisHewanProgres.setText("-");
+                // binding.txtKotaProgres.setText("-");
+                // binding.txtStatusProgresAdopsi.setText("Gagal memuat");
+                // binding.btnBatalkanAdopsi.setEnabled(false);
+            }
+        });
+
+        viewModel.status.observe(getViewLifecycleOwner(), status -> {
+            if (status != null) {
+                updateStatusUI(status);
+            } else if (viewModel.error.getValue() == null || !viewModel.error.getValue().equals("Belum ada pengajuan adopsi.")){
+                // Jika status null tapi tidak ada error spesifik "belum ada pengajuan"
+                // Bisa jadi ini adalah state awal sebelum data di-load atau ada error lain
+                // binding.txtStatusProgresAdopsi.setText("Memuat...");
+            }
+        });
     }
 
-    // Fungsi helper untuk update UI status (termasuk warna dan teks)
     private void updateStatusUI(String status) {
         binding.txtStatusProgresAdopsi.setText(status);
         int statusColor;
+        boolean canCancel = true;
+        String buttonText = "Batalkan Pengajuan";
+
         switch (status.toLowerCase()) {
             case "diterima":
-                // Ganti dengan warna hijau yang sesuai dari colors.xml jika ada
-                statusColor = ContextCompat.getColor(requireContext(), R.color.status_diterima); // Contoh: Buat color resource
-                binding.btnBatalkanAdopsi.setEnabled(false); // Tidak bisa batal jika diterima
-                binding.btnBatalkanAdopsi.setAlpha(0.5f); // Buat tombol terlihat disabled
+                statusColor = ContextCompat.getColor(requireContext(), R.color.status_diterima);
+                canCancel = false;
                 break;
             case "diproses":
-                // Ganti dengan warna kuning/oranye yang sesuai
-                statusColor = ContextCompat.getColor(requireContext(), R.color.status_diproses); // Contoh
-                binding.btnBatalkanAdopsi.setEnabled(true);
-                binding.btnBatalkanAdopsi.setAlpha(1.0f);
+                statusColor = ContextCompat.getColor(requireContext(), R.color.status_diproses);
                 break;
             case "ditolak":
-                // Ganti dengan warna merah yang sesuai
-                statusColor = ContextCompat.getColor(requireContext(), R.color.status_ditolak); // Contoh
-                binding.btnBatalkanAdopsi.setEnabled(false);
-                binding.btnBatalkanAdopsi.setAlpha(0.5f);
+                statusColor = ContextCompat.getColor(requireContext(), R.color.status_ditolak);
+                canCancel = false;
                 break;
             case "dibatalkan":
-                // Ganti dengan warna abu-abu yang sesuai
-                statusColor = ContextCompat.getColor(requireContext(), R.color.status_dibatalkan); // Contoh
-                binding.btnBatalkanAdopsi.setEnabled(false);
-                binding.btnBatalkanAdopsi.setAlpha(0.5f);
-                binding.btnBatalkanAdopsi.setText("Telah Dibatalkan"); // Ubah teks tombol
+                statusColor = ContextCompat.getColor(requireContext(), R.color.status_dibatalkan);
+                canCancel = false;
+                buttonText = "Telah Dibatalkan";
                 break;
-            default:
-                statusColor = ContextCompat.getColor(requireContext(), R.color.default_text_color); // Warna default
-                binding.btnBatalkanAdopsi.setEnabled(true); // Default bisa batal
-                binding.btnBatalkanAdopsi.setAlpha(1.0f);
+            default: // "Diajukan" atau status lain
+                statusColor = ContextCompat.getColor(requireContext(), R.color.default_text_color);
                 break;
         }
         binding.txtStatusProgresAdopsi.setTextColor(statusColor);
+        binding.btnBatalkanAdopsi.setEnabled(canCancel);
+        binding.btnBatalkanAdopsi.setText(buttonText);
+        binding.btnBatalkanAdopsi.setAlpha(canCancel ? 1.0f : 0.5f);
     }
 
-
-    // Helper function to show an information dialog (dipindahkan ke sini)
     private void showInfoDialog(String message) {
-        // Gunakan requireContext() untuk Builder
         new AlertDialog.Builder(requireContext())
                 .setTitle("Informasi")
                 .setMessage(message)
                 .setPositiveButton("OK", (dialog, which) -> dialog.dismiss())
-                .setIcon(android.R.drawable.ic_dialog_info) // Optional icon
+                .setIcon(android.R.drawable.ic_dialog_info)
                 .show();
     }
 
-    // Helper function to show a confirmation dialog (dipindahkan ke sini)
     private void showConfirmationDialog(String title, String message, DialogInterface.OnClickListener positiveAction) {
-        // Gunakan requireContext() untuk Builder
         new AlertDialog.Builder(requireContext())
                 .setTitle(title)
                 .setMessage(message)
-                .setPositiveButton("Ya, Batalkan", positiveAction) // Set positive action
-                .setNegativeButton("Tidak", (dialog, which) -> dialog.dismiss()) // Just dismiss on negative
-                .setIcon(android.R.drawable.ic_dialog_alert) // Optional icon
+                .setPositiveButton("Ya, Batalkan", positiveAction)
+                .setNegativeButton("Tidak", (dialog, which) -> dialog.dismiss())
+                .setIcon(android.R.drawable.ic_dialog_alert)
                 .show();
     }
-
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        binding = null; // Penting
+        binding = null;
     }
 }

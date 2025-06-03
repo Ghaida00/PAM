@@ -24,25 +24,30 @@
                 android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:paddingBottom="16dp"> <ImageView
-                android:id="@+id/ivHeaderUserProfile"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:src="@drawable/profile"
-                android:scaleType="centerCrop"
-                android:background="@drawable/circle_bg"
-                android:layout_marginEnd="8dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:contentDescription="User Profile" /> <TextView
-                android:id="@+id/tvHeaderUsername"
-                android:text="DirtyCat"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:textColor="@android:color/black"/> </LinearLayout>
+                android:paddingBottom="16dp">
+
+                <ImageView
+                    android:id="@+id/ivHeaderUserProfile"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/profile"
+                    android:scaleType="centerCrop"
+                    android:background="@drawable/circle_bg"
+                    android:layout_marginEnd="8dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:contentDescription="User Profile" />
+
+                <TextView
+                    android:id="@+id/tvHeaderUsername"
+                    android:text="DirtyCat"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:textColor="@android:color/black"/>
+            </LinearLayout>
 
             <TextView
                 android:text="Kami Hadir"
@@ -50,19 +55,23 @@
                 android:textStyle="bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@android:color/black"/> <TextView
-            android:text="🐾 Temukan hewan adopsi terdekat di kota pilihanmu!"
-            android:textSize="14sp"
-            android:layout_marginBottom="16dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="#333333"/> <GridLayout
-            android:id="@+id/gridKota"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:columnCount="2"
-            android:alignmentMode="alignMargins"
-            android:useDefaultMargins="false" />
+                android:textColor="@android:color/black"/>
+
+            <TextView
+                android:text="🐾 Temukan hewan adopsi terdekat di kota pilihanmu!"
+                android:textSize="14sp"
+                android:layout_marginBottom="16dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#333333"/>
+
+            <GridLayout
+                android:id="@+id/gridKota"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:columnCount="2"
+                android:alignmentMode="alignMargins"
+                android:useDefaultMargins="false" />
 
             <TextView
                 android:text="Baru Ditambahkan"
@@ -70,21 +79,33 @@
                 android:textStyle="bold"
                 android:layout_marginTop="24dp"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@android:color/black"/> <HorizontalScrollView
-            android:layout_marginTop="8dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:scrollbars="none"
-            android:clipToPadding="false"
-            android:paddingEnd="16dp"
-            tools:ignore="RtlSymmetry">
-            <LinearLayout
-                android:id="@+id/listBaru"
-                android:orientation="horizontal"
-                android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
-        </HorizontalScrollView>
+
+            <ProgressBar
+                android:id="@+id/progressBarNewestHewan"
+                style="?android:attr/progressBarStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:visibility="gone"
+                android:layout_marginTop="8dp"/>
+
+            <HorizontalScrollView
+                android:id="@+id/scrollViewNewestHewan"
+                android:layout_marginTop="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="none"
+                android:clipToPadding="false"
+                android:paddingStart="0dp"
+                android:paddingEnd="16dp">
+
+                <LinearLayout
+                    android:id="@+id/listBaru"
+                    android:orientation="horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </HorizontalScrollView>
 
             <LinearLayout
                 android:id="@+id/cardFormPengaduan"

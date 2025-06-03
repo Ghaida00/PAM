@@ -4,12 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.adoption.DetailHewanFragment"> <ImageView
-    android:id="@+id/bgDetail"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:scaleType="centerCrop"
-    android:src="@drawable/bg_detail_hewan" />
+    tools:context=".ui.adoption.DetailHewanFragment">
+
+    <ImageView
+        android:id="@+id/bgDetail"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:src="@drawable/bg_detail_hewan" />
 
     <ScrollView
         android:id="@+id/scrollView"
@@ -18,26 +20,26 @@
         android:fillViewport="true">
 
         <LinearLayout
+            android:id="@+id/contentLayoutDetailHewan"
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="16dp">
-
+            android:padding="16dp"
+            android:visibility="gone">
+            
             <ImageView
                 android:id="@+id/imgHewan"
                 android:layout_width="match_parent"
                 android:layout_height="270dp"
-                android:scaleType="fitCenter"  />
-            <LinearLayout
+                android:scaleType="fitCenter"
+                tools:src="@drawable/grace_no_background" /> <LinearLayout
                 android:id="@+id/traitsLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:gravity="center"
                 android:layout_marginTop="16dp"
-                android:layout_marginBottom="16dp">
-            </LinearLayout>
-
+                android:layout_marginBottom="16dp" />
 
             <TextView
                 android:id="@+id/namaHewan"
@@ -82,7 +84,9 @@
 
             <LinearLayout
                 android:id="@+id/btnAdopt"
-                android:layout_width="wrap_content" android:layout_height="wrap_content" android:minHeight="50dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minHeight="50dp"
                 android:orientation="horizontal"
                 android:gravity="center"
                 android:paddingStart="24dp"
@@ -90,7 +94,8 @@
                 android:paddingTop="12dp"
                 android:paddingBottom="12dp"
                 android:layout_marginTop="12dp"
-                android:layout_gravity="center_horizontal" android:background="@drawable/bg_button_adopt"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/bg_button_adopt"
                 android:clickable="true"
                 android:focusable="true"
                 android:foreground="?android:attr/selectableItemBackground">
@@ -117,5 +122,23 @@
 
         </LinearLayout>
     </ScrollView>
+
+    <ProgressBar
+        android:id="@+id/progressBarDetailHewan"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/txtErrorDetailHewan"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="Gagal memuat data."
+        android:visibility="gone"
+        android:padding="16dp"
+        android:textSize="16sp"/>
 
 </RelativeLayout>

@@ -10,6 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide; // Import Glide
 import com.example.projectakhir.data.Hewan;
 import com.example.projectakhir.R;
 
@@ -18,58 +19,62 @@ import java.util.ArrayList;
 
 public class HewanAdapter extends RecyclerView.Adapter<HewanAdapter.ViewHolder> {
 
-    // +++ Interface untuk menangani klik item hewan +++
     public interface OnHewanClickListener {
         void onHewanClick(Hewan hewan);
     }
-    // ++++++++++++++++++++++++++++++++++++++++++++++++
 
     private List<Hewan> list;
     private Context context;
-    private final OnHewanClickListener clickListener; // Tambahkan variabel listener
+    private final OnHewanClickListener clickListener;
 
-    // +++ Modifikasi Constructor untuk menerima listener +++
     public HewanAdapter(Context context, List<Hewan> list, OnHewanClickListener listener) {
         this.context = context;
-        // Gunakan list baru untuk keamanan
         this.list = new ArrayList<>(list);
-        this.clickListener = listener; // Simpan listener
+        this.clickListener = listener;
     }
-    // +++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-    // Metode untuk update data (sudah ada dan bagus)
     public void updateData(List<Hewan> newList) {
         this.list.clear();
         if (newList != null) {
             this.list.addAll(newList);
         }
-        notifyDataSetChanged(); // Notify adapter the data has changed
+        notifyDataSetChanged();
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.item_hewan, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.item_hewan, parent, false); //
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Hewan data = list.get(position);
-        holder.nama.setText(data.nama);
-        holder.lokasi.setText(data.kota + "  •  " + data.jenis);
-        holder.gambar.setImageResource(data.gambarThumbnailResId);
-        holder.tagUmur.setText(data.umur);
-        holder.tagGender.setText(data.gender);
+        holder.nama.setText(data.getNama()); // Gunakan getter
+        holder.lokasi.setText(data.getKota() + "  •  " + data.getJenis()); // Gunakan getter
+        holder.tagUmur.setText(data.getUmur()); // Gunakan getter
+        holder.tagGender.setText(data.getGender()); // Gunakan getter
 
-        // +++ Modifikasi OnClickListener untuk item +++
+        // --- Modifikasi untuk memuat gambar dari URL menggunakan Glide ---
+        if (data.getThumbnailImageUrl() != null && !data.getThumbnailImageUrl().isEmpty()) {
+            Glide.with(context)
+                    .load(data.getThumbnailImageUrl())
+                    .placeholder(R.drawable.grace) // Gambar placeholder opsional
+                    .error(R.drawable.ic_paw)       // Gambar error opsional jika gagal load
+                    .centerCrop() // atau .fitCenter() sesuai kebutuhan
+                    .into(holder.gambar);
+        } else {
+            // Jika URL null atau kosong, tampilkan placeholder atau gambar default
+            holder.gambar.setImageResource(R.drawable.grace); // Atau placeholder lain
+        }
+        // --- Akhir Modifikasi Gambar ---
+
         holder.itemView.setOnClickListener(v -> {
             if (clickListener != null) {
-                // Panggil method di listener (yang diimplementasikan di Fragment)
                 clickListener.onHewanClick(data);
             }
         });
-        // ++++++++++++++++++++++++++++++++++++++++++++++
     }
 
     @Override
@@ -83,11 +88,11 @@ public class HewanAdapter extends RecyclerView.Adapter<HewanAdapter.ViewHolder> 
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            nama = itemView.findViewById(R.id.txtNama);
-            lokasi = itemView.findViewById(R.id.txtLokasi);
-            tagUmur = itemView.findViewById(R.id.tagUmur);
-            tagGender = itemView.findViewById(R.id.tagGender);
-            gambar = itemView.findViewById(R.id.imgHewan);
+            nama = itemView.findViewById(R.id.txtNama); //
+            lokasi = itemView.findViewById(R.id.txtLokasi); //
+            tagUmur = itemView.findViewById(R.id.tagUmur); //
+            tagGender = itemView.findViewById(R.id.tagGender); //
+            gambar = itemView.findViewById(R.id.imgHewan); //
         }
     }
 }
