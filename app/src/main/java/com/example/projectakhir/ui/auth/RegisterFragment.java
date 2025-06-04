@@ -1,5 +1,6 @@
 package com.example.projectakhir.ui.auth;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -21,10 +22,12 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Random;
 
 public class RegisterFragment extends Fragment {
 
@@ -33,6 +36,7 @@ public class RegisterFragment extends Fragment {
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private NavController navController;
+    private static final int MAX_USERNAME_RETRIES = 5;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -114,7 +118,26 @@ public class RegisterFragment extends Fragment {
         binding.progressBarRegister.setVisibility(View.VISIBLE);
         binding.buttonRegister.setEnabled(false);
 
-        mAuth.createUserWithEmailAndPassword(email, password)
+        // Generate URL Gambar Profil menggunakan UI Avatars
+        String profileImageUrl = "https://ui-avatars.com/api/?name=" + Uri.encode(fullName) +
+                "&size=256&background=random&font-size=0.5&bold=true&format=png&color=000000&length=2";
+
+        // Generate dan cek keunikan username
+        generateUniqueUsername(fullName, 0, (uniqueUsername) -> {
+            if (uniqueUsername != null) {
+                // Jika username unik berhasil digenerasi, lanjutkan dengan registrasi Firebase Auth
+                proceedWithFirebaseRegistration(fullName, email, password, uniqueUsername, profileImageUrl);
+            } else {
+                // Gagal membuat username unik setelah beberapa percobaan
+                binding.progressBarRegister.setVisibility(View.GONE);
+                binding.buttonRegister.setEnabled(true);
+                if (getContext() != null) {
+                    Toast.makeText(getContext(), "Gagal membuat username unik. Silakan coba lagi atau hubungi support.", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
+        /*mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(requireActivity(), task -> {
                     if (task.isSuccessful()) {
                         Log.d(TAG, "createUserWithEmail:success");
@@ -135,9 +158,14 @@ public class RegisterFragment extends Fragment {
                             // Simpan data pengguna tambahan ke Firestore
                             Map<String, Object> userData = new HashMap<>();
                             userData.put("fullName", fullName);
+                            String[] names = fullName.split(" ", 2);
+                            userData.put("firstName", names[0]);
+                            userData.put("lastName", names.length > 1 ? names[1] : "");
+
                             userData.put("email", email);
                             // Anda bisa menambahkan field lain seperti tanggalBergabung, dll.
-                            // userData.put("createdAt", com.google.firebase.firestore.FieldValue.serverTimestamp());
+
+                            userData.put("createdAt", com.google.firebase.firestore.FieldValue.serverTimestamp());
 
                             db.collection("users").document(firebaseUser.getUid())
                                     .set(userData)
@@ -165,8 +193,140 @@ public class RegisterFragment extends Fragment {
                         Toast.makeText(getContext(), "Registrasi gagal: " + Objects.requireNonNull(task.getException()).getMessage(),
                                 Toast.LENGTH_LONG).show();
                     }
+                });*/
+    }
+
+    // Fungsi untuk membuat username dasar dari nama lengkap
+    private String generateBaseUsername(String fullName) {
+        String base = fullName.toLowerCase()
+                .replaceAll("\\s+", "") // Hapus semua spasi
+                .replaceAll("[^a-z0-9]", ""); // Hapus karakter non-alphanumeric
+        if (base.length() > 15) { // Batasi panjang dasar username
+            base = base.substring(0, 15);
+        }
+        if (base.isEmpty()) {
+            base = "user"; // Fallback jika nama hanya berisi karakter non-alphanumeric
+        }
+        return base;
+    }
+
+    // Fungsi rekursif (dengan batasan) untuk menghasilkan username unik
+    private void generateUniqueUsername(String fullName, int attempt, UsernameCallback callback) {
+        if (attempt >= MAX_USERNAME_RETRIES) {
+            callback.onResult(null); // Mencapai batas percobaan
+            return;
+        }
+
+        String baseUsername = generateBaseUsername(fullName);
+        String currentUsernameToTry = baseUsername;
+        if (attempt > 0) {
+            Random random = new Random();
+            // Tambahkan angka acak 4 digit untuk variasi
+            currentUsernameToTry = baseUsername + (random.nextInt(8999) + 1000);
+        }
+
+        String finalCurrentUsernameToTry = currentUsernameToTry; // Variabel harus effectively final untuk lambda
+        db.collection("users").whereEqualTo("username", finalCurrentUsernameToTry).get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        QuerySnapshot snapshot = task.getResult();
+                        if (snapshot != null && snapshot.isEmpty()) {
+                            // Username unik, kirim kembali melalui callback
+                            callback.onResult(finalCurrentUsernameToTry);
+                        } else {
+                            // Username sudah ada, coba lagi dengan attempt + 1
+                            Log.d(TAG, "Username '" + finalCurrentUsernameToTry + "' sudah ada, mencoba lagi. Percobaan: " + (attempt + 1));
+                            generateUniqueUsername(fullName, attempt + 1, callback);
+                        }
+                    } else {
+                        // Error saat mengecek keunikan
+                        Log.w(TAG, "Error saat mengecek keunikan username", task.getException());
+                        if (getContext() != null) {
+                            Toast.makeText(getContext(), "Gagal memeriksa username: " + Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_LONG).show();
+                        }
+                        callback.onResult(null); // Error saat pengecekan
+                    }
                 });
     }
+
+    // Fungsi untuk melanjutkan proses registrasi ke Firebase Authentication dan Firestore
+    private void proceedWithFirebaseRegistration(String fullName, String email, String password, String username, String profileImageUrl) {
+        mAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(requireActivity(), task -> {
+                    if (task.isSuccessful()) {
+                        Log.d(TAG, "createUserWithEmail:success");
+                        FirebaseUser firebaseUser = mAuth.getCurrentUser();
+                        if (firebaseUser != null) {
+                            // Update profil Firebase Auth (displayName dan photoURL)
+                            UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                    .setDisplayName(fullName)
+                                    .setPhotoUri(Uri.parse(profileImageUrl)) // Simpan juga URL gambar yang digenerasi di profil Auth
+                                    .build();
+                            firebaseUser.updateProfile(profileUpdates)
+                                    .addOnCompleteListener(profileTask -> {
+                                        if(profileTask.isSuccessful()){
+                                            Log.d(TAG, "Profil pengguna (Auth) diupdate dengan displayName dan photoURL.");
+                                        } else {
+                                            Log.w(TAG, "Gagal mengupdate profil Auth.", profileTask.getException());
+                                        }
+                                    });
+
+                            // Siapkan data untuk disimpan ke Firestore
+                            Map<String, Object> userData = new HashMap<>();
+                            userData.put("fullName", fullName);
+                            String[] names = fullName.split(" ", 2);
+                            userData.put("firstName", names[0]);
+                            userData.put("lastName", names.length > 1 ? names[1] : "");
+                            userData.put("email", email);
+                            userData.put("username", username); // Simpan username unik yang digenerasi
+                            userData.put("profileImageUrl", profileImageUrl); // Simpan URL gambar profil yang digenerasi
+                            userData.put("createdAt", com.google.firebase.firestore.FieldValue.serverTimestamp());
+
+                            // Simpan data pengguna ke Firestore
+                            db.collection("users").document(firebaseUser.getUid())
+                                    .set(userData)
+                                    .addOnSuccessListener(aVoid -> {
+                                        Log.d(TAG, "Data pengguna berhasil ditulis ke Firestore.");
+                                        binding.progressBarRegister.setVisibility(View.GONE);
+                                        binding.buttonRegister.setEnabled(true);
+                                        if (getContext() != null) {
+                                            Toast.makeText(getContext(), "Registrasi berhasil!", Toast.LENGTH_SHORT).show();
+                                        }
+                                        if (navController.getCurrentDestination() != null && navController.getCurrentDestination().getId() == R.id.registerFragment) {
+                                            navController.navigate(R.id.action_registerFragment_to_loginFragment);
+                                        }
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Log.w(TAG, "Error saat menulis data pengguna ke Firestore", e);
+                                        binding.progressBarRegister.setVisibility(View.GONE);
+                                        binding.buttonRegister.setEnabled(true);
+                                        if (getContext() != null) {
+                                            Toast.makeText(getContext(), "Registrasi berhasil, namun gagal menyimpan detail pengguna.", Toast.LENGTH_LONG).show();
+                                        }
+                                        // Tetap navigasi ke login agar pengguna bisa masuk
+                                        if (navController.getCurrentDestination() != null && navController.getCurrentDestination().getId() == R.id.registerFragment) {
+                                            navController.navigate(R.id.action_registerFragment_to_loginFragment);
+                                        }
+                                    });
+                        }
+                    } else {
+                        // Jika registrasi Firebase Auth gagal
+                        Log.w(TAG, "createUserWithEmail:failure", task.getException());
+                        binding.progressBarRegister.setVisibility(View.GONE);
+                        binding.buttonRegister.setEnabled(true);
+                        if (getContext() != null) {
+                            Toast.makeText(getContext(), "Registrasi gagal: " + Objects.requireNonNull(task.getException()).getMessage(),
+                                    Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+    }
+
+    // Interface callback untuk hasil generasi username asinkron
+    interface UsernameCallback {
+        void onResult(String username);
+    }
+
 
     @Override
     public void onDestroyView() {

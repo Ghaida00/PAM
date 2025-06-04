@@ -19,6 +19,7 @@ import androidx.lifecycle.ViewModelProvider; // Untuk ViewModel
 import androidx.navigation.fragment.NavHostFragment;
 
 // Import kelas Binding yang sesuai dengan nama file XML kamu
+import com.bumptech.glide.Glide;
 import com.example.projectakhir.R; // Pastikan R diimport jika perlu
 import com.example.projectakhir.databinding.FragmentPersonalDetailBinding;
 // Import ViewModel kamu (buat jika belum ada)
@@ -28,7 +29,7 @@ import com.example.projectakhir.databinding.FragmentPersonalDetailBinding;
 public class PersonalDetailFragment extends Fragment {
 
     private FragmentPersonalDetailBinding binding;
-    // private PersonalDetailViewModel viewModel; // Uncomment jika menggunakan ViewModel
+    private PersonalDetailViewModel viewModel; // Uncomment jika menggunakan ViewModel
 
     // Launcher untuk memilih gambar dari galeri
     private ActivityResultLauncher<Intent> galleryLauncher;
@@ -46,8 +47,10 @@ public class PersonalDetailFragment extends Fragment {
                         if (selectedImageUri != null) {
                             // Tampilkan gambar yang dipilih di ImageView
                             binding.ivUserProfilePersonal.setImageURI(selectedImageUri);
-                            // TODO: Tambahkan logika untuk mengunggah atau menyimpan URI gambar ini
-                            showToast("Foto profil akan diubah (implementasi backend diperlukan)");
+                            /*// TODO: Tambahkan logika untuk mengunggah atau menyimpan URI gambar ini
+                            showToast("Foto profil akan diubah (implementasi backend diperlukan)");*/
+
+                            viewModel.updateProfilePicture(selectedImageUri);
                         }
                     }
                 });
@@ -58,7 +61,7 @@ public class PersonalDetailFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = FragmentPersonalDetailBinding.inflate(inflater, container, false);
         // Inisialisasi ViewModel (Uncomment jika menggunakan ViewModel)
-        // viewModel = new ViewModelProvider(this).get(PersonalDetailViewModel.class);
+        viewModel = new ViewModelProvider(this).get(PersonalDetailViewModel.class);
         return binding.getRoot();
     }
 
@@ -68,18 +71,18 @@ public class PersonalDetailFragment extends Fragment {
 
         setupActionListeners();
         observeViewModelData(); // Panggil method untuk observe data (Uncomment jika menggunakan ViewModel)
-        populateStaticDataForNow(); // Hapus ini jika sudah menggunakan ViewModel
+        // populateStaticDataForNow(); // Hapus ini jika sudah menggunakan ViewModel
     }
 
     // Contoh mengisi data statis, ganti dengan data dari ViewModel
-    private void populateStaticDataForNow() {
+    /*private void populateStaticDataForNow() {
         binding.ivUserProfilePersonal.setImageResource(R.drawable.bambang); // Gambar default
         binding.tvUserFirstName.setText("Kucing");
         binding.tvUserLastName.setText("Oren");
         binding.tvUserEmailValue.setText("ayamoyen@gmail.com");
         binding.tvUsernameValue.setText("Ayam Oyen");
         binding.tvPasswordValue.setText("********"); // Password biasanya tidak ditampilkan nilainya
-    }
+    }*/
 
     private void observeViewModelData() {
         // Uncomment dan sesuaikan jika menggunakan ViewModel
@@ -112,6 +115,48 @@ public class PersonalDetailFragment extends Fragment {
         // Panggil method di ViewModel untuk memuat data pengguna jika belum dimuat
         // viewModel.loadUserDetails("user_id_jika_perlu");
         */
+
+        viewModel.user.observe(getViewLifecycleOwner(), user -> {
+            if (user != null) {
+                binding.tvUserFirstName.setText(user.getFirstName() != null ? user.getFirstName() : "N/A");
+                binding.tvUserLastName.setText(user.getLastName() != null ? user.getLastName() : "N/A");
+                binding.tvUserEmailValue.setText(user.getEmail() != null ? user.getEmail() : "N/A");
+                binding.tvUsernameValue.setText(user.getUsername() != null ? user.getUsername() : "N/A");
+                binding.tvPasswordValue.setText("********");
+
+                if (user.getProfileImageUrl() != null && !user.getProfileImageUrl().isEmpty()) {
+                    Glide.with(this)
+                            .load(user.getProfileImageUrl())
+                            .placeholder(R.drawable.bambang) // Your default placeholder
+                            .error(R.drawable.ic_profile) // Your error placeholder
+                            .into(binding.ivUserProfilePersonal);
+                } else {
+                    binding.ivUserProfilePersonal.setImageResource(R.drawable.bambang); // Default if no URL
+                }
+            }
+        });
+
+        viewModel.isLoading.observe(getViewLifecycleOwner(), isLoading -> {
+            binding.progressBarPersonalDetail.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+            binding.btnEditProfile.setEnabled(!isLoading);
+            binding.ivCameraIcon.setEnabled(!isLoading);
+        });
+
+        viewModel.error.observe(getViewLifecycleOwner(), error -> {
+            if (error != null && !error.isEmpty()) {
+                showToast(error);
+                viewModel.clearError(); // Clear error after showing
+            }
+        });
+
+        viewModel.profileUpdateSuccess.observe(getViewLifecycleOwner(), success -> {
+            if (success != null && success) {
+                showToast("Foto profil berhasil diperbarui!");
+                viewModel.resetProfileUpdateStatus(); // Reset status
+                // Optionally, reload user details if not automatically updated by LiveData
+                // viewModel.loadUserDetails();
+            }
+        });
     }
 
     private void setupActionListeners() {
