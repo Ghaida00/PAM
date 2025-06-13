@@ -26,13 +26,15 @@
             android:layout_height="wrap_content"
             android:padding="16dp"
             android:visibility="gone">
-            
+
             <ImageView
                 android:id="@+id/imgHewan"
                 android:layout_width="match_parent"
                 android:layout_height="270dp"
                 android:scaleType="fitCenter"
-                tools:src="@drawable/grace_no_background" /> <LinearLayout
+                tools:src="@drawable/grace_no_background" />
+
+            <LinearLayout
                 android:id="@+id/traitsLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

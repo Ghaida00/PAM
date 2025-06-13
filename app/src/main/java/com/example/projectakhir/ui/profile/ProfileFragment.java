@@ -3,6 +3,7 @@ package com.example.projectakhir.ui.profile;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,6 +17,8 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavOptions;
 import androidx.navigation.fragment.NavHostFragment;
+
+import com.bumptech.glide.Glide;
 import com.example.projectakhir.R;
 import com.example.projectakhir.databinding.FragmentProfileBinding;
 import com.example.projectakhir.ui.auth.LoginFragment;
@@ -47,33 +50,10 @@ public class ProfileFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        /*viewModel.user.observe(getViewLifecycleOwner(), user -> {
-            if (user != null) {
-                binding.txtUserName.setText(user.name);
-                binding.txtUserEmail.setText(user.email);
-                if (user.avatarUrl != null && !user.avatarUrl.isEmpty()){
-                    int imageResource = getResources().getIdentifier(user.avatarUrl, "drawable", requireContext().getPackageName());
-                    if (imageResource != 0) {
-                        binding.imgUserProfile.setImageResource(imageResource);
-                    } else {
-                        binding.imgUserProfile.setImageResource(R.drawable.agus);
-                    }
-                } else {
-                    binding.imgUserProfile.setImageResource(R.drawable.agus);
-                }
-            }
-        });*/
 
         loadUserProfile();
 
         setupNavigationListeners();
-
-        /*viewModel.navigateTo.observe(getViewLifecycleOwner(), event -> {
-            ProfileViewModel.NavigationTarget target = event.getContentIfNotHandled();
-            if (target != null) {
-                handleNavigation(target);
-            }
-        });*/
 
         binding.btnBack.setOnClickListener(v -> {
             NavHostFragment.findNavController(this).popBackStack();
@@ -83,44 +63,66 @@ public class ProfileFragment extends Fragment {
     private void loadUserProfile() {
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {
+            // Set email dari data otentikasi
             binding.txtUserEmail.setText(currentUser.getEmail());
-            if (currentUser.getDisplayName() != null && !currentUser.getDisplayName().isEmpty()) {
-                binding.txtUserName.setText(currentUser.getDisplayName());
-            } else {
-                DocumentReference userDocRef = db.collection("users").document(currentUser.getUid());
-                userDocRef.get().addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        DocumentSnapshot document = task.getResult();
-                        if (document != null && document.exists()) {
-                            String fullName = document.getString("fullName");
-                            binding.txtUserName.setText(fullName != null ? fullName : "Nama Tidak Ada");
+
+            // Ambil data lain (nama & URL gambar) dari Firestore
+            DocumentReference userDocRef = db.collection("users").document(currentUser.getUid());
+            userDocRef.get().addOnCompleteListener(task -> {
+                if (getContext() == null) { // Pastikan fragment masih ada
+                    return;
+                }
+
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document != null && document.exists()) {
+                        // Jika dokumen user ada di Firestore, gunakan data ini
+                        String fullName = document.getString("fullName");
+                        binding.txtUserName.setText(fullName != null ? fullName : "Nama Tidak Ada");
+
+                        String profileImageUrl = document.getString("profileImageUrl");
+                        if (profileImageUrl != null && !profileImageUrl.isEmpty()) {
+                            // Muat gambar dari URL menggunakan Glide
+                            Glide.with(requireContext())
+                                    .load(profileImageUrl)
+                                    .placeholder(R.drawable.ic_profile) // Gambar sementara saat loading
+                                    .error(R.drawable.agus) // Gambar jika terjadi error
+                                    .into(binding.imgUserProfile);
                         } else {
-                            Log.d("ProfileFragment", "No such document in Firestore");
-                            binding.txtUserName.setText("Nama Tidak Ada");
+                            // Jika tidak ada URL, gunakan gambar default
+                            binding.imgUserProfile.setImageResource(R.drawable.agus);
                         }
                     } else {
-                        Log.d("ProfileFragment", "get failed with ", task.getException());
-                        binding.txtUserName.setText("Gagal Memuat Nama");
+                        // Fallback jika dokumen tidak ada di Firestore, coba ambil dari data Auth
+                        Log.d("ProfileFragment", "No such document in Firestore, fallback to Auth data");
+                        binding.txtUserName.setText(currentUser.getDisplayName() != null ? currentUser.getDisplayName() : "Nama Tidak Ada");
+                        Uri photoUri = currentUser.getPhotoUrl();
+                        if (photoUri != null) {
+                            Glide.with(requireContext())
+                                    .load(photoUri)
+                                    .placeholder(R.drawable.ic_profile)
+                                    .error(R.drawable.agus)
+                                    .into(binding.imgUserProfile);
+                        } else {
+                            binding.imgUserProfile.setImageResource(R.drawable.agus);
+                        }
                     }
-                });
-            }
-
-            binding.imgUserProfile.setImageResource(R.drawable.agus);
+                } else {
+                    // Jika gagal mengambil data dari Firestore
+                    Log.d("ProfileFragment", "get failed with ", task.getException());
+                    binding.txtUserName.setText("Gagal Memuat Nama");
+                    binding.imgUserProfile.setImageResource(R.drawable.agus); // Gunakan gambar default
+                }
+            });
         } else {
+            // Jika tidak ada pengguna yang login
             Toast.makeText(getContext(), "Pengguna tidak login.", Toast.LENGTH_SHORT).show();
-            NavHostFragment.findNavController(this).navigate(R.id.loginFragment);
+            if (NavHostFragment.findNavController(this).getCurrentDestination() != null &&
+                    NavHostFragment.findNavController(this).getCurrentDestination().getId() == R.id.profileFragment) {
+                NavHostFragment.findNavController(this).navigate(R.id.loginFragment);
+            }
         }
     }
-
-    /*private void setupNavigationListeners() {
-        binding.itemPersonalDetailCard.setOnClickListener(v -> viewModel.onPersonalDetailClicked());
-        binding.itemYourPetCard.setOnClickListener(v -> viewModel.onYourPetClicked());
-        binding.itemDeliveryAddressCard.setOnClickListener(v -> viewModel.onDeliveryAddressClicked());
-        binding.itemPaymentMethodCard.setOnClickListener(v -> viewModel.onPaymentMethodClicked());
-        binding.itemAboutCard.setOnClickListener(v -> viewModel.onAboutClicked());
-        binding.itemHelpCard.setOnClickListener(v -> viewModel.onHelpClicked());
-        binding.itemLogoutCard.setOnClickListener(v -> viewModel.onLogoutClicked());
-    }*/
 
     private void setupNavigationListeners() {
         binding.itemPersonalDetailCard.setOnClickListener(v -> navigateTo(R.id.action_profileFragment_to_personalDetailFragment, "Detail Personal"));
@@ -140,38 +142,6 @@ public class ProfileFragment extends Fragment {
         }
     }
 
-    /*private void handleNavigation(ProfileViewModel.NavigationTarget target) {
-        try {
-            switch (target) {
-                case PERSONAL_DETAIL:
-                    NavHostFragment.findNavController(this).navigate(R.id.action_profileFragment_to_personalDetailFragment);
-                    break;
-                case YOUR_PET:
-                    NavHostFragment.findNavController(this).navigate(R.id.action_profileFragment_to_yourPetListFragment);
-                    break;
-                case DELIVERY_ADDRESS:
-                    NavHostFragment.findNavController(this).navigate(R.id.action_profileFragment_to_deliveryAddressFragment);
-                    break;
-                case PAYMENT_METHOD:
-                    NavHostFragment.findNavController(this).navigate(R.id.action_profileFragment_to_paymentMethodFragment);
-                    break;
-                case ABOUT:
-                    NavHostFragment.findNavController(this).navigate(R.id.action_profileFragment_to_aboutAppFragment);
-                    break;
-                case HELP:
-                    Toast.makeText(getContext(), "Help clicked (Fitur belum diimplementasi)", Toast.LENGTH_SHORT).show();
-                    break;
-                case LOGOUT:
-                    showLogoutConfirmationDialog();
-                    break;
-            }
-        } catch (IllegalArgumentException e) {
-            String message = "Navigasi untuk " + target.name() + " belum diimplementasi atau ID action salah.";
-            if (getContext() != null) {
-                Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
-            }
-        }
-    }*/
 
     private void showLogoutConfirmationDialog() {
         if (getContext() == null) return;

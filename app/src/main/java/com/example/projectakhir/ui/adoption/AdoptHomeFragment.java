@@ -50,6 +50,10 @@ public class AdoptHomeFragment extends Fragment {
         // Inisialisasi ViewModel
         adoptHomeViewModel = new ViewModelProvider(this).get(AdoptHomeViewModel.class);
 
+        // Setup Observers
+        observeUserProfile(); // Observe user data
+        observeNewestHewan(); // Observe newest animal data
+
         // Setup Listener Navigasi (tetap sama)
         binding.cardFormPengaduan.setOnClickListener(v -> {
             try {
@@ -59,6 +63,7 @@ public class AdoptHomeFragment extends Fragment {
                 Toast.makeText(requireContext(), "Navigasi ke Form Pengaduan belum siap.", Toast.LENGTH_SHORT).show();
             }
         });
+
 
         // --- Implementasi Navigasi Header Profile Picture ---
         binding.ivHeaderUserProfile.setOnClickListener(v -> {
@@ -80,7 +85,35 @@ public class AdoptHomeFragment extends Fragment {
         });
 
         setupGridKota(); // Grid kota bisa tetap statis atau dinamis dari Firestore nanti
+    }
 
+    private void observeUserProfile() {
+        adoptHomeViewModel.userName.observe(getViewLifecycleOwner(), name -> {
+            if (name != null && !name.isEmpty()) {
+                binding.tvHeaderUsername.setText(name);
+            } else {
+                binding.tvHeaderUsername.setText("Guest"); // Fallback
+            }
+        });
+
+        adoptHomeViewModel.userProfileImageUrl.observe(getViewLifecycleOwner(), imageUrl -> {
+            if (getContext() != null) {
+                if (imageUrl != null && !imageUrl.isEmpty()) {
+                    Glide.with(requireContext())
+                            .load(imageUrl)
+                            .placeholder(R.drawable.ic_profile) // Placeholder image
+                            .error(R.drawable.profile)          // Error fallback image
+                            .circleCrop()                       // Make the image circular
+                            .into(binding.ivHeaderUserProfile);
+                } else {
+                    // Set a default image if URL is null or empty
+                    binding.ivHeaderUserProfile.setImageResource(R.drawable.profile);
+                }
+            }
+        });
+    }
+
+    private void observeNewestHewan() {
         // Observe LiveData dari ViewModel untuk hewan terbaru
         adoptHomeViewModel.newestHewanList.observe(getViewLifecycleOwner(), hewans -> {
             if (hewans != null) {
@@ -90,10 +123,10 @@ public class AdoptHomeFragment extends Fragment {
 
         adoptHomeViewModel.isLoading.observe(getViewLifecycleOwner(), isLoading -> {
             if (isLoading) {
-                if (binding.progressBarNewestHewan != null) { // Cek null untuk ProgressBar
+                if (binding.progressBarNewestHewan != null) {
                     binding.progressBarNewestHewan.setVisibility(View.VISIBLE);
                 }
-                binding.scrollViewNewestHewan.setVisibility(View.GONE); // Sembunyikan list saat loading
+                binding.scrollViewNewestHewan.setVisibility(View.GONE);
             } else {
                 if (binding.progressBarNewestHewan != null) {
                     binding.progressBarNewestHewan.setVisibility(View.GONE);
@@ -107,7 +140,7 @@ public class AdoptHomeFragment extends Fragment {
                 if (binding.progressBarNewestHewan != null) {
                     binding.progressBarNewestHewan.setVisibility(View.GONE);
                 }
-                binding.scrollViewNewestHewan.setVisibility(View.VISIBLE); // Atau sembunyikan dan tampilkan pesan error
+                binding.scrollViewNewestHewan.setVisibility(View.VISIBLE);
                 Toast.makeText(requireContext(), errorMsg, Toast.LENGTH_LONG).show();
                 adoptHomeViewModel.clearError();
             }

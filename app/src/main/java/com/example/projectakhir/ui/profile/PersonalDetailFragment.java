@@ -1,4 +1,4 @@
-package com.example.projectakhir.ui.profile; // Sesuaikan dengan package di proyekmu
+package com.example.projectakhir.ui.profile;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -18,18 +18,14 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider; // Untuk ViewModel
 import androidx.navigation.fragment.NavHostFragment;
 
-// Import kelas Binding yang sesuai dengan nama file XML kamu
 import com.bumptech.glide.Glide;
-import com.example.projectakhir.R; // Pastikan R diimport jika perlu
+import com.example.projectakhir.R;
 import com.example.projectakhir.databinding.FragmentPersonalDetailBinding;
-// Import ViewModel kamu (buat jika belum ada)
-// import com.example.projectakhir.ui.profile.PersonalDetailViewModel;
-// import com.example.projectakhir.data.model.User; // Model data pengguna
 
 public class PersonalDetailFragment extends Fragment {
 
     private FragmentPersonalDetailBinding binding;
-    private PersonalDetailViewModel viewModel; // Uncomment jika menggunakan ViewModel
+    private PersonalDetailViewModel viewModel;
 
     // Launcher untuk memilih gambar dari galeri
     private ActivityResultLauncher<Intent> galleryLauncher;
@@ -47,8 +43,6 @@ public class PersonalDetailFragment extends Fragment {
                         if (selectedImageUri != null) {
                             // Tampilkan gambar yang dipilih di ImageView
                             binding.ivUserProfilePersonal.setImageURI(selectedImageUri);
-                            /*// TODO: Tambahkan logika untuk mengunggah atau menyimpan URI gambar ini
-                            showToast("Foto profil akan diubah (implementasi backend diperlukan)");*/
 
                             viewModel.updateProfilePicture(selectedImageUri);
                         }
@@ -74,47 +68,8 @@ public class PersonalDetailFragment extends Fragment {
         // populateStaticDataForNow(); // Hapus ini jika sudah menggunakan ViewModel
     }
 
-    // Contoh mengisi data statis, ganti dengan data dari ViewModel
-    /*private void populateStaticDataForNow() {
-        binding.ivUserProfilePersonal.setImageResource(R.drawable.bambang); // Gambar default
-        binding.tvUserFirstName.setText("Kucing");
-        binding.tvUserLastName.setText("Oren");
-        binding.tvUserEmailValue.setText("ayamoyen@gmail.com");
-        binding.tvUsernameValue.setText("Ayam Oyen");
-        binding.tvPasswordValue.setText("********"); // Password biasanya tidak ditampilkan nilainya
-    }*/
 
     private void observeViewModelData() {
-        // Uncomment dan sesuaikan jika menggunakan ViewModel
-        /*
-        viewModel.getUser().observe(getViewLifecycleOwner(), user -> {
-            if (user != null) {
-                binding.tvUserFirstName.setText(user.getFirstName());
-                binding.tvUserLastName.setText(user.getLastName());
-                binding.tvUserEmailValue.setText(user.getEmail());
-                binding.tvUsernameValue.setText(user.getUsername());
-                binding.tvPasswordValue.setText("********"); // Selalu tampilkan sebagai bintang
-
-                // Load profile picture
-                if (user.getAvatarUrl() != null && !user.getAvatarUrl().isEmpty()) {
-                    // Jika avatarUrl adalah nama drawable resource:
-                    int imageResource = getResources().getIdentifier(user.getAvatarUrl(), "drawable", requireContext().getPackageName());
-                    if (imageResource != 0) {
-                        binding.ivUserProfilePersonal.setImageResource(imageResource);
-                    } else {
-                        binding.ivUserProfilePersonal.setImageResource(R.drawable.default_profile_picture); // Fallback
-                    }
-                    // Jika avatarUrl adalah URL gambar dari internet, gunakan Glide atau Picasso:
-                    // Glide.with(this).load(user.getAvatarUrl()).placeholder(R.drawable.default_profile_picture).into(binding.ivUserProfilePersonal);
-                } else {
-                    binding.ivUserProfilePersonal.setImageResource(R.drawable.default_profile_picture); // Fallback
-                }
-            }
-        });
-
-        // Panggil method di ViewModel untuk memuat data pengguna jika belum dimuat
-        // viewModel.loadUserDetails("user_id_jika_perlu");
-        */
 
         viewModel.user.observe(getViewLifecycleOwner(), user -> {
             if (user != null) {
@@ -152,9 +107,7 @@ public class PersonalDetailFragment extends Fragment {
         viewModel.profileUpdateSuccess.observe(getViewLifecycleOwner(), success -> {
             if (success != null && success) {
                 showToast("Foto profil berhasil diperbarui!");
-                viewModel.resetProfileUpdateStatus(); // Reset status
-                // Optionally, reload user details if not automatically updated by LiveData
-                // viewModel.loadUserDetails();
+                viewModel.resetProfileUpdateStatus();
             }
         });
     }
@@ -167,17 +120,12 @@ public class PersonalDetailFragment extends Fragment {
 
         // Listener untuk ikon kamera (ubah foto profil)
         binding.ivCameraIcon.setOnClickListener(v -> {
-            // TODO: Implementasikan logika untuk memilih gambar (misalnya dari galeri atau kamera)
             openGallery();
-            // showToast("Ubah foto profil diklik");
         });
 
         // Listener untuk tombol Edit Profile
         binding.btnEditProfile.setOnClickListener(v -> {
-            // TODO: Implementasikan navigasi ke halaman Edit Profile atau ubah state halaman ini menjadi mode edit
             showToast("Edit Profile diklik (Navigasi belum diimplementasi)");
-            // Contoh Navigasi:
-            // NavHostFragment.findNavController(PersonalDetailFragment.this).navigate(R.id.action_personalDetailFragment_to_editProfileFragment);
         });
     }
 
