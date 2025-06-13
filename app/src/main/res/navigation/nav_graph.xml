@@ -96,7 +96,7 @@
     <fragment
         android:id="@+id/adoptHomeFragment"
         android:name="com.example.projectakhir.ui.adoption.AdoptHomeFragment"
-        android:label="fragment_adopt_home"
+        android:label="Adopsi"
         tools:layout="@layout/fragment_adopt_home" >
         <action
             android:id="@+id/action_adoptHomeFragment_to_daftarHewanFragment"
@@ -183,7 +183,7 @@
     <fragment
         android:id="@+id/heartFragment"
         android:name="com.example.projectakhir.ui.grooming.HeartFragment"
-        android:label="fragment_heart"
+        android:label="Grooming &amp; Doctor"
         tools:layout="@layout/fragment_heart" >
         <action
             android:id="@+id/action_heartFragment_to_groomingFragment"

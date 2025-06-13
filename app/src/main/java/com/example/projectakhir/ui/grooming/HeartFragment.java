@@ -43,7 +43,7 @@ public class HeartFragment extends Fragment {
 
         viewModel = new ViewModelProvider(this).get(HeartViewModel.class);
 
-        if (binding.ivHeaderUserProfile != null) { // Ganti ivHeaderUserProfile dengan ID yang benar
+        /*if (binding.ivHeaderUserProfile != null) { // Ganti ivHeaderUserProfile dengan ID yang benar
             binding.ivHeaderUserProfile.setOnClickListener(v -> {
                 try {
                     NavHostFragment.findNavController(HeartFragment.this)
@@ -55,7 +55,7 @@ public class HeartFragment extends Fragment {
             });
         } else {
             Log.d("HeartFragment", "ImageView untuk navigasi profil (ivHeaderUserProfile) tidak ditemukan di layout.");
-        }
+        }*/
 
 
         binding.btnGrooming.setOnClickListener(v -> {
