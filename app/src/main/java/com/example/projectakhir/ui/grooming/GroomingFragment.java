@@ -23,6 +23,8 @@ import com.example.projectakhir.adapters.SalonAdapter; // Import SalonAdapter
 import com.example.projectakhir.data.Salon; // Import data Salon
 import com.example.projectakhir.databinding.FragmentGroomingBinding; // Nama binding
 
+import android.widget.ProgressBar;
+import android.widget.Toast;
 import java.util.ArrayList;
 
 public class GroomingFragment extends Fragment {
@@ -42,57 +44,51 @@ public class GroomingFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Inisialisasi ViewModel
-        // Gunakan requireActivity() jika ingin ViewModel shared dengan Activity/Fragment lain
         viewModel = new ViewModelProvider(this).get(GroomingViewModel.class);
-
-        // --- Kode dari onCreate GroomingActivity ---
-
-        // Setup tombol back (jika tidak pakai Toolbar AppActivity)
         binding.btnBack.setOnClickListener(v -> NavHostFragment.findNavController(this).popBackStack());
 
-        // Setup RecyclerView
         setupRecyclerView();
+        observeViewModel();
 
-        // Observe LiveData dari ViewModel
-        viewModel.salonList.observe(getViewLifecycleOwner(), salons -> {
-            if (salons != null) {
-                adapter.updateData(salons); // Update adapter saat data berubah
-            }
-        });
-
-        // Setup tombol filter kategori
-        String[] kategoriList = {"Semua", "Wash", "Brush", "Spa", "Cut"}; // Kategori untuk grooming
+        String[] kategoriList = {"Semua", "Wash", "Brush", "Spa", "Cut"};
         setupCategoryButtons(binding.kategoriContainer, kategoriList);
-
-        // --- Akhir kode dari onCreate GroomingActivity ---
-
-        // Tidak perlu setup EdgeToEdge atau WindowInsetsListener di Fragment,
-        // biasanya ditangani oleh Activity induk (AppActivity)
     }
 
     private void setupRecyclerView() {
         binding.recyclerSalon.setLayoutManager(new LinearLayoutManager(requireContext()));
-        // Buat adapter dengan listener klik, berikan tipe "grooming"
         adapter = new SalonAdapter(requireContext(), new ArrayList<>(), "grooming", (salon, tipe) -> {
-            // Handle klik item salon -> Navigasi ke DetailSalonFragment
-            try {
-                // Pastikan action dan argumen (jika ada) sudah didefinisikan di nav_graph.xml
-                GroomingFragmentDirections.ActionGroomingFragmentToDetailSalonFragment action =
-                        GroomingFragmentDirections.actionGroomingFragmentToDetailSalonFragment(); // Tambahkan argumen jika perlu
-
-                // Contoh jika mengirim ID salon (perlu argumen di nav_graph & DetailSalonFragment)
-                // action.setSalonId(salon.getId()); // Asumsi Salon punya getId()
-
-                // Contoh jika mengirim nama salon (perlu argumen di nav_graph & DetailSalonFragment)
-                // action.setNamaSalon(salon.nama);
-
-                NavHostFragment.findNavController(GroomingFragment.this).navigate(action);
-            } catch (IllegalArgumentException e) {
-                Toast.makeText(requireContext(), "Navigasi ke Detail Salon belum siap.", Toast.LENGTH_SHORT).show();
+            if (salon.getId() == null || salon.getId().isEmpty()) {
+                Toast.makeText(requireContext(), "Error: ID layanan tidak ditemukan.", Toast.LENGTH_SHORT).show();
+                return;
             }
+            // Navigasi dengan ID unik
+            GroomingFragmentDirections.ActionGroomingFragmentToDetailSalonFragment action =
+                    GroomingFragmentDirections.actionGroomingFragmentToDetailSalonFragment(salon.getNama()); //sementara
+            NavHostFragment.findNavController(GroomingFragment.this).navigate(action);
         });
         binding.recyclerSalon.setAdapter(adapter);
+    }
+
+    private void observeViewModel() {
+        viewModel.salonList.observe(getViewLifecycleOwner(), salons -> {
+            adapter.updateData(salons);
+        });
+
+        viewModel.isLoading.observe(getViewLifecycleOwner(), isLoading -> {
+            // Menggunakan ID dari ProgressBar yang ditambahkan di XML
+            ProgressBar progressBar = requireView().findViewById(R.id.progressBar);
+            if (progressBar != null) {
+                progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+            }
+            binding.recyclerSalon.setVisibility(isLoading ? View.GONE : View.VISIBLE);
+        });
+
+        viewModel.error.observe(getViewLifecycleOwner(), error -> {
+            if (error != null && !error.isEmpty()) {
+                Toast.makeText(requireContext(), error, Toast.LENGTH_LONG).show();
+                viewModel.clearError();
+            }
+        });
     }
 
     // Fungsi untuk setup tombol kategori (sama seperti di DaftarHewanFragment)

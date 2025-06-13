@@ -3,6 +3,7 @@ package com.example.projectakhir.ui.booking;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.Consumer; // Import Consumer
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.projectakhir.R;
@@ -30,6 +32,8 @@ import java.util.Locale;
 public class BookingFragment extends Fragment {
 
     private FragmentBookingBinding binding; // View Binding
+    private BookingViewModel viewModel;
+    private String serviceId;
     private String namaProviderDiterima;
     private ArrayList<String> layananYangDipilih = new ArrayList<>();
     private String tanggalDipilih = "";
@@ -38,25 +42,18 @@ public class BookingFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Ambil argumen
         if (getArguments() != null) {
-            try {
-                // Menggunakan Safe Args
-                namaProviderDiterima = BookingFragmentArgs.fromBundle(getArguments()).getNamaProvider();
-                String[] layananArray = BookingFragmentArgs.fromBundle(getArguments()).getLayananDipilih();
-                if (layananArray != null) {
-                    layananYangDipilih = new ArrayList<>(Arrays.asList(layananArray));
-                }
-            } catch (IllegalArgumentException e) {
-                // Fallback jika Safe Args belum siap
-                namaProviderDiterima = getArguments().getString("namaProvider");
-                String[] layananArray = getArguments().getStringArray("layananDipilih");
-                if (layananArray != null) {
-                    layananYangDipilih = new ArrayList<>(Arrays.asList(layananArray));
-                }
-                if (namaProviderDiterima == null) {
-                    handleArgumentError();
-                }
+            // Ambil semua argumen dari Navigasi
+            namaProviderDiterima = BookingFragmentArgs.fromBundle(getArguments()).getNamaProvider();
+            String[] layananArray = BookingFragmentArgs.fromBundle(getArguments()).getLayananDipilih();
+            serviceId = BookingFragmentArgs.fromBundle(getArguments()).getServiceId();
+
+            if (layananArray != null) {
+                layananYangDipilih.clear();
+                layananYangDipilih.addAll(Arrays.asList(layananArray));
+            }
+            if (namaProviderDiterima == null || serviceId == null) {
+                handleArgumentError();
             }
         } else {
             handleArgumentError();
@@ -75,6 +72,7 @@ public class BookingFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = FragmentBookingBinding.inflate(inflater, container, false);
+        viewModel = new ViewModelProvider(this).get(BookingViewModel.class); // Inisialisasi ViewModel
         return binding.getRoot();
     }
 
@@ -82,37 +80,49 @@ public class BookingFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // --- Kode dari onCreate BookingActivity ---
-
-        // Set nama provider (salon/vet)
-        binding.txtNamaSalon.setText(namaProviderDiterima != null ? namaProviderDiterima : "Nama Provider");
-
-        // Setup tombol back
+        binding.txtNamaSalon.setText(namaProviderDiterima);
         binding.btnBack.setOnClickListener(v -> NavHostFragment.findNavController(this).popBackStack());
 
-        // Setup pilihan tanggal
         setupTanggal();
-
-        // Setup pilihan waktu
         setupWaktu();
+        setupConfirmButton();
+        observeViewModel();
+    }
 
-        // Setup tombol Confirm
+    private void setupConfirmButton() {
         binding.btnConfirm.setOnClickListener(v -> {
+            String petName = binding.inputPetName.getText().toString().trim();
+            if (TextUtils.isEmpty(petName)) {
+                binding.inputPetName.setError("Nama peliharaan tidak boleh kosong");
+                return;
+            }
             if (tanggalDipilih.isEmpty() || waktuDipilih.isEmpty()) {
                 Toast.makeText(requireContext(), "Pilih tanggal dan waktu dulu ya!", Toast.LENGTH_SHORT).show();
             } else {
-                // TODO: Implementasi logika booking (kirim data ke ViewModel/Repository)
-                // Data yang perlu dikirim: namaProviderDiterima, layananYangDipilih, tanggalDipilih, waktuDipilih
-                Toast.makeText(requireContext(), "Booking berhasil! 🎉", Toast.LENGTH_LONG).show();
-
-                // Navigasi kembali setelah booking berhasil
-                // Bisa kembali ke detail, atau ke halaman utama (HeartFragment)
-                NavHostFragment.findNavController(this).popBackStack(R.id.heartFragment, false); // Kembali ke HeartFragment
-                // Atau NavHostFragment.findNavController(this).popBackStack(); // Kembali ke layar sebelumnya (Detail)
+                // Panggil method di ViewModel untuk membuat appointment
+                viewModel.createAppointment(serviceId, namaProviderDiterima, petName, layananYangDipilih, tanggalDipilih, waktuDipilih);
             }
         });
+    }
 
-        // --- Akhir kode dari onCreate BookingActivity ---
+    private void observeViewModel() {
+        viewModel.isSubmitting.observe(getViewLifecycleOwner(), isSubmitting -> {
+            binding.btnConfirm.setEnabled(!isSubmitting);
+            binding.btnConfirm.setText(isSubmitting ? "MEMPROSES..." : "CONFIRM");
+        });
+
+        viewModel.submissionResult.observe(getViewLifecycleOwner(), result -> {
+            if (result != null) {
+                if (result.equals("success")) {
+                    Toast.makeText(requireContext(), "Booking berhasil! 🎉", Toast.LENGTH_LONG).show();
+                    // Kembali ke halaman utama (HeartFragment)
+                    NavHostFragment.findNavController(this).popBackStack(R.id.heartFragment, false);
+                } else if (result.startsWith("error:")) {
+                    Toast.makeText(requireContext(), result.substring(7), Toast.LENGTH_LONG).show();
+                }
+                viewModel.clearSubmissionResult();
+            }
+        });
     }
 
     // Fungsi untuk setup tanggal
@@ -145,7 +155,6 @@ public class BookingFragment extends Fragment {
     // Fungsi untuk setup waktu
     private void setupWaktu() {
         binding.waktuContainer.removeAllViews(); // Clear view lama
-        // TODO: Idealnya, daftar waktu yang tersedia diambil dari backend/API berdasarkan tanggal yang dipilih
         String[] waktuList = {"09:00", "10:00", "11:00", "13:00", "14:00", "15:00", "16:00"}; // Dummy
         for (String jam : waktuList) {
             TextView j = createTag(jam, binding.waktuContainer, selected -> {
@@ -167,10 +176,7 @@ public class BookingFragment extends Fragment {
         tag.setGravity(Gravity.CENTER); // Tengahkan teks
         tag.setClickable(true);
         tag.setFocusable(true);
-        // foreground ripple
-        // ...
 
-        // Tentukan LayoutParams berdasarkan parent
         ViewGroup.MarginLayoutParams params;
         if (parent instanceof FlexboxLayout) {
             params = new FlexboxLayout.LayoutParams(

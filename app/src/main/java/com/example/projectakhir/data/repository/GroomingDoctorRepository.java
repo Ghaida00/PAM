@@ -1,62 +1,74 @@
-// In com.example.projectakhir.data.repository.GroomingDoctorRepository.java
+// File: main/java/com/example/projectakhir/data/repository/GroomingDoctorRepository.java
 package com.example.projectakhir.data.repository;
 
-import com.example.projectakhir.R;
-import com.example.projectakhir.data.Salon; // Use the Salon model
-
+import android.util.Log;
+import com.example.projectakhir.data.Salon;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class GroomingDoctorRepository {
 
-    private ArrayList<Salon> allGroomingSalons = new ArrayList<>();
-    private ArrayList<Salon> allVetClinics = new ArrayList<>();
+    private static final String TAG = "GroomingDoctorRepo";
+    private final CollectionReference servicesCollection;
+
+    // Callback interface untuk operasi Firestore yang asynchronous
+    public interface FirestoreCallback<T> {
+        void onSuccess(T result);
+        void onError(Exception e);
+    }
 
     public GroomingDoctorRepository() {
-        setupDummyGroomingData();
-        setupDummyDoctorData();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        servicesCollection = db.collection("services");
     }
 
-    private void setupDummyGroomingData() {
-        // --- MOVE DUMMY DATA FROM GroomingActivity HERE ---
-        allGroomingSalons.add(new Salon("Barber Pet", "Surabaya", "Open • Close at 20:00",
-                new String[]{"Wash", "Brush", "Cut", "Spa"}, R.drawable.grace));
-        allGroomingSalons.add(new Salon("Pet Zone", "Surabaya", "Open • Close at 18:00",
-                new String[]{"Wash", "Spa"}, R.drawable.grace)); // Consider different image if available
-        allGroomingSalons.add(new Salon("Clean Tails", "Surabaya", "Open • Close at 21:00",
-                new String[]{"Brush", "Cut"}, R.drawable.claire)); // Consider different image if available
-        // Add more dummy grooming salons...
-    }
+    // Mengambil data services (grooming/doctor) berdasarkan tipe dan kategori
+    public void getFilteredServices(String tipe, String kategori, FirestoreCallback<List<Salon>> callback) {
+        Query query = servicesCollection.whereEqualTo("tipe", tipe);
 
-    private void setupDummyDoctorData() {
-        // --- MOVE DUMMY DATA FROM DoctorActivity HERE ---
-        allVetClinics.add(new Salon("Paw Vet", "Surabaya", "Open • Close at 20:00",
-                new String[]{"Vaccine", "GCU", "Medicine"}, R.drawable.grace)); // Use appropriate image
-        allVetClinics.add(new Salon("Happy Paw Clinic", "Surabaya", "Open • Close at 18:00",
-                new String[]{"Check-up", "Vaccine"}, R.drawable.anomali)); // Use appropriate image
-        allVetClinics.add(new Salon("VetCare Center", "Surabaya", "Open • Close at 21:00",
-                new String[]{"Emergency", "Medicine"}, R.drawable.amat)); // Use appropriate image
-        // Add more dummy vet clinics...
-    }
-
-    // Get filtered grooming salons
-    public List<Salon> getFilteredGroomingSalons(String kategori) {
-        if (kategori.equals("Semua")) {
-            return new ArrayList<>(allGroomingSalons); // Return a copy
+        if (kategori != null && !kategori.isEmpty() && !"Semua".equalsIgnoreCase(kategori)) {
+            query = query.whereArrayContains("layanan", kategori);
         }
-        return allGroomingSalons.stream()
-                .filter(s -> s.menyediakanLayanan(kategori))
-                .collect(Collectors.toList());
+
+        query.get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<Salon> serviceList = new ArrayList<>();
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        Salon salon = document.toObject(Salon.class);
+                        salon.setId(document.getId()); // Simpan ID dokumen
+                        serviceList.add(salon);
+                    }
+                    callback.onSuccess(serviceList);
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Error fetching filtered services: ", e);
+                    callback.onError(e);
+                });
     }
 
-    // Get filtered vet clinics
-    public List<Salon> getFilteredVetClinics(String kategori) {
-        if (kategori.equals("Semua")) {
-            return new ArrayList<>(allVetClinics); // Return a copy
-        }
-        return allVetClinics.stream()
-                .filter(s -> s.menyediakanLayanan(kategori))
-                .collect(Collectors.toList());
+    // Mengambil satu service berdasarkan ID dokumennya
+    public void getServiceById(String serviceId, FirestoreCallback<Salon> callback) {
+        servicesCollection.document(serviceId).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        Salon salon = documentSnapshot.toObject(Salon.class);
+                        if (salon != null) {
+                            salon.setId(documentSnapshot.getId());
+                            callback.onSuccess(salon);
+                        } else {
+                            callback.onError(new Exception("Gagal parsing data service."));
+                        }
+                    } else {
+                        callback.onSuccess(null); // Dokumen tidak ditemukan
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Error fetching service by ID: ", e);
+                    callback.onError(e);
+                });
     }
 }

@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast; // Untuk fallback navigasi
 
@@ -42,60 +43,66 @@ public class DoctorFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Inisialisasi ViewModel
-        viewModel = new ViewModelProvider(this).get(DoctorViewModel.class); // Gunakan DoctorViewModel
+        viewModel = new ViewModelProvider(this).get(DoctorViewModel.class);
 
-        // --- Kode dari onCreate DoctorActivity ---
-
-        // Setup tombol back (jika tidak pakai Toolbar AppActivity)
         binding.btnBack.setOnClickListener(v -> NavHostFragment.findNavController(this).popBackStack());
 
-        // Setup RecyclerView
         setupRecyclerView();
+        observeViewModel();
 
-        // Observe LiveData dari ViewModel
-        viewModel.salonList.observe(getViewLifecycleOwner(), vetClinics -> { // Ganti nama variabel jika perlu
-            if (vetClinics != null) {
-                adapter.updateData(vetClinics); // Update adapter saat data berubah
-            }
-        });
-
-        // Setup tombol filter kategori
         String[] kategoriList = {"Semua", "Vaccine", "GCU", "Medicine", "Check-up", "Emergency"}; // Kategori untuk dokter
         setupCategoryButtons(binding.kategoriContainer, kategoriList);
-
-        // --- Akhir kode dari onCreate DoctorActivity ---
     }
 
     private void setupRecyclerView() {
         binding.recyclerVet.setLayoutManager(new LinearLayoutManager(requireContext()));
-        // Buat adapter dengan listener klik, berikan tipe "doctor"
-        adapter = new SalonAdapter(requireContext(), new ArrayList<>(), "doctor", (salon, tipe) -> { // Terima tipe juga
-            // Handle klik item vet -> Navigasi ke DetailVetFragment
+        adapter = new SalonAdapter(requireContext(), new ArrayList<>(), "doctor", (salon, tipe) -> { //
+            if (salon.getId() == null || salon.getId().isEmpty()) {
+                Toast.makeText(requireContext(), "Error: ID Klinik tidak ditemukan.", Toast.LENGTH_SHORT).show();
+                return;
+            }
             try {
-                // Pastikan action dan argumen (jika ada) sudah didefinisikan di nav_graph.xml
+                // Navigasi ke detail fragment dengan ID unik dari Firestore
                 DoctorFragmentDirections.ActionDoctorFragmentToDetailVetFragment action =
-                        DoctorFragmentDirections.actionDoctorFragmentToDetailVetFragment(); // Tambahkan argumen jika perlu
-
-                // Contoh jika mengirim ID vet
-                // action.setVetId(salon.getId()); // Asumsi Salon punya getId()
-
-                // Contoh jika mengirim nama vet
-                // action.setNamaVet(salon.nama);
-
+                        DoctorFragmentDirections.actionDoctorFragmentToDetailVetFragment(salon.getId());
                 NavHostFragment.findNavController(DoctorFragment.this).navigate(action);
             } catch (IllegalArgumentException e) {
-                Toast.makeText(requireContext(), "Navigasi ke Detail Vet belum siap.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Navigasi ke Detail Vet belum siap.", Toast.LENGTH_SHORT).show(); //
             }
         });
         binding.recyclerVet.setAdapter(adapter);
     }
 
+    private void observeViewModel() {
+        // Mengamati perubahan pada daftar klinik
+        viewModel.vetList.observe(getViewLifecycleOwner(), vetClinics -> {
+            if (vetClinics != null) {
+                adapter.updateData(vetClinics);
+            }
+        });
+
+        // Mengamati status loading
+        viewModel.isLoading.observe(getViewLifecycleOwner(), isLoading -> {
+            ProgressBar progressBar = requireView().findViewById(R.id.progressBar);
+            if (progressBar != null) {
+                progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+            }
+            binding.recyclerVet.setVisibility(isLoading ? View.GONE : View.VISIBLE);
+        });
+
+        // Mengamati pesan error
+        viewModel.error.observe(getViewLifecycleOwner(), error -> {
+            if (error != null && !error.isEmpty()) {
+                Toast.makeText(requireContext(), error, Toast.LENGTH_LONG).show();
+                viewModel.clearError();
+            }
+        });
+    }
+
+
     // Fungsi untuk setup tombol kategori (sama seperti di GroomingFragment)
     private void setupCategoryButtons(LinearLayout container, String[] categories) {
         container.removeAllViews();
-        LayoutInflater inflater = LayoutInflater.from(requireContext());
-
         for (String kategori : categories) {
             TextView txt = new TextView(requireContext());
             txt.setText(kategori);
@@ -107,8 +114,6 @@ public class DoctorFragment extends Fragment {
             txt.setGravity(Gravity.CENTER);
             txt.setClickable(true);
             txt.setFocusable(true);
-            // foreground ripple
-            // ...
 
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -131,7 +136,7 @@ public class DoctorFragment extends Fragment {
                 txt.setTextColor(Color.WHITE);
 
                 // Filter data melalui ViewModel
-                viewModel.loadSalons(kategori); // Panggil method ViewModel (loadSalons atau nama lain yang sesuai)
+                viewModel.loadVets(kategori); // Panggil method ViewModel (loadSalons atau nama lain yang sesuai)
             });
             container.addView(txt);
         }

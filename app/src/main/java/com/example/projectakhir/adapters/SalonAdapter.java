@@ -1,3 +1,4 @@
+// File: main/java/com/example/projectakhir/adapters/SalonAdapter.java
 package com.example.projectakhir.adapters;
 
 import android.content.Context;
@@ -8,39 +9,32 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
+import com.bumptech.glide.Glide; // Import Glide
 import com.example.projectakhir.R;
 import com.example.projectakhir.data.Salon;
-
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 public class SalonAdapter extends RecyclerView.Adapter<SalonAdapter.ViewHolder> {
-
-    // +++ Interface Listener +++
+    // ... (Interface dan constructor tidak berubah) ...
     public interface OnSalonClickListener {
-        void onSalonClick(Salon salon, String tipe); // Kirim juga tipe (grooming/doctor)
+        void onSalonClick(Salon salon, String tipe);
     }
-    // ++++++++++++++++++++++++++
 
     private Context context;
     private List<Salon> list;
-    private String tipe; // "grooming" atau "doctor"
-    private final OnSalonClickListener clickListener; // Tambahkan listener
+    private String tipe;
+    private final OnSalonClickListener clickListener;
 
-    // +++ Modifikasi Constructor +++
     public SalonAdapter(Context context, List<Salon> list, String tipe, OnSalonClickListener listener) {
         this.context = context;
-        this.list = new ArrayList<>(list); // Use a new list
+        this.list = new ArrayList<>(list);
         this.tipe = tipe;
-        this.clickListener = listener; // Simpan listener
+        this.clickListener = listener;
     }
-    // ++++++++++++++++++++++++++++++
 
-    // Method updateData (sudah ada)
     public void updateData(List<Salon> newList) {
         this.list.clear();
         if (newList != null) {
@@ -48,6 +42,7 @@ public class SalonAdapter extends RecyclerView.Adapter<SalonAdapter.ViewHolder> 
         }
         notifyDataSetChanged();
     }
+
 
     @NonNull
     @Override
@@ -60,20 +55,26 @@ public class SalonAdapter extends RecyclerView.Adapter<SalonAdapter.ViewHolder> 
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Salon s = list.get(position);
 
-        holder.nama.setText(s.nama);
-        holder.kota.setText(s.kota);
-        // Load gambar (pastikan gambar ada atau gunakan placeholder)
-        if (s.gambarResId != 0) {
-            holder.gambar.setImageResource(s.gambarResId);
+        holder.nama.setText(s.getNama());
+        holder.kota.setText(s.getKota());
+
+        // Memuat gambar dari URL menggunakan Glide
+        if (s.getImageUrl() != null && !s.getImageUrl().isEmpty()) {
+            Glide.with(context)
+                    .load(s.getImageUrl())
+                    .placeholder(R.drawable.grace) // Gambar placeholder
+                    .error(R.drawable.ic_paw)       // Gambar jika error
+                    .centerCrop()
+                    .into(holder.gambar);
         } else {
-            holder.gambar.setImageResource(R.drawable.grace); // Ganti dengan placeholder Anda
+            // Fallback jika URL tidak ada
+            holder.gambar.setImageResource(R.drawable.grace);
         }
 
-
-        // Tag layanan
-        holder.tagContainer.removeAllViews(); // Hapus tag lama sebelum menambah baru
-        if (s.layanan != null) {
-            for (String layanan : s.layanan) {
+        // Tampilkan tag layanan
+        holder.tagContainer.removeAllViews();
+        if (s.getLayanan() != null) {
+            for (String layanan : s.getLayanan()) {
                 TextView tag = new TextView(context);
                 tag.setText(layanan);
                 tag.setTextSize(12f);
@@ -85,20 +86,18 @@ public class SalonAdapter extends RecyclerView.Adapter<SalonAdapter.ViewHolder> 
                         LinearLayout.LayoutParams.WRAP_CONTENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT
                 );
-                lp.setMargins(0, 0, 16, 8); // Beri margin bawah juga
+                lp.setMargins(0, 0, 16, 8);
                 tag.setLayoutParams(lp);
-
                 holder.tagContainer.addView(tag);
             }
         }
 
-        // +++ Modifikasi Klik Item -> Panggil Listener +++
+        // Set listener klik
         holder.itemView.setOnClickListener(v -> {
             if (clickListener != null) {
-                clickListener.onSalonClick(s, tipe); // Panggil listener dengan data salon dan tipe
+                clickListener.onSalonClick(s, tipe);
             }
         });
-        // +++++++++++++++++++++++++++++++++++++++++++++++
     }
 
     @Override
@@ -106,7 +105,7 @@ public class SalonAdapter extends RecyclerView.Adapter<SalonAdapter.ViewHolder> 
         return list != null ? list.size() : 0;
     }
 
-    // ViewHolder (tidak perlu diubah)
+    // ... (ViewHolder class tidak berubah) ...
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView gambar;
         TextView nama, kota;

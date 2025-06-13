@@ -3,7 +3,8 @@ package com.example.projectakhir.data;
 
 // Implement Serializable jika ingin mengirim seluruh objek via Intent
 // Jika tidak, kirim field satu per satu
-public class AppointmentData /* implements Serializable */ {
+public class AppointmentData {
+    private String id;
     private String petName;
     private String appointmentDay; // "Today", "Tomorrow", etc.
     private String appointmentTime; // "15:00", "14:00", etc.
@@ -29,6 +30,14 @@ public class AppointmentData /* implements Serializable */ {
         this.petType = petType;
         this.petNotes = petNotes;
         this.iconRes = iconRes;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getPetName() {

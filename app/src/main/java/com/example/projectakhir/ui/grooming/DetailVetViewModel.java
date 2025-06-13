@@ -1,4 +1,4 @@
-// File: main/java/com/example/projectakhir/ui/grooming/DoctorViewModel.java
+// File BARU: main/java/com/example/projectakhir/ui/grooming/DetailVetViewModel.java
 package com.example.projectakhir.ui.grooming;
 
 import androidx.lifecycle.LiveData;
@@ -6,14 +6,12 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import com.example.projectakhir.data.Salon;
 import com.example.projectakhir.data.repository.GroomingDoctorRepository;
-import java.util.ArrayList;
-import java.util.List;
 
-public class DoctorViewModel extends ViewModel {
+public class DetailVetViewModel extends ViewModel {
 
     private final GroomingDoctorRepository repository;
-    private final MutableLiveData<List<Salon>> _vetList = new MutableLiveData<>(); // Ganti nama agar lebih jelas
-    public LiveData<List<Salon>> vetList = _vetList;
+    private final MutableLiveData<Salon> _vetDetail = new MutableLiveData<>();
+    public LiveData<Salon> vetDetail = _vetDetail;
 
     private final MutableLiveData<Boolean> _isLoading = new MutableLiveData<>(false);
     public LiveData<Boolean> isLoading = _isLoading;
@@ -21,26 +19,28 @@ public class DoctorViewModel extends ViewModel {
     private final MutableLiveData<String> _error = new MutableLiveData<>();
     public LiveData<String> error = _error;
 
-    public DoctorViewModel() {
-        repository = new GroomingDoctorRepository();
-        loadVets("Semua"); // Muat semua data dokter saat pertama kali
+    public DetailVetViewModel() {
+        this.repository = new GroomingDoctorRepository();
     }
 
-    public void loadVets(String kategori) {
+    public void fetchVetDetails(String serviceId) {
         _isLoading.setValue(true);
         _error.setValue(null);
-        repository.getFilteredServices("doctor", kategori, new GroomingDoctorRepository.FirestoreCallback<List<Salon>>() {
+        repository.getServiceById(serviceId, new GroomingDoctorRepository.FirestoreCallback<Salon>() {
             @Override
-            public void onSuccess(List<Salon> result) {
-                _vetList.setValue(result);
+            public void onSuccess(Salon result) {
                 _isLoading.setValue(false);
+                if (result != null) {
+                    _vetDetail.setValue(result);
+                } else {
+                    _error.setValue("Gagal menemukan detail layanan.");
+                }
             }
 
             @Override
             public void onError(Exception e) {
-                _error.setValue("Gagal memuat data: " + e.getMessage());
-                _vetList.setValue(new ArrayList<>());
                 _isLoading.setValue(false);
+                _error.setValue("Error: " + e.getMessage());
             }
         });
     }

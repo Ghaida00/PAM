@@ -13,51 +13,32 @@ import android.widget.Toast; // Untuk fallback navigasi
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.bumptech.glide.Glide;
 import com.example.projectakhir.R;
 import com.example.projectakhir.data.Salon; // Jika perlu model Salon
 import com.example.projectakhir.databinding.FragmentSalonDetailBinding; // Nama binding
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class DetailSalonFragment extends Fragment {
 
     private FragmentSalonDetailBinding binding; // View Binding
-
-    // Variabel untuk data salon (idealnya dari ViewModel berdasarkan ID)
-    private String nama;
-    private String kota;
-    private String jam;
-    private int gambarResId;
-    private ArrayList<String> layananTersedia = new ArrayList<>(); // Daftar layanan yang ditawarkan salon ini
-    private ArrayList<String> layananDipilih = new ArrayList<>(); // Daftar layanan yang dipilih user
+    private DetailSalonViewModel viewModel;
+    private String serviceId;
+    private Salon currentSalonData;
+    private final ArrayList<String> layananDipilih = new ArrayList<>();
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Ambil argumen (jika ada)
         if (getArguments() != null) {
-            // Contoh jika mengirim nama salon via Safe Args
-            // nama = DetailSalonFragmentArgs.fromBundle(getArguments()).getNamaSalon();
-
-            // TODO: Idealnya, dapatkan ID salon dari argumen, lalu minta detail lengkap
-            // salon (termasuk layananTersedia, jam, gambar, kota) dari ViewModel/Repository.
-            // loadSalonDetails(salonId);
+            // Ambil serviceId dari argumen navigasi
+            serviceId = DetailSalonFragmentArgs.fromBundle(getArguments()).getServiceId();
         }
-
-        // --- Data Dummy Sementara (GANTI DENGAN DATA AKTUAL DARI ARGUMEN/VIEWMODEL) ---
-        // Ini HANYA contoh jika belum ada mekanisme pengambilan data detail
-        nama = getArguments() != null ? getArguments().getString("namaSalon", "Nama Salon (Dummy)") : "Nama Salon (Dummy)"; // Ambil nama dari argumen jika ada
-        kota = "Surabaya (Dummy)";
-        jam = "09:00 - 20:00 (Dummy)";
-        gambarResId = R.drawable.grace; // Gambar dummy
-        layananTersedia.clear();
-        layananTersedia.add("Wash");
-        layananTersedia.add("Brush");
-        layananTersedia.add("Spa");
-        layananTersedia.add("Cut");
-        // --- Akhir Data Dummy ---
     }
 
     @Nullable
@@ -70,37 +51,79 @@ public class DetailSalonFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        viewModel = new ViewModelProvider(this).get(DetailSalonViewModel.class);
 
-        // --- Kode dari onCreate DetailSalonActivity ---
+        setupListeners();
+        observeViewModel();
 
-        // Setup tombol back
         binding.btnBack.setOnClickListener(v -> NavHostFragment.findNavController(this).popBackStack());
 
-        // Tampilkan data salon (gunakan data yang sudah diambil/dummy)
-        binding.imgSalon.setImageResource(gambarResId);
-        binding.namaSalon.setText(nama);
-        binding.kotaSalon.setText(kota);
-        binding.descSalon.setText("Tempat grooming terpercaya dengan pelayanan " + layananTersedia.size() + " jenis layanan. Jam buka: " + jam);
+        if (serviceId != null && !serviceId.isEmpty()) {
+            viewModel.fetchSalonDetails(serviceId);
+        } else {
+            Toast.makeText(getContext(), "ID Layanan tidak ditemukan.", Toast.LENGTH_SHORT).show();
+            NavHostFragment.findNavController(this).popBackStack();
+        }
+    }
 
-        // Setup tampilan layanan yang bisa dipilih
-        setupLayananTags();
-
-        // Setup tombol Book Now
+    private void setupListeners() {
+        binding.btnBack.setOnClickListener(v -> NavHostFragment.findNavController(this).popBackStack());
         binding.btnBook.setOnClickListener(v -> {
+            if (currentSalonData == null) {
+                Toast.makeText(requireContext(), "Data salon belum dimuat.", Toast.LENGTH_SHORT).show();
+                return;
+            }
             if (layananDipilih.isEmpty()) {
                 Toast.makeText(requireContext(), "Pilih minimal satu layanan", Toast.LENGTH_SHORT).show();
             } else {
-                navigateToBooking();
+                navigateToBooking(currentSalonData.getNama(), currentSalonData.getId());
             }
         });
-
-        // --- Akhir kode dari onCreate DetailSalonActivity ---
     }
 
+    private void observeViewModel() {
+        viewModel.salonDetail.observe(getViewLifecycleOwner(), this::displaySalonDetails);
+
+        viewModel.isLoading.observe(getViewLifecycleOwner(), isLoading -> {
+            binding.progressBarDetail.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+            binding.scrollView.setVisibility(isLoading ? View.GONE : View.VISIBLE);
+        });
+
+        viewModel.error.observe(getViewLifecycleOwner(), error -> {
+            if (error != null && !error.isEmpty()) {
+                Toast.makeText(getContext(), error, Toast.LENGTH_LONG).show();
+                viewModel.clearError();
+                NavHostFragment.findNavController(this).popBackStack();
+            }
+        });
+    }
+
+    private void displaySalonDetails(Salon salon) {
+        if (salon == null) return;
+        currentSalonData = salon;
+
+        binding.namaSalon.setText(salon.getNama());
+        binding.kotaSalon.setText(salon.getKota());
+        binding.descSalon.setText("Tempat grooming terpercaya dengan pelayanan lengkap. Buka: " + salon.getJam());
+
+        if (salon.getImageUrl() != null && !salon.getImageUrl().isEmpty()) {
+            Glide.with(requireContext())
+                    .load(salon.getImageUrl())
+                    .placeholder(R.drawable.grace)
+                    .error(R.drawable.ic_paw)
+                    .into(binding.imgSalon);
+        }
+
+        setupLayananTags(salon.getLayanan());
+    }
+
+
     // Fungsi untuk membuat tag layanan
-    private void setupLayananTags() {
+    private void setupLayananTags(List<String> layananTersedia) {
         binding.layananContainer.removeAllViews(); // Hapus view lama
         layananDipilih.clear(); // Reset pilihan saat view dibuat ulang
+
+        if (layananTersedia == null) return;
 
         for (String l : layananTersedia) {
             TextView tag = new TextView(requireContext());
@@ -140,16 +163,11 @@ public class DetailSalonFragment extends Fragment {
         }
     }
 
-    // Fungsi untuk navigasi ke BookingFragment
-    private void navigateToBooking() {
+    private void navigateToBooking(String providerName, String providerId) {
         try {
-            // Pastikan action dan argumen sudah didefinisikan di nav_graph.xml
             DetailSalonFragmentDirections.ActionDetailSalonFragmentToBookingFragment action =
-                    DetailSalonFragmentDirections.actionDetailSalonFragmentToBookingFragment(nama); // Kirim nama salon
-
-            // Kirim layanan yang dipilih sebagai String array
+                    DetailSalonFragmentDirections.actionDetailSalonFragmentToBookingFragment(providerName, providerId);
             action.setLayananDipilih(layananDipilih.toArray(new String[0]));
-
             NavHostFragment.findNavController(this).navigate(action);
         } catch (IllegalArgumentException e) {
             Toast.makeText(requireContext(), "Navigasi ke Booking belum siap.", Toast.LENGTH_SHORT).show();

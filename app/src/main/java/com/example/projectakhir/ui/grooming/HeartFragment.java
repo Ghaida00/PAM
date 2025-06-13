@@ -43,10 +43,6 @@ public class HeartFragment extends Fragment {
 
         viewModel = new ViewModelProvider(this).get(HeartViewModel.class);
 
-        // --- Setup Navigasi Profil (JIKA ADA ELEMEN UI-NYA) ---
-        // Pastikan Anda memiliki ImageView dengan ID ivHeaderUserProfile di fragment_heart.xml
-        // dan action action_heartFragment_to_profileFragment di nav_graph.xml
-        // Contoh jika ImageView profil ada langsung di binding FragmentHeartBinding:
         if (binding.ivHeaderUserProfile != null) { // Ganti ivHeaderUserProfile dengan ID yang benar
             binding.ivHeaderUserProfile.setOnClickListener(v -> {
                 try {
@@ -58,13 +54,8 @@ public class HeartFragment extends Fragment {
                 }
             });
         } else {
-            // Jika ivHeaderUserProfile ada di dalam layout yang di-include (misal, custom_header.xml)
-            // dan custom_header.xml memiliki ID, Anda mungkin perlu mengaksesnya melalui:
-            // if (binding.namaIdIncludeLayout.ivHeaderUserProfile != null) { ... }
-            // Atau jika tidak ada elemen UI profil di layout ini, bagian ini bisa diabaikan.
             Log.d("HeartFragment", "ImageView untuk navigasi profil (ivHeaderUserProfile) tidak ditemukan di layout.");
         }
-        // --- Akhir Setup Navigasi Profil ---
 
 
         binding.btnGrooming.setOnClickListener(v -> {
@@ -100,6 +91,18 @@ public class HeartFragment extends Fragment {
                 doctorAdapter.updateData(appointments);
             }
         });
+
+        viewModel.isLoading.observe(getViewLifecycleOwner(), isLoading -> {
+            if (isLoading != null) {
+                binding.progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+            }
+        });
+
+        viewModel.error.observe(getViewLifecycleOwner(), error -> {
+            if (error != null) {
+                Toast.makeText(getContext(), error, Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     private void setupRecyclerViews() {
@@ -113,19 +116,14 @@ public class HeartFragment extends Fragment {
     }
 
     private void navigateToDetail(AppointmentData appointment) {
-        if (appointment == null || appointment.getPetName() == null) { // Pengecekan null untuk data appointment
-            Toast.makeText(requireContext(), "Data appointment tidak lengkap.", Toast.LENGTH_SHORT).show();
+        if (appointment == null || appointment.getPetName() == null) {
+            Toast.makeText(requireContext(), "Data appointment tidak valid.", Toast.LENGTH_SHORT).show();
             Log.w("HeartFragment", "Gagal navigasi ke detail: data appointment tidak lengkap.");
             return;
         }
         try {
-            // Pastikan argumen di nav_graph.xml untuk action ini sesuai (misal: android:name="appointmentId" atau "petName")
             HeartFragmentDirections.ActionHeartFragmentToAppointmentDetailFragment action =
-                    HeartFragmentDirections.actionHeartFragmentToAppointmentDetailFragment(appointment.getPetName()); // Mengirim nama hewan sebagai contoh
-
-            // Jika Anda ingin mengirim ID unik:
-            // HeartFragmentDirections.ActionHeartFragmentToAppointmentDetailFragment action =
-            //        HeartFragmentDirections.actionHeartFragmentToAppointmentDetailFragment(appointment.getId()); // Pastikan AppointmentData punya getId()
+                    HeartFragmentDirections.actionHeartFragmentToAppointmentDetailFragment(appointment.getId());
 
             NavHostFragment.findNavController(HeartFragment.this).navigate(action);
 

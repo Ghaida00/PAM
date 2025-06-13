@@ -13,52 +13,32 @@ import android.widget.Toast; // Untuk fallback navigasi
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.bumptech.glide.Glide;
 import com.example.projectakhir.R;
 import com.example.projectakhir.data.Salon; // Jika perlu model Salon (atau Vet)
 import com.example.projectakhir.databinding.FragmentDetailVetBinding; // Nama binding
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class DetailVetFragment extends Fragment {
 
-    private FragmentDetailVetBinding binding; // View Binding
-
-    // Variabel untuk data vet (idealnya dari ViewModel berdasarkan ID)
-    private String nama;
-    private String kota;
-    private String jam;
-    private int gambarResId;
-    private ArrayList<String> layananTersedia = new ArrayList<>(); // Layanan yang ditawarkan vet
-    private ArrayList<String> layananDipilih = new ArrayList<>(); // Layanan yang dipilih user
-    // private String jenisHewanDipilih = "Dog"; // Jika pilihan jenis hewan masih relevan
+    private FragmentDetailVetBinding binding;
+    private DetailVetViewModel viewModel;
+    private String serviceId;
+    private Salon currentVetData;
+    private final ArrayList<String> layananDipilih = new ArrayList<>();
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Ambil argumen (jika ada)
         if (getArguments() != null) {
-            // Contoh jika mengirim nama vet via Safe Args
-            // nama = DetailVetFragmentArgs.fromBundle(getArguments()).getNamaVet();
-
-            // TODO: Idealnya, dapatkan ID vet dari argumen, lalu minta detail lengkap
-            // dari ViewModel/Repository.
-            // loadVetDetails(vetId);
+            // Mengambil ID unik dari argumen navigasi
+            serviceId = DetailVetFragmentArgs.fromBundle(getArguments()).getServiceId();
         }
-
-        // --- Data Dummy Sementara (GANTI DENGAN DATA AKTUAL DARI ARGUMEN/VIEWMODEL) ---
-        nama = getArguments() != null ? getArguments().getString("namaVet", "Nama Vet (Dummy)") : "Nama Vet (Dummy)";
-        kota = "Surabaya (Dummy)";
-        jam = "08:00 - 19:00 (Dummy)";
-        gambarResId = R.drawable.anomali; // Gambar dummy
-        layananTersedia.clear();
-        layananTersedia.add("Vaccine");
-        layananTersedia.add("GCU");
-        layananTersedia.add("Medicine");
-        layananTersedia.add("Check-up");
-        layananTersedia.add("Emergency");
-        // --- Akhir Data Dummy ---
     }
 
     @Nullable
@@ -71,34 +51,74 @@ public class DetailVetFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        viewModel = new ViewModelProvider(this).get(DetailVetViewModel.class);
 
-        // --- Kode dari onCreate DetailVetActivity ---
+        setupListeners();
+        observeViewModel();
 
-        // Setup tombol back
+        // Meminta data detail dari ViewModel jika serviceId ada
+        if (serviceId != null && !serviceId.isEmpty()) {
+            viewModel.fetchVetDetails(serviceId);
+        } else {
+            Toast.makeText(getContext(), "ID Layanan tidak ditemukan.", Toast.LENGTH_SHORT).show();
+            NavHostFragment.findNavController(this).popBackStack();
+        }
+    }
+
+    private void setupListeners() {
         binding.btnBack.setOnClickListener(v -> NavHostFragment.findNavController(this).popBackStack());
-
-        // Tampilkan data vet (gunakan data yang sudah diambil/dummy)
-        binding.imgVet.setImageResource(gambarResId);
-        binding.namaVet.setText(nama);
-        binding.kotaVet.setText(kota);
-        binding.descVet.setText("Klinik hewan terpercaya untuk kesehatan anakbulumu. Pemeriksaan dilakukan oleh dokter berpengalaman dengan penanganan penuh kasih. Karena mereka pantas mendapatkan perawatan terbaik. Buka: " + jam);
-
-        // Setup pilihan jenis hewan (jika masih diperlukan)
-        setupJenisHewanSelection(); // Anda bisa membuat fungsi ini
-
-        // Setup tampilan layanan yang bisa dipilih
-        setupLayananTags();
-
-        // Setup tombol Book Now
         binding.btnBook.setOnClickListener(v -> {
+            if (currentVetData == null) {
+                Toast.makeText(requireContext(), "Data klinik belum dimuat.", Toast.LENGTH_SHORT).show();
+                return;
+            }
             if (layananDipilih.isEmpty()) {
                 Toast.makeText(requireContext(), "Pilih minimal satu layanan", Toast.LENGTH_SHORT).show();
             } else {
-                navigateToBooking();
+                navigateToBooking(currentVetData.getNama(), currentVetData.getId());
             }
         });
+        setupJenisHewanSelection();
+    }
 
-        // --- Akhir kode dari onCreate DetailVetActivity ---
+    private void observeViewModel() {
+        // Mengamati perubahan pada data detail vet
+        viewModel.vetDetail.observe(getViewLifecycleOwner(), this::displayVetDetails);
+
+        // Mengamati status loading
+        viewModel.isLoading.observe(getViewLifecycleOwner(), isLoading -> {
+            binding.progressBarDetail.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+            binding.scrollView.setVisibility(isLoading ? View.GONE : View.VISIBLE);
+        });
+
+        // Mengamati pesan error
+        viewModel.error.observe(getViewLifecycleOwner(), error -> {
+            if (error != null && !error.isEmpty()) {
+                Toast.makeText(getContext(), error, Toast.LENGTH_LONG).show();
+                viewModel.clearError();
+                NavHostFragment.findNavController(this).popBackStack(); // Kembali jika ada error
+            }
+        });
+    }
+
+    private void displayVetDetails(Salon vet) {
+        if (vet == null) return;
+        currentVetData = vet;
+
+        binding.namaVet.setText(vet.getNama());
+        binding.kotaVet.setText(vet.getKota());
+        binding.descVet.setText("Klinik hewan terpercaya untuk kesehatan anak bulumu. Pemeriksaan dilakukan oleh dokter berpengalaman dengan penanganan penuh kasih. Buka: " + vet.getJam());
+
+        // Memuat gambar dari URL
+        if (vet.getImageUrl() != null && !vet.getImageUrl().isEmpty()) {
+            Glide.with(requireContext())
+                    .load(vet.getImageUrl())
+                    .placeholder(R.drawable.anomali)
+                    .error(R.drawable.ic_paw)
+                    .into(binding.imgVet);
+        }
+
+        setupLayananTags(vet.getLayanan());
     }
 
     // Fungsi untuk setup pilihan jenis hewan (jika masih ada di desain/kebutuhan)
@@ -116,9 +136,7 @@ public class DetailVetFragment extends Fragment {
             // Set background yang dipilih
             v.setBackgroundResource(R.drawable.bg_tag_hijau); // Warna terpilih
             if (v instanceof TextView) {
-                ((TextView) v).setTextColor(Color.WHITE); // Warna teks terpilih
-                // Simpan jenis hewan yang dipilih jika perlu
-                // jenisHewanDipilih = ((TextView) v).getText().toString();
+                ((TextView) v).setTextColor(Color.WHITE);
             }
         };
 
@@ -127,14 +145,14 @@ public class DetailVetFragment extends Fragment {
         binding.txtJenisOthers.setOnClickListener(jenisHewanListener);
 
         // Set default selection (misal Dog)
-        binding.txtJenisDog.setBackgroundResource(R.drawable.bg_tag_hijau);
-        binding.txtJenisDog.setTextColor(Color.WHITE);
+        binding.txtJenisDog.performClick();
     }
 
     // Fungsi untuk membuat tag layanan (mirip DetailSalonFragment)
-    private void setupLayananTags() {
+    private void setupLayananTags(List<String> layananTersedia) {
         binding.layananContainer.removeAllViews(); // Hapus view lama
         layananDipilih.clear(); // Reset pilihan
+        if (layananTersedia == null) return;
 
         for (String l : layananTersedia) {
             TextView tag = new TextView(requireContext());
@@ -175,11 +193,11 @@ public class DetailVetFragment extends Fragment {
     }
 
     // Fungsi untuk navigasi ke BookingFragment
-    private void navigateToBooking() {
+    private void navigateToBooking(String providerName, String providerId) {
         try {
             // Pastikan action dan argumen sudah didefinisikan di nav_graph.xml
             DetailVetFragmentDirections.ActionDetailVetFragmentToBookingFragment action =
-                    DetailVetFragmentDirections.actionDetailVetFragmentToBookingFragment(nama); // Kirim nama vet
+                    DetailVetFragmentDirections.actionDetailVetFragmentToBookingFragment(providerName, providerId); // Kirim nama vet
 
             // Kirim layanan yang dipilih sebagai String array
             action.setLayananDipilih(layananDipilih.toArray(new String[0]));
