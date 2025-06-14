@@ -8,6 +8,7 @@ import java.util.Date;
 
 public class Hewan {
     private String id;
+    private String ownerId;
     private String nama;
     private String kota;
     private String jenis;
@@ -17,6 +18,7 @@ public class Hewan {
     private String deskripsi;
     private String thumbnailImageUrl;
     private String detailImageUrl;
+    private String adoptionStatus;
     private List<String> traits;
     @ServerTimestamp
     public Date timestamp;
@@ -131,4 +133,20 @@ public class Hewan {
     }
 
     public Date getTimestamp() { return timestamp; }
+
+    public String getOwnerId() {
+        return ownerId;
+    }
+
+    public void setOwnerId(String ownerId) {
+        this.ownerId = ownerId;
+    }
+
+    public String getAdoptionStatus() {
+        return adoptionStatus;
+    }
+
+    public void setAdoptionStatus(String adoptionStatus) {
+        this.adoptionStatus = adoptionStatus;
+    }
 }

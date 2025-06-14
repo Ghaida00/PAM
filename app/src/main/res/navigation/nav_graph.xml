@@ -74,7 +74,26 @@
         android:id="@+id/yourPetListFragment"
         android:name="com.example.projectakhir.ui.profile.YourPetListFragment"
         android:label="Your Pets"
-        tools:layout="@layout/fragment_your_pet_list" />
+        tools:layout="@layout/fragment_your_pet_list" >
+        <action
+            android:id="@+id/action_yourPetListFragment_to_addPetFragment"
+            app:destination="@id/addPetFragment" />
+        <action
+            android:id="@+id/action_yourPetListFragment_to_putForAdoptionFragment"
+            app:destination="@id/putForAdoptionFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/putForAdoptionFragment"
+        android:name="com.example.projectakhir.ui.profile.PutForAdoptionFragment"
+        android:label="Put Your Pet For Adoption"
+        tools:layout="@layout/fragment_put_for_adoption" />
+
+    <fragment
+        android:id="@+id/addPetFragment"
+        android:name="com.example.projectakhir.ui.profile.AddPetFragment"
+        android:label="Add Your Pet"
+        tools:layout="@layout/fragment_add_pet" />
     <fragment
         android:id="@+id/deliveryAddressFragment"
         android:name="com.example.projectakhir.ui.profile.DeliveryAddressFragment"

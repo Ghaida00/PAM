@@ -45,7 +45,7 @@ public class AdoptionRepository {
     }
 
     public void fetchFilteredHewan(String kota, String kategori, FirestoreCallback<List<Hewan>> callback) {
-        Query query = petsCollection;
+        Query query = petsCollection.whereEqualTo("adoptionStatus", "available");
 
         if (kota != null && !kota.isEmpty() && !"Semua Kota".equalsIgnoreCase(kota)) {
             query = query.whereEqualTo("kota", kota);
@@ -118,6 +118,7 @@ public class AdoptionRepository {
 
     public void fetchNewestHewan(int limit, FirestoreCallback<List<Hewan>> callback) {
         petsCollection.orderBy("timestamp", Query.Direction.DESCENDING)
+                .whereEqualTo("adoptionStatus", "available")
                 .limit(limit)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
@@ -304,5 +305,20 @@ public class AdoptionRepository {
                 Log.e(TAG, "Error updating user report status: ", e);
                 callback.onError(e);
             });
+    }
+
+    // Method untuk mengubah status hewan di koleksi 'pets'
+    public void updatePetAdoptionStatus(String petId, String newStatus, FirestoreCallback<Void> callback) {
+        if (petId == null || petId.isEmpty()) {
+            callback.onError(new Exception("Pet ID is invalid."));
+            return;
+        }
+        db.collection("pets").document(petId)
+                .update("adoptionStatus", newStatus)
+                .addOnSuccessListener(aVoid -> callback.onSuccess(null))
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Error updating pet adoption status: ", e);
+                    callback.onError(e);
+                });
     }
 }
