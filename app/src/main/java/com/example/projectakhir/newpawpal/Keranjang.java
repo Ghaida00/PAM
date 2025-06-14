@@ -1,4 +1,4 @@
-package com.example.projectakhir;
+package com.example.projectakhir.newpawpal;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -12,6 +12,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.projectakhir.R;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;

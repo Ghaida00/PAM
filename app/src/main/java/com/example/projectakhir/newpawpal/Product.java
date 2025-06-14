@@ -1,4 +1,4 @@
-package com.example.projectakhir;
+package com.example.projectakhir.newpawpal;
 
 import java.io.Serializable;
 

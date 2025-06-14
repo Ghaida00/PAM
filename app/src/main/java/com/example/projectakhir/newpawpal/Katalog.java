@@ -1,4 +1,4 @@
-package com.example.projectakhir;
+package com.example.projectakhir.newpawpal;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,6 +13,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.example.projectakhir.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import com.google.firebase.database.DataSnapshot;

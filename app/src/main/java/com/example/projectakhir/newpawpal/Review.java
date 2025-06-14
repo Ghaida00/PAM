@@ -1,4 +1,4 @@
-package com.example.projectakhir;
+package com.example.projectakhir.newpawpal;
 
 // Model data untuk ulasan produk
 public class Review {

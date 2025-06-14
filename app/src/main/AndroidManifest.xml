@@ -14,40 +14,40 @@
         tools:targetApi="31" >
 
         <activity
-            android:name=".PenilaianProduk"
+            android:name=".newpawpal.PenilaianProduk"
             android:exported="false" />
         <activity
-            android:name=".DetailProduk"
+            android:name=".newpawpal.DetailProduk"
             android:exported="false" />
         <activity
-            android:name=".NilaiProduk"
+            android:name=".newpawpal.NilaiProduk"
             android:exported="false" />
         <activity
-            android:name=".Notifikasi"
+            android:name=".newpawpal.Notifikasi"
             android:exported="false" />
         <activity
-            android:name=".Keranjang"
+            android:name=".newpawpal.Keranjang"
             android:exported="false" />
         <activity
-            android:name=".CategoryAdapter"
+            android:name=".newpawpal.CategoryAdapter"
             android:exported="false" />
         <activity
-            android:name=".ProductAdapter"
+            android:name=".newpawpal.ProductAdapter"
             android:exported="false" />
         <activity
-            android:name=".Katalog"
+            android:name=".newpawpal.Katalog"
             android:exported="false" />
         <activity
-            android:name=".Register"
+            android:name=".newpawpal.Register"
             android:exported="false" />
         <activity
-            android:name=".Login"
+            android:name=".newpawpal.Login"
             android:exported="false" />
         <activity
             android:name=".ui.AppActivity"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".newpawpal.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
