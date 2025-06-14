@@ -14,6 +14,36 @@
         tools:targetApi="31" >
 
         <activity
+            android:name=".PenilaianProduk"
+            android:exported="false" />
+        <activity
+            android:name=".DetailProduk"
+            android:exported="false" />
+        <activity
+            android:name=".NilaiProduk"
+            android:exported="false" />
+        <activity
+            android:name=".Notifikasi"
+            android:exported="false" />
+        <activity
+            android:name=".Keranjang"
+            android:exported="false" />
+        <activity
+            android:name=".CategoryAdapter"
+            android:exported="false" />
+        <activity
+            android:name=".ProductAdapter"
+            android:exported="false" />
+        <activity
+            android:name=".Katalog"
+            android:exported="false" />
+        <activity
+            android:name=".Register"
+            android:exported="false" />
+        <activity
+            android:name=".Login"
+            android:exported="false" />
+        <activity
             android:name=".ui.AppActivity"
             android:exported="true">
             <intent-filter>
