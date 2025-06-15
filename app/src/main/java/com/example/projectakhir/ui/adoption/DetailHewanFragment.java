@@ -9,15 +9,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-// Import ProgressBar dan Glide
-import android.widget.ProgressBar;
 import com.bumptech.glide.Glide;
-
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider; // Import ViewModelProvider
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.projectakhir.R;
@@ -25,25 +22,20 @@ import com.example.projectakhir.data.Hewan;
 import com.example.projectakhir.databinding.FragmentDetailHewanBinding;
 
 import java.util.ArrayList;
-import java.util.List; // Import List
-
 
 public class DetailHewanFragment extends Fragment {
 
     private FragmentDetailHewanBinding binding;
-    private DetailHewanViewModel viewModel; // ViewModel
-    private String hewanIdentifier; // Akan menyimpan ID atau nama hewan dari argumen
-
-    // Variabel untuk menyimpan data hewan yang sudah di-fetch
+    private DetailHewanViewModel viewModel;
+    private String hewanIdentifier;
     private Hewan currentHewanData;
-
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             try {
-                hewanIdentifier = DetailHewanFragmentArgs.fromBundle(getArguments()).getNamaHewan(); // Argumennya bernama namaHewan
+                hewanIdentifier = DetailHewanFragmentArgs.fromBundle(getArguments()).getNamaHewan();
             } catch (IllegalArgumentException e) {
                 hewanIdentifier = getArguments().getString("namaHewan");
                 if (hewanIdentifier == null) {
@@ -63,7 +55,6 @@ public class DetailHewanFragment extends Fragment {
         }
     }
 
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -77,17 +68,16 @@ public class DetailHewanFragment extends Fragment {
 
         viewModel = new ViewModelProvider(this).get(DetailHewanViewModel.class);
 
-        // Observe LiveData dari ViewModel
+        binding.btnBack.setOnClickListener(v -> NavHostFragment.findNavController(this).popBackStack());
+
         viewModel.hewanDetail.observe(getViewLifecycleOwner(), hewan -> {
             if (hewan != null) {
-                currentHewanData = hewan; // Simpan data hewan
+                currentHewanData = hewan;
                 displayHewanDetails(hewan);
-                binding.contentLayoutDetailHewan.setVisibility(View.VISIBLE); // Tampilkan konten
+                binding.contentLayoutDetailHewan.setVisibility(View.VISIBLE);
                 binding.txtErrorDetailHewan.setVisibility(View.GONE);
             } else {
-                // Jika hewan null setelah loading selesai dan tidak ada error spesifik,
-                // mungkin karena tidak ditemukan. Error spesifik ditangani di observer error.
-                if (viewModel.isLoading.getValue() != null && !viewModel.isLoading.getValue()){ // Hanya jika tidak sedang loading
+                if (viewModel.isLoading.getValue() != null && !viewModel.isLoading.getValue()){
                     binding.txtErrorDetailHewan.setText("Data hewan tidak ditemukan.");
                     binding.txtErrorDetailHewan.setVisibility(View.VISIBLE);
                     binding.contentLayoutDetailHewan.setVisibility(View.GONE);
@@ -102,7 +92,6 @@ public class DetailHewanFragment extends Fragment {
                 binding.txtErrorDetailHewan.setVisibility(View.GONE);
             } else {
                 binding.progressBarDetailHewan.setVisibility(View.GONE);
-                // Visibilitas contentLayoutDetailHewan dan txtErrorDetailHewan diatur oleh observer hewanDetail dan error
             }
         });
 
@@ -118,17 +107,13 @@ public class DetailHewanFragment extends Fragment {
             }
         });
 
-        // Panggil fetch data jika hewanIdentifier ada
         if (hewanIdentifier != null && !hewanIdentifier.isEmpty()) {
             viewModel.fetchHewanDetailsById(hewanIdentifier);
         }
 
-        // Setup Tombol Adopt
         binding.btnAdopt.setOnClickListener(v -> {
             if (currentHewanData != null && currentHewanData.getId() != null) {
                 try {
-                    // ▼▼▼ PERUBAHAN DI SINI ▼▼▼
-                    // Mengirim semua data yang diperlukan ke FormAdopsiFragment
                     DetailHewanFragmentDirections.ActionDetailHewanFragmentToFormAdopsiFragment action =
                             DetailHewanFragmentDirections.actionDetailHewanFragmentToFormAdopsiFragment(
                                     currentHewanData.getId(),
@@ -137,7 +122,6 @@ public class DetailHewanFragment extends Fragment {
                                     currentHewanData.getKota()
                             );
                     NavHostFragment.findNavController(DetailHewanFragment.this).navigate(action);
-                    // ▲▲▲ AKHIR DARI PERUBAHAN ▲▲▲
                 } catch (IllegalArgumentException e) {
                     Toast.makeText(requireContext(), "Navigasi ke Form Adopsi belum siap.", Toast.LENGTH_SHORT).show();
                 }
@@ -148,18 +132,15 @@ public class DetailHewanFragment extends Fragment {
     }
 
     private void displayHewanDetails(Hewan hewan) {
-        // Simpan data hewan untuk digunakan nanti
         currentHewanData = hewan;
 
-        // Memuat gambar detail menggunakan Glide
         if (hewan.getDetailImageUrl() != null && !hewan.getDetailImageUrl().isEmpty()) {
             Glide.with(requireContext())
                     .load(hewan.getDetailImageUrl())
-                    .placeholder(R.drawable.grace_no_background) // Placeholder opsional
-                    .error(R.drawable.ic_paw) // Error image opsional
+                    .placeholder(R.drawable.grace_no_background)
+                    .error(R.drawable.ic_paw)
                     .into(binding.imgHewan);
         } else if (hewan.getThumbnailImageUrl() != null && !hewan.getThumbnailImageUrl().isEmpty()) {
-            // Fallback ke thumbnail jika detail image URL tidak ada
             Glide.with(requireContext())
                     .load(hewan.getThumbnailImageUrl())
                     .placeholder(R.drawable.grace_no_background)
@@ -167,7 +148,7 @@ public class DetailHewanFragment extends Fragment {
                     .into(binding.imgHewan);
         }
         else {
-            binding.imgHewan.setImageResource(R.drawable.grace_no_background); // Default
+            binding.imgHewan.setImageResource(R.drawable.grace_no_background);
         }
 
         binding.namaHewan.setText(hewan.getNama());
@@ -176,13 +157,12 @@ public class DetailHewanFragment extends Fragment {
         binding.descHewan.setText(hewan.getDeskripsi());
 
         if (hewan.getTraits() != null) {
-            setupTraitsLayout(new ArrayList<>(hewan.getTraits())); // Konversi ke ArrayList jika perlu
+            setupTraitsLayout(new ArrayList<>(hewan.getTraits()));
         } else {
-            setupTraitsLayout(new ArrayList<>()); // Berikan list kosong jika null
+            setupTraitsLayout(new ArrayList<>());
         }
     }
 
-    // Fungsi untuk setup layout traits (kode tetap sama)
     private void setupTraitsLayout(ArrayList<String> traits) {
         if (traits == null || traits.isEmpty()) {
             binding.traitsLayout.setVisibility(View.GONE);
@@ -191,98 +171,29 @@ public class DetailHewanFragment extends Fragment {
         binding.traitsLayout.setVisibility(View.VISIBLE);
         binding.traitsLayout.removeAllViews();
 
-        if (traits.size() == 3) {
-            binding.traitsLayout.setOrientation(LinearLayout.VERTICAL);
-            LinearLayout top = new LinearLayout(requireContext());
-            top.setGravity(Gravity.CENTER);
-            top.addView(createTraitView(traits.get(0)));
-
-            LinearLayout bottom = new LinearLayout(requireContext());
-            bottom.setGravity(Gravity.CENTER);
-            bottom.setPadding(0, 26, 0, 0);
-
-            LinearLayout traitLeft = createTraitView(traits.get(1));
-            LinearLayout.LayoutParams leftParams = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-            );
-            try {
-                leftParams.setMarginEnd(getResources().getDimensionPixelSize(R.dimen.trait_horizontal_margin));
-            } catch (Exception e) { leftParams.setMarginEnd(16); /* fallback */ }
-            traitLeft.setLayoutParams(leftParams);
-
-
-            LinearLayout traitRight = createTraitView(traits.get(2));
-            LinearLayout.LayoutParams rightParams = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-            );
-            try {
-                rightParams.setMarginStart(getResources().getDimensionPixelSize(R.dimen.trait_horizontal_margin));
-            } catch (Exception e) { rightParams.setMarginStart(16); /* fallback */ }
-            traitRight.setLayoutParams(rightParams);
-
-            bottom.addView(traitLeft);
-            bottom.addView(traitRight);
-
-            binding.traitsLayout.addView(top);
-            binding.traitsLayout.addView(bottom);
-        } else {
-            binding.traitsLayout.setOrientation(LinearLayout.VERTICAL);
-            LinearLayout currentRow = null;
-            final int ITEMS_PER_ROW = 3;
-
-            for (int i = 0; i < traits.size(); i++) {
-                if (i % ITEMS_PER_ROW == 0) {
-                    currentRow = new LinearLayout(requireContext());
-                    currentRow.setOrientation(LinearLayout.HORIZONTAL);
-                    currentRow.setGravity(Gravity.CENTER);
-                    currentRow.setPadding(0, (i == 0 ? 0 : 8), 0, 8);
-                    binding.traitsLayout.addView(currentRow);
-                }
-                if (currentRow != null) {
-                    currentRow.addView(createTraitView(traits.get(i)));
-                }
-            }
+        for (String trait : traits) {
+            LinearLayout traitView = createTraitView(trait);
+            binding.traitsLayout.addView(traitView);
         }
     }
 
-
     private LinearLayout createTraitView(String trait) {
-        LinearLayout layout = new LinearLayout(requireContext());
-        layout.setOrientation(LinearLayout.VERTICAL);
-        layout.setGravity(Gravity.CENTER);
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-        );
-        lp.setMargins(16, 8, 16, 8);
-        layout.setLayoutParams(lp);
+        LinearLayout layout = (LinearLayout) LayoutInflater.from(requireContext())
+                .inflate(R.layout.item_trait_chip, binding.traitsLayout, false);
 
-        ImageView icon = new ImageView(requireContext());
+        ImageView icon = layout.findViewById(R.id.trait_icon);
+        TextView label = layout.findViewById(R.id.trait_label);
+
         icon.setImageResource(getIconForTrait(trait));
-        int iconSize = 80; // fallback
-        try {
-            iconSize = getResources().getDimensionPixelSize(R.dimen.trait_icon_size);
-        } catch (Exception e) { /* biarkan default */ }
-        icon.setLayoutParams(new LinearLayout.LayoutParams(iconSize, iconSize));
-
-        TextView label = new TextView(requireContext());
         label.setText(capitalize(trait));
-        label.setTextSize(12f);
-        label.setTypeface(null, android.graphics.Typeface.BOLD);
-        label.setGravity(Gravity.CENTER);
-        label.setPadding(0, 4, 0, 0);
 
-        layout.addView(icon);
-        layout.addView(label);
         return layout;
     }
 
     private int getIconForTrait(String trait) {
         if (trait == null) return R.drawable.ic_paw;
         switch (trait.toLowerCase()) {
-            case "friendly": return R.drawable.ic_paw;
+            case "friendly": return R.drawable.ic_pawblack;
             case "silly": return R.drawable.traits_cat;
             case "playful": return R.drawable.traits_toy;
             case "spoiled": return R.drawable.traits_spoiled;

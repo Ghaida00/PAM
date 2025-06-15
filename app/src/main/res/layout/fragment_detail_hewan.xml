@@ -4,123 +4,125 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#FFFBEF"
     tools:context=".ui.adoption.DetailHewanFragment">
 
     <ImageView
-        android:id="@+id/bgDetail"
+        android:id="@+id/imgHewan"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="350dp"
+        android:layout_alignParentTop="true"
         android:scaleType="centerCrop"
-        android:src="@drawable/bg_detail_hewan" />
+        tools:src="@drawable/bambang" />
+
+    <ImageView
+        android:id="@+id/btnBack"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:clickable="true"
+        android:contentDescription="Kembali"
+        android:focusable="true"
+        android:src="@drawable/ic_back_circle"
+         />
 
     <ScrollView
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="300dp"
+        android:background="@drawable/bg_hewan_rounded_top_corners"
         android:fillViewport="true">
 
         <LinearLayout
             android:id="@+id/contentLayoutDetailHewan"
-            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="16dp"
-            android:visibility="gone">
+            android:orientation="vertical"
+            android:padding="24dp"
+            android:visibility="invisible"
+            tools:visibility="visible">
 
-            <ImageView
-                android:id="@+id/imgHewan"
-                android:layout_width="match_parent"
-                android:layout_height="270dp"
-                android:scaleType="fitCenter"
-                tools:src="@drawable/grace_no_background" />
+            <TextView
+                android:id="@+id/namaHewan"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/black"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                tools:text="Bambang" />
+
+            <TextView
+                android:id="@+id/kotaHewan"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:drawableStart="@drawable/ic_location"
+                android:drawablePadding="8dp"
+                android:gravity="center_vertical"
+                android:textColor="#555"
+                android:textSize="14sp"
+                tools:text="Surabaya" />
+
+            <TextView
+                android:id="@+id/detailHewan"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:textColor="#333"
+                android:textSize="14sp"
+                tools:text="1 Year | Jantan | 4.7 Kg" />
 
             <LinearLayout
                 android:id="@+id/traitsLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
+                android:layout_marginTop="24dp"
                 android:gravity="center"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="16dp" />
+                android:orientation="horizontal" />
 
             <TextView
-                android:id="@+id/namaHewan"
-                tools:text="Nama Hewan"
-                android:textSize="24sp"
-                android:textStyle="bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp" />
-
-            <TextView
-                android:id="@+id/kotaHewan"
-                tools:text="Kota Hewan"
-                android:textSize="14sp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp" />
-
-            <TextView
-                android:id="@+id/detailHewan"
-                tools:text="Gender • Umur • Berat"
-                android:textSize="14sp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp" />
-
-            <TextView
-                android:text="Tentang Hewan"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp" />
+                android:layout_marginTop="24dp"
+                android:text="About"
+                android:textColor="@android:color/black"
+                android:textSize="18sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/descHewan"
-                tools:text="Deskripsi hewan..."
-                android:textSize="14sp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp" />
+                android:layout_marginTop="8dp"
+                android:lineSpacingExtra="4dp"
+                android:textColor="#555"
+                android:textSize="14sp"
+                tools:text="Bambang ditemukan duduk sendirian di depan warung, pura-pura kuat padahal kakinya pincang. Setelah dirawat, sekarang dia sudah lincah lagi..." />
 
-            <LinearLayout
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnAdopt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:minHeight="50dp"
-                android:orientation="horizontal"
-                android:gravity="center"
-                android:paddingStart="24dp"
-                android:paddingEnd="24dp"
-                android:paddingTop="12dp"
-                android:paddingBottom="12dp"
-                android:layout_marginTop="12dp"
                 android:layout_gravity="center_horizontal"
-                android:background="@drawable/bg_button_adopt"
-                android:clickable="true"
-                android:focusable="true"
-                android:foreground="?android:attr/selectableItemBackground">
-
-                <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:src="@drawable/ic_paw"
-                    app:tint="#000000"
-                    android:layout_marginEnd="8dp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Adopt"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="#000000" />
-            </LinearLayout>
-
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="16dp"/>
+                android:layout_marginTop="32dp"
+                android:layout_marginBottom="16dp"
+                android:backgroundTint="#FFC700"
+                android:paddingLeft="60dp"
+                android:paddingTop="14dp"
+                android:paddingRight="60dp"
+                android:paddingBottom="14dp"
+                android:text="Adopt"
+                android:textColor="@android:color/black"
+                android:textStyle="bold"
+                app:cornerRadius="28dp"
+                app:icon="@drawable/ic_paw"
+                app:iconGravity="textStart"
+                app:iconPadding="8dp"
+                app:iconTint="@android:color/black" />
 
         </LinearLayout>
     </ScrollView>
@@ -138,9 +140,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:text="Gagal memuat data."
-        android:visibility="gone"
         android:padding="16dp"
-        android:textSize="16sp"/>
+        android:text="Gagal memuat data."
+        android:textSize="16sp"
+        android:visibility="gone" />
 
 </RelativeLayout>

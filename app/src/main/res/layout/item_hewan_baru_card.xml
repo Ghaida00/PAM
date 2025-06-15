@@ -39,7 +39,7 @@
         android:id="@+id/txtInfoHewanBaru"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Kota • Jenis"
+        android:text="Kota"
         android:textSize="12sp"
         android:textColor="#666666"
         android:paddingStart="12dp"
