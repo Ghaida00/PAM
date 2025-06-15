@@ -1,4 +1,8 @@
 <resources>
+    <style name="App.Button.Rectangular" parent="Widget.AppCompat.Button">
+        <item name="cornerRadius">45dp</item>
+    </style>
+
     <style name="ProfileMenuItem" parent="Widget.AppCompat.TextView">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>

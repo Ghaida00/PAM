@@ -95,11 +95,18 @@ public class AppActivity extends AppCompatActivity {
                     destination.getId() == R.id.registerFragment ||
                     destination.getId() == R.id.profileFragment;
 
+            boolean hideToolbarOnly = destination.getId() == R.id.groomingFragment;
+
             if (isAuthOrProfileScreen) {
                 actionBar.hide();
                 bottomNavView.setVisibility(View.GONE);
             } else {
                 actionBar.show();
+
+                if (hideToolbarOnly) {
+                    actionBar.hide();
+                }
+
                 bottomNavView.setVisibility(View.VISIBLE);
 
                 if (isTopLevel) {
