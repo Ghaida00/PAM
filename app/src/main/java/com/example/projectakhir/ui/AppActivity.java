@@ -100,6 +100,7 @@ public class AppActivity extends AppCompatActivity {
                     destination.getId() == R.id.deliveryAddressFragment ||
                     destination.getId() == R.id.paymentMethodFragment ||
                     destination.getId() == R.id.putForAdoptionFragment ||
+                    destination.getId() == R.id.detailPetFragment ||
                     destination.getId() == R.id.profileFragment;
 
             boolean hideToolbarOnly = destination.getId() == R.id.groomingFragment ||

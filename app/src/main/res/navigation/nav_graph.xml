@@ -87,6 +87,16 @@
     </fragment>
 
     <fragment
+        android:id="@+id/detailPetFragment"
+        android:name="com.example.projectakhir.ui.profile.DetailPetFragment"
+        android:label="Detail Peliharaan"
+        tools:layout="@layout/fragment_detail_pet">
+        <argument
+            android:name="petId"
+            app:argType="string" />
+    </fragment>
+
+    <fragment
         android:id="@+id/yourPetListFragment"
         android:name="com.example.projectakhir.ui.profile.YourPetListFragment"
         android:label="Your Pets"
@@ -97,6 +107,10 @@
         <action
             android:id="@+id/action_yourPetListFragment_to_putForAdoptionFragment"
             app:destination="@id/putForAdoptionFragment" />
+
+        <action
+            android:id="@+id/action_yourPetListFragment_to_detailPetFragment"
+            app:destination="@id/detailPetFragment" />
     </fragment>
 
     <fragment

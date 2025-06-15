@@ -44,18 +44,20 @@ public class YourPetListFragment extends Fragment {
     }
 
     private void setupRecyclerView() {
-        // Inisialisasi adapter dengan list kosong dan listener
         adapter = new YourPetAdapter(requireContext(), new ArrayList<>(), pet -> {
-            // Aksi ketika item di-klik, misalnya navigasi ke detail
-            // Contoh: Navigasi ke DetailHewanFragment yang sudah ada
-            // Pastikan Anda sudah menambahkan action di nav_graph.xml dari YourPetListFragment ke DetailHewanFragment
+            // Aksi ketika item di-klik
             try {
-                // YourPetListFragmentDirections.ActionYourPetListFragmentToDetailHewanFragment action =
-                //         YourPetListFragmentDirections.actionYourPetListFragmentToDetailHewanFragment(pet.getId());
-                // NavHostFragment.findNavController(this).navigate(action);
-                Toast.makeText(getContext(), "Clicked on " + pet.getNama(), Toast.LENGTH_SHORT).show();
+                // Pastikan pet ID tidak null sebelum navigasi
+                if (pet.getId() == null || pet.getId().isEmpty()) {
+                    Toast.makeText(getContext(), "Error: ID hewan tidak valid.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                // Gunakan action yang sudah dibuat di nav_graph.xml
+                YourPetListFragmentDirections.ActionYourPetListFragmentToDetailPetFragment action =
+                        YourPetListFragmentDirections.actionYourPetListFragmentToDetailPetFragment(pet.getId());
+                NavHostFragment.findNavController(this).navigate(action);
             } catch (Exception e) {
-                Toast.makeText(getContext(), "Navigation to pet detail is not set up.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Navigasi ke detail hewan belum diatur.", Toast.LENGTH_SHORT).show();
             }
         });
 
