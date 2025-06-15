@@ -1,8 +1,6 @@
 package com.example.projectakhir.ui.profile;
 
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.SharedPreferences;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -21,7 +19,6 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.bumptech.glide.Glide;
 import com.example.projectakhir.R;
 import com.example.projectakhir.databinding.FragmentProfileBinding;
-import com.example.projectakhir.ui.auth.LoginFragment;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -151,8 +148,28 @@ public class ProfileFragment extends Fragment {
         }
 
         binding.itemAboutCard.setOnClickListener(v -> navigateTo(R.id.action_profileFragment_to_aboutAppFragment, "Tentang Aplikasi"));
-        binding.itemHelpCard.setOnClickListener(v -> Toast.makeText(getContext(), "Bantuan diklik (Fitur belum diimplementasi)", Toast.LENGTH_SHORT).show());
+        binding.itemHelpCard.setOnClickListener(v -> composeEmail());
         binding.itemLogoutCard.setOnClickListener(v -> showLogoutConfirmationDialog());
+    }
+
+    private void composeEmail() {
+        // Alamat email tujuan dan subjek
+        String[] recipients = {"pawpal@pawpal.com"};
+        String subject = "Bantuan Aplikasi PawPal";
+
+        // Membuat intent untuk membuka aplikasi email
+        Intent intent = new Intent(Intent.ACTION_SENDTO);
+        intent.setData(Uri.parse("mailto:")); // Hanya aplikasi email yang akan merespon
+        intent.putExtra(Intent.EXTRA_EMAIL, recipients);
+        intent.putExtra(Intent.EXTRA_SUBJECT, subject);
+
+        // Memeriksa apakah ada aplikasi email yang terpasang di perangkat
+        if (intent.resolveActivity(requireActivity().getPackageManager()) != null) {
+            startActivity(intent);
+        } else {
+            // Memberi tahu pengguna jika tidak ada aplikasi email
+            Toast.makeText(getContext(), "Tidak ada aplikasi email yang terpasang.", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void navigateTo(int actionId, String featureName) {
