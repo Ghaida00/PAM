@@ -78,7 +78,14 @@
         android:id="@+id/personalDetailFragment"
         android:name="com.example.projectakhir.ui.profile.PersonalDetailFragment"
         android:label="Personal Detail"
-        tools:layout="@layout/fragment_personal_detail" />
+        tools:layout="@layout/fragment_personal_detail">
+
+        <action
+            android:id="@+id/action_personalDetailFragment_to_editProfileFragment"
+            app:destination="@id/editProfileFragment" />
+
+    </fragment>
+
     <fragment
         android:id="@+id/yourPetListFragment"
         android:name="com.example.projectakhir.ui.profile.YourPetListFragment"
@@ -303,6 +310,12 @@
             android:name="serviceType"
             app:argType="string" />
     </fragment>
+
+    <fragment
+        android:id="@+id/editProfileFragment"
+        android:name="com.example.projectakhir.ui.profile.EditProfileFragment"
+        android:label="Edit Profile"
+        tools:layout="@layout/fragment_edit_profile" />
 
     <fragment
         android:id="@+id/appointmentDetailFragment"

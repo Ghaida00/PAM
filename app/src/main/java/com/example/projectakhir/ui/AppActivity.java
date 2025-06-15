@@ -103,12 +103,18 @@ public class AppActivity extends AppCompatActivity {
                     destination.getId() == R.id.profileFragment;
 
             boolean hideToolbarOnly = destination.getId() == R.id.groomingFragment ||
+                    destination.getId() == R.id.doctorFragment ||
+                    destination.getId() == R.id.appointmentDetailFragment ||
+                    destination.getId() == R.id.detailSalonFragment ||
+                    destination.getId() == R.id.detailVetFragment ||
+                    destination.getId() == R.id.bookingFragment ||
                     destination.getId() == R.id.detailHewanFragment ||
                     destination.getId() == R.id.daftarHewanFragment ||
                     destination.getId() == R.id.formAdopsiFragment ||
                     destination.getId() == R.id.formPengaduanFragment ||
                     destination.getId() == R.id.progresMainFragment ||
                     destination.getId() == R.id.progresAdopsiFragment||
+                    destination.getId() == R.id.editProfileFragment||
                     destination.getId() == R.id.progresPengaduanFragment;
 
             if (isAuthOrProfileScreen) {

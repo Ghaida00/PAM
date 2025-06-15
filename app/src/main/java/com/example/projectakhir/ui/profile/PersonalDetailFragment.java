@@ -125,7 +125,9 @@ public class PersonalDetailFragment extends Fragment {
 
         // Listener untuk tombol Edit Profile
         binding.btnEditProfile.setOnClickListener(v -> {
-            showToast("Edit Profile diklik (Navigasi belum diimplementasi)");
+            // Navigasi ke EditProfileFragment
+            NavHostFragment.findNavController(PersonalDetailFragment.this)
+                    .navigate(R.id.action_personalDetailFragment_to_editProfileFragment);
         });
     }
 
