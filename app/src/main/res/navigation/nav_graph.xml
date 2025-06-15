@@ -110,7 +110,7 @@
         android:id="@+id/aboutAppFragment"
         android:name="com.example.projectakhir.ui.profile.AboutAppFragment"
         android:label="About PawPal"
-        tools:layout="@layout/fragment_about_app" />
+        tools:layout="@layout/fragment_about" />
 
     <fragment
         android:id="@+id/adoptHomeFragment"
@@ -291,5 +291,86 @@
             android:name="appointmentId"
             app:argType="string" />
     </fragment>
+
+    <fragment
+        android:id="@+id/navigation_meal"
+        android:name="com.example.projectakhir.mealplannerfragment.fragments.MealPlannerFragment"
+        android:label="Meal Planner"
+        tools:layout="@layout/fragment_meal_planner">
+        <action
+            android:id="@+id/action_navigation_meal_to_foodRecommendationFragment"
+            app:destination="@id/foodRecommendationFragment"/>
+        <action
+            android:id="@+id/action_navigation_meal_to_yourCustomMenuFragment"
+            app:destination="@id/yourCustomMenuFragment"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/foodRecommendationFragment"
+        android:name="com.example.projectakhir.mealplannerfragment.fragments.FoodRecommendationFragment"
+        android:label="Food Recommendation"
+        tools:layout="@layout/fragment_food_recommendation">
+        <action
+            android:id="@+id/action_foodRecommendationFragment_to_navigation_meal"
+            app:destination="@id/navigation_meal"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/yourCustomMenuFragment"
+        android:name="com.example.projectakhir.mealplannerfragment.fragments.YourCustomMenuFragment"
+        android:label="Your Custom Menu"
+        tools:layout="@layout/fragment_your_custom_menu">
+        <action
+            android:id="@+id/action_yourCustomMenuFragment_to_foodSelectionFragment"
+            app:destination="@id/foodSelectionFragment"/>
+        <action
+            android:id="@+id/action_yourCustomMenuFragment_to_makeYourOwnMenuFragment"
+            app:destination="@id/makeYourOwnMenuFragment"/>
+        <action
+            android:id="@+id/action_yourCustomMenuFragment_to_cartFragment"
+            app:destination="@id/cartFragment"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/foodSelectionFragment"
+        android:name="com.example.projectakhir.mealplannerfragment.fragments.FoodSelectionFragment"
+        android:label="Food Selection"
+        tools:layout="@layout/fragment_food_selection">
+        <action
+            android:id="@+id/action_foodSelectionFragment_to_cartFragment"
+            app:destination="@id/cartFragment"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/cartFragment"
+        android:name="com.example.projectakhir.mealplannerfragment.fragments.CartFragment"
+        android:label="Cart"
+        tools:layout="@layout/fragment_cart">
+        <action
+            android:id="@+id/action_cartFragment_to_customizedMenuFragment"
+            app:destination="@id/customizedMenuFragment"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/customizedMenuFragment"
+        android:name="com.example.projectakhir.mealplannerfragment.fragments.CustomizedMenuFragment"
+        android:label="Customized Menu"
+        tools:layout="@layout/fragment_customized_menu">
+        <action
+            android:id="@+id/action_customizedMenuFragment_to_navigation_meal"
+            app:destination="@id/navigation_meal"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/makeYourOwnMenuFragment"
+        android:name="com.example.projectakhir.mealplannerfragment.fragments.MakeYourOwnMenuFragment"
+        android:label="Make Your Own Menu"
+        tools:layout="@layout/fragment_make_your_own_menu">
+        <action
+            android:id="@+id/action_makeYourOwnMenuFragment_to_yourCustomMenuFragment"
+            app:destination="@id/yourCustomMenuFragment"/>
+    </fragment>
+
+
 
 </navigation>

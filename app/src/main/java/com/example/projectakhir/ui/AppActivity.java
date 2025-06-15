@@ -58,6 +58,7 @@ public class AppActivity extends AppCompatActivity {
         topLevelDestinations.add(R.id.adoptHomeFragment);
         topLevelDestinations.add(R.id.heartFragment);
         // topLevelDestinations.add(R.id.profileFragment);
+        topLevelDestinations.add(R.id.navigation_meal);
 
         // Konfigurasi AppBar (PENTING untuk tombol kembali otomatis)
         appBarConfiguration = new AppBarConfiguration.Builder(topLevelDestinations).build();
@@ -83,6 +84,7 @@ public class AppActivity extends AppCompatActivity {
             topLevelDestinations.add(R.id.adoptHomeFragment);
             topLevelDestinations.add(R.id.heartFragment);
             // topLevelDestinations.add(R.id.profileFragment);
+            topLevelDestinations.add(R.id.navigation_meal);
 
             ActionBar actionBar = getSupportActionBar();
             if (actionBar == null) return;
