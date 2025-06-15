@@ -12,6 +12,7 @@ import com.example.projectakhir.data.repository.AdoptionRepository;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
@@ -36,13 +37,22 @@ public class AdoptHomeViewModel extends ViewModel {
     private final MutableLiveData<String> _userProfileImageUrl = new MutableLiveData<>();
     public LiveData<String> userProfileImageUrl = _userProfileImageUrl;
 
+    // LiveData for progress cards
+    private final MutableLiveData<DocumentSnapshot> _adoptionRequestStatus = new MutableLiveData<>();
+    public LiveData<DocumentSnapshot> adoptionRequestStatus = _adoptionRequestStatus;
+
+    private final MutableLiveData<DocumentSnapshot> _userReportStatus = new MutableLiveData<>();
+    public LiveData<DocumentSnapshot> userReportStatus = _userReportStatus;
+
+
     public AdoptHomeViewModel() {
         this.repository = new AdoptionRepository();
         this.db = FirebaseFirestore.getInstance();
         this.mAuth = FirebaseAuth.getInstance();
 
         fetchNewestHewan(5); // Fetch 5 newest pets
-        loadUserProfile(); // Ambil 3 hewan terbaru sebagai contoh
+        loadUserProfile();
+        fetchProgressStatus();
     }
 
 
@@ -89,6 +99,39 @@ public class AdoptHomeViewModel extends ViewModel {
             _userProfileImageUrl.setValue(null);
         }
     }
+
+    public void fetchProgressStatus() {
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser == null) {
+            return; // User not logged in, do nothing
+        }
+        String userId = currentUser.getUid();
+
+        repository.fetchLatestUserAdoptionRequest(userId, new AdoptionRepository.FirestoreCallback<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot result) {
+                _adoptionRequestStatus.setValue(result); // Will be null if no request exists
+            }
+            @Override
+            public void onError(Exception e) {
+                _adoptionRequestStatus.setValue(null); // Set to null on error
+                _error.setValue("Failed to get adoption status.");
+            }
+        });
+
+        repository.fetchLatestUserReport(userId, new AdoptionRepository.FirestoreCallback<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot result) {
+                _userReportStatus.setValue(result); // Will be null if no report exists
+            }
+            @Override
+            public void onError(Exception e) {
+                _userReportStatus.setValue(null); // Set to null on error
+                _error.setValue("Failed to get complaint status.");
+            }
+        });
+    }
+
 
     public void fetchNewestHewan(int limit) {
         _isLoading.setValue(true);

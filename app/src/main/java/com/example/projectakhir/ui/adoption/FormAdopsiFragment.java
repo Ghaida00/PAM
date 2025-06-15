@@ -6,40 +6,38 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
-// Import ProgressBar jika ingin menampilkan saat submit
-import android.widget.ProgressBar;
-
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider; // Import ViewModelProvider
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.projectakhir.R;
 import com.example.projectakhir.databinding.FragmentFormAdopsiBinding;
-// Hapus import AdoptionRepository jika menggunakan ViewModel
-// import com.example.projectakhir.data.repository.AdoptionRepository;
-// import com.google.firebase.auth.FirebaseAuth; // Pindahkan ke ViewModel jika ada
 
 public class FormAdopsiFragment extends Fragment {
 
     private FragmentFormAdopsiBinding binding;
-    private String namaHewanDiterima;
-    private FormAdopsiViewModel viewModel; // ViewModel
-    // private AdoptionRepository adoptionRepository; // Jika tidak pakai ViewModel
+    private FormAdopsiViewModel viewModel;
+
+    // Variabel untuk menampung data dari argumen
+    private String petId;
+    private String petNama;
+    private String petJenis;
+    private String petKota;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             try {
-                namaHewanDiterima = FormAdopsiFragmentArgs.fromBundle(getArguments()).getNamaHewan();
-            } catch (IllegalArgumentException e) {
-                namaHewanDiterima = getArguments().getString("namaHewan");
-                if (namaHewanDiterima == null) {
-                    handleArgumentError();
-                }
+                // Ambil semua argumen yang dikirim dari DetailHewanFragment
+                petId = FormAdopsiFragmentArgs.fromBundle(getArguments()).getPetId();
+                petNama = FormAdopsiFragmentArgs.fromBundle(getArguments()).getPetNama();
+                petJenis = FormAdopsiFragmentArgs.fromBundle(getArguments()).getPetJenis();
+                petKota = FormAdopsiFragmentArgs.fromBundle(getArguments()).getPetKota();
+            } catch (Exception e) {
+                handleArgumentError();
             }
         } else {
             handleArgumentError();
@@ -47,13 +45,12 @@ public class FormAdopsiFragment extends Fragment {
     }
 
     private void handleArgumentError() {
-        Toast.makeText(requireContext(), "Error: Argumen nama hewan tidak ditemukan!", Toast.LENGTH_SHORT).show();
-        if (getView() != null && NavHostFragment.findNavController(this).getCurrentDestination() != null &&
+        Toast.makeText(requireContext(), "Error: Data hewan tidak lengkap!", Toast.LENGTH_SHORT).show();
+        if (isAdded() && NavHostFragment.findNavController(this).getCurrentDestination() != null &&
                 NavHostFragment.findNavController(this).getCurrentDestination().getId() == R.id.formAdopsiFragment) {
             NavHostFragment.findNavController(this).popBackStack();
         }
     }
-
 
     @Nullable
     @Override
@@ -67,17 +64,19 @@ public class FormAdopsiFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         viewModel = new ViewModelProvider(this).get(FormAdopsiViewModel.class);
-        // adoptionRepository = new AdoptionRepository(); // Jika tidak pakai ViewModel
 
-        if (namaHewanDiterima != null) {
-            binding.inputNamaHewan.setText(namaHewanDiterima);
+        // Isi nama hewan dari argumen dan buat tidak bisa diedit
+        if (petNama != null) {
+            binding.inputNamaHewan.setText(petNama);
             binding.inputNamaHewan.setEnabled(false);
         }
 
-        binding.btnBack.setOnClickListener(v -> NavHostFragment.findNavController(this).popBackStack());
+        binding.btnBack.setOnClickListener(v -> {
+            if (isAdded()) NavHostFragment.findNavController(this).popBackStack();
+        });
 
         binding.btnKonfirmasi.setOnClickListener(v -> {
-            // Validasi input
+            // Validasi input dari pengguna
             String namaPemohon = binding.inputNamaPemohon.getText().toString().trim();
             String alamat = binding.inputAlamat.getText().toString().trim();
             String noHp = binding.inputNoHP.getText().toString().trim();
@@ -87,52 +86,22 @@ public class FormAdopsiFragment extends Fragment {
                     TextUtils.isEmpty(noHp) || TextUtils.isEmpty(alasan)) {
                 Toast.makeText(requireContext(), "Harap isi semua field", Toast.LENGTH_SHORT).show();
             } else {
-                // Nonaktifkan tombol dan tampilkan progress bar jika ada
-                binding.btnKonfirmasi.setEnabled(false);
-                // binding.progressBarFormAdopsi.setVisibility(View.VISIBLE); // Jika ada ProgressBar
-
-                viewModel.submitAdoptionForm(namaHewanDiterima, namaPemohon, alamat, noHp, alasan);
-
-                // ---- Jika tidak menggunakan ViewModel, panggil repository langsung: ----
-                // String userId = FirebaseAuth.getInstance().getCurrentUser() != null ?
-                //         FirebaseAuth.getInstance().getCurrentUser().getUid() : "anonymous";
-                // adoptionRepository.submitAdoptionForm(namaHewanDiterima, namaPemohon, alamat, noHp, alasan, userId,
-                //     new AdoptionRepository.FirestoreCallback<String>() {
-                //         @Override
-                //         public void onSuccess(String documentId) {
-                //             binding.btnKonfirmasi.setEnabled(true);
-                //             // binding.progressBarFormAdopsi.setVisibility(View.GONE);
-                //             Toast.makeText(requireContext(), "Pengajuan adopsi berhasil dikirim!", Toast.LENGTH_LONG).show();
-                //             NavHostFragment.findNavController(FormAdopsiFragment.this).popBackStack();
-                //         }
-                //         @Override
-                //         public void onError(Exception e) {
-                //             binding.btnKonfirmasi.setEnabled(true);
-                //             // binding.progressBarFormAdopsi.setVisibility(View.GONE);
-                //             Toast.makeText(requireContext(), "Gagal mengirim pengajuan: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                //         }
-                // });
+                // Kirim semua data (termasuk dari argumen) ke ViewModel
+                viewModel.submitAdoptionForm(petId, petNama, petJenis, petKota, namaPemohon, alamat, noHp, alasan);
             }
         });
 
         // Observe status dari ViewModel
         viewModel.isSubmitting.observe(getViewLifecycleOwner(), isSubmitting -> {
-            if (isSubmitting) {
-                binding.btnKonfirmasi.setEnabled(false);
-                // Tampilkan ProgressBar jika ada di layout XML
-                binding.progressBarFormAdopsi.setVisibility(View.VISIBLE);
-            } else {
-                binding.btnKonfirmasi.setEnabled(true);
-                // Sembunyikan ProgressBar
-                binding.progressBarFormAdopsi.setVisibility(View.GONE);
-            }
+            binding.btnKonfirmasi.setEnabled(!isSubmitting);
+            binding.progressBarFormAdopsi.setVisibility(isSubmitting ? View.VISIBLE : View.GONE);
         });
 
         viewModel.submissionStatus.observe(getViewLifecycleOwner(), status -> {
             if (status != null) {
                 if (status.equals("success")) {
                     Toast.makeText(requireContext(), "Pengajuan adopsi berhasil dikirim!", Toast.LENGTH_LONG).show();
-                    NavHostFragment.findNavController(FormAdopsiFragment.this).popBackStack();
+                    if (isAdded()) NavHostFragment.findNavController(FormAdopsiFragment.this).popBackStack();
                 } else if (!status.isEmpty()) { // Ada pesan error
                     Toast.makeText(requireContext(), status, Toast.LENGTH_SHORT).show();
                 }

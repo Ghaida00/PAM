@@ -16,15 +16,6 @@ public class ProgresAdopsiViewModel extends ViewModel {
     private final MutableLiveData<DocumentSnapshot> _adoptionRequest = new MutableLiveData<>();
     public LiveData<DocumentSnapshot> adoptionRequest = _adoptionRequest;
 
-    private final MutableLiveData<String> _hewanNama = new MutableLiveData<>();
-    public LiveData<String> hewanNama = _hewanNama;
-
-    private final MutableLiveData<String> _hewanJenis = new MutableLiveData<>();
-    public LiveData<String> hewanJenis = _hewanJenis;
-
-    private final MutableLiveData<String> _hewanKota = new MutableLiveData<>();
-    public LiveData<String> hewanKota = _hewanKota;
-
 
     private final MutableLiveData<String> _status = new MutableLiveData<>();
     public LiveData<String> status = _status;
@@ -57,45 +48,12 @@ public class ProgresAdopsiViewModel extends ViewModel {
             public void onSuccess(DocumentSnapshot result) {
                 _isLoading.setValue(false);
                 if (result != null && result.exists()) {
-                    _adoptionRequest.setValue(result);
+                    _adoptionRequest.setValue(result); // Data lengkap sudah ada di sini
                     currentDocumentId = result.getId();
                     _status.setValue(result.getString("status"));
-
-                    // Ambil namaHewan dari request
-                    String namaHewanFromRequest = result.getString("namaHewan");
-                    _hewanNama.setValue(namaHewanFromRequest);
-
-
-                    // Ambil detail hewan (jenis & kota) berdasarkan namaHewanFromRequest
-                    if (namaHewanFromRequest != null && !namaHewanFromRequest.isEmpty()) {
-                        repository.fetchHewanDetails(namaHewanFromRequest, new AdoptionRepository.FirestoreCallback<com.example.projectakhir.data.Hewan>() {
-                            @Override
-                            public void onSuccess(com.example.projectakhir.data.Hewan hewanDetail) {
-                                if (hewanDetail != null) {
-                                    _hewanJenis.setValue(hewanDetail.getJenis());
-                                    _hewanKota.setValue(hewanDetail.getKota());
-                                } else {
-                                    _hewanJenis.setValue("N/A");
-                                    _hewanKota.setValue("N/A");
-                                    Log.w(TAG, "Detail hewan tidak ditemukan untuk: " + namaHewanFromRequest);
-                                }
-                            }
-                            @Override
-                            public void onError(Exception e) {
-                                _hewanJenis.setValue("Error");
-                                _hewanKota.setValue("Error");
-                                Log.e(TAG, "Error fetching hewan detail: ", e);
-                            }
-                        });
-                    } else {
-                        _hewanJenis.setValue("N/A");
-                        _hewanKota.setValue("N/A");
-                    }
-
-
                 } else {
                     _error.setValue("Belum ada pengajuan adopsi.");
-                    _adoptionRequest.setValue(null); // Pastikan UI tahu tidak ada data
+                    _adoptionRequest.setValue(null);
                 }
             }
 
@@ -113,8 +71,9 @@ public class ProgresAdopsiViewModel extends ViewModel {
             _error.setValue("Tidak ada pengajuan untuk dibatalkan.");
             return;
         }
-        if ("Diterima".equalsIgnoreCase(_status.getValue()) || "Dibatalkan".equalsIgnoreCase(_status.getValue())) {
-            _error.setValue("Pengajuan yang sudah " + _status.getValue().toLowerCase() + " tidak dapat dibatalkan.");
+        String currentStatus = _status.getValue();
+        if ("Diterima".equalsIgnoreCase(currentStatus) || "Ditolak".equalsIgnoreCase(currentStatus) || "Dibatalkan".equalsIgnoreCase(currentStatus)) {
+            _error.setValue("Pengajuan yang sudah " + currentStatus.toLowerCase() + " tidak dapat dibatalkan.");
             return;
         }
 
@@ -124,8 +83,6 @@ public class ProgresAdopsiViewModel extends ViewModel {
             public void onSuccess(Void result) {
                 _isLoading.setValue(false);
                 _status.setValue("Dibatalkan");
-                // Opsional: refresh data _adoptionRequest jika perlu FieldValue.serverTimestamp()
-                // fetchLatestAdoptionProgress(); 
             }
 
             @Override

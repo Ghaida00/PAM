@@ -189,9 +189,15 @@ public class AdoptionRepository {
     }
 
 
-    public void submitAdoptionForm(String namaHewan, String namaPemohon, String alamat, String noHp, String alasan, String userId, FirestoreCallback<String> callback) {
+    public void submitAdoptionForm(String petId, String namaHewan, String jenisHewan, String kotaPengambilan,
+                                   String namaPemohon, String alamat, String noHp, String alasan,
+                                   String userId, FirestoreCallback<String> callback) {
         Map<String, Object> adoptionData = new HashMap<>();
+        adoptionData.put("petId", petId);
         adoptionData.put("namaHewan", namaHewan);
+        adoptionData.put("jenisHewan", jenisHewan);         // Simpan Jenis Hewan
+        adoptionData.put("kotaPengambilan", kotaPengambilan); // Simpan Kota
+
         adoptionData.put("namaPemohon", namaPemohon);
         adoptionData.put("alamat", alamat);
         adoptionData.put("noHp", noHp);
@@ -314,7 +320,10 @@ public class AdoptionRepository {
             return;
         }
         db.collection("pets").document(petId)
-                .update("adoptionStatus", newStatus)
+                .update(
+                        "adoptionStatus", newStatus,
+                        "timestamp", FieldValue.serverTimestamp() // Tambahkan baris ini untuk update timestamp
+                )
                 .addOnSuccessListener(aVoid -> callback.onSuccess(null))
                 .addOnFailureListener(e -> {
                     Log.e(TAG, "Error updating pet adoption status: ", e);
