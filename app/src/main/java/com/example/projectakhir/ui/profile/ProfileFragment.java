@@ -154,20 +154,24 @@ public class ProfileFragment extends Fragment {
 
     private void composeEmail() {
         // Alamat email tujuan dan subjek
-        String[] recipients = {"pawpal@pawpal.com"};
+        String recipient = "pawpal@pawpal.com";
         String subject = "Bantuan Aplikasi PawPal";
 
-        // Membuat intent untuk membuka aplikasi email
-        Intent intent = new Intent(Intent.ACTION_SENDTO);
-        intent.setData(Uri.parse("mailto:")); // Hanya aplikasi email yang akan merespon
-        intent.putExtra(Intent.EXTRA_EMAIL, recipients);
-        intent.putExtra(Intent.EXTRA_SUBJECT, subject);
+        // 1. Buat Intent dasar untuk mengirim email
+        // Perhatikan: alamat email kini menjadi bagian dari Uri untuk kompatibilitas yang lebih baik
+        Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:" + recipient));
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
 
-        // Memeriksa apakah ada aplikasi email yang terpasang di perangkat
-        if (intent.resolveActivity(requireActivity().getPackageManager()) != null) {
-            startActivity(intent);
+        // 2. Buat Intent Chooser yang membungkus intent email kita
+        // Argumen kedua adalah judul yang akan muncul di atas dialog pilihan
+        Intent chooser = Intent.createChooser(emailIntent, "Kirim email via...");
+
+        // 3. Lakukan pengecekan keamanan sekali lagi sebelum menampilkan chooser
+        if (emailIntent.resolveActivity(requireActivity().getPackageManager()) != null) {
+            // Jalankan chooser, bukan emailIntent asli
+            startActivity(chooser);
         } else {
-            // Memberi tahu pengguna jika tidak ada aplikasi email
+            // Tampilkan pesan jika benar-benar tidak ada aplikasi email sama sekali
             Toast.makeText(getContext(), "Tidak ada aplikasi email yang terpasang.", Toast.LENGTH_SHORT).show();
         }
     }
