@@ -96,19 +96,19 @@
             android:id="@+id/cardPutForAdoption"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="16dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:foreground="?android:attr/selectableItemBackground">
+            app:cardCornerRadius="16dp">
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
+
                 <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="180dp"
-                    android:src="@drawable/bambang"
-                    android:scaleType="centerCrop"/>
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/bambang" />
+
                 <Button
                     android:id="@+id/btnPut"
                     android:layout_width="match_parent"

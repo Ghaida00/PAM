@@ -71,7 +71,7 @@ public class YourPetListFragment extends Fragment {
                     .navigate(R.id.action_yourPetListFragment_to_addPetFragment);
         });
 
-        binding.cardPutForAdoption.setOnClickListener(v -> {
+        binding.btnPut.setOnClickListener(v -> {
             // Navigasi ke fragment "Put for Adoption"
             NavHostFragment.findNavController(this)
                     .navigate(R.id.action_yourPetListFragment_to_putForAdoptionFragment);
