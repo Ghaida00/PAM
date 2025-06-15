@@ -68,12 +68,22 @@ public class AdminFragment extends Fragment {
             AdoptionRequestsAdapter adapter = new AdoptionRequestsAdapter(requests, new AdoptionRequestsAdapter.OnItemInteractionListener() {
                 @Override
                 public void onApprove(AdoptionRequest request) {
-                    viewModel.updateAdoptionRequestStatus(request.getId(), "Diterima");
+                    // Pastikan petId tidak null sebelum mengirim
+                    if (request.getPetId() != null) {
+                        viewModel.updateAdoptionRequestStatus(request.getId(), request.getPetId(), "Diterima");
+                    } else {
+                        Toast.makeText(getContext(), "Error: Pet ID not found in this request.", Toast.LENGTH_SHORT).show();
+                    }
                 }
 
                 @Override
                 public void onReject(AdoptionRequest request) {
-                    viewModel.updateAdoptionRequestStatus(request.getId(), "Ditolak");
+                    // Pastikan petId tidak null sebelum mengirim
+                    if (request.getPetId() != null) {
+                        viewModel.updateAdoptionRequestStatus(request.getId(), request.getPetId(), "Ditolak");
+                    } else {
+                        Toast.makeText(getContext(), "Error: Pet ID not found in this request.", Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
             binding.recyclerAdoptionRequests.setAdapter(adapter);

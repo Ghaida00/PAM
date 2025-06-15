@@ -6,6 +6,7 @@ import java.util.Date;
 
 public class AdoptionRequest {
     private String id; // ID dokumen Firestore
+    private String petId;
     private String namaHewan;
     private String jenisHewan;
     private String kotaPengambilan;
@@ -54,6 +55,14 @@ public class AdoptionRequest {
 
     public String getUserId() {
         return userId;
+    }
+
+    public String getPetId() {
+        return petId;
+    }
+
+    public void setPetId(String petId) {
+        this.petId = petId;
     }
 
     public Date getTimestamp() {

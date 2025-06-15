@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.projectakhir.data.AdoptionRequest;
+import com.example.projectakhir.data.repository.AdoptionRepository;
 import com.example.projectakhir.data.repository.UserReport;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -15,6 +16,7 @@ import java.util.List;
 
 public class AdminViewModel extends ViewModel {
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private final AdoptionRepository adoptionRepository = new AdoptionRepository();
 
     private final MutableLiveData<List<AdoptionRequest>> _adoptionRequests = new MutableLiveData<>();
     public LiveData<List<AdoptionRequest>> adoptionRequests = _adoptionRequests;
@@ -78,16 +80,43 @@ public class AdminViewModel extends ViewModel {
                 });
     }
 
-    public void updateAdoptionRequestStatus(String docId, String newStatus) {
+    public void updateAdoptionRequestStatus(String docId, String petId, String newStatus) {
         if (docId == null || newStatus == null) {
             _error.setValue("Invalid ID or status.");
             return;
         }
+
+        // Tentukan status hewan baru berdasarkan keputusan admin
+        final String newPetStatus;
+        if ("Diterima".equals(newStatus)) {
+            newPetStatus = "adopted";
+        } else if ("Ditolak".equals(newStatus)) {
+            newPetStatus = "available"; // Kembalikan menjadi available jika ditolak
+        } else {
+            // Jika status lain, jangan ubah status hewan
+            newPetStatus = null;
+        }
+
         db.collection("adoption_requests").document(docId)
                 .update("status", newStatus)
                 .addOnSuccessListener(aVoid -> {
-                    _updateStatus.setValue("Adoption status updated successfully!");
-                    loadAdoptionRequests(); // Refresh list
+                    // 2. Jika status request berhasil diubah DAN newPetStatus valid, ubah status hewannya
+                    if (newPetStatus != null) {
+                        adoptionRepository.updatePetAdoptionStatus(petId, newPetStatus, new AdoptionRepository.FirestoreCallback<Void>() {
+                            @Override
+                            public void onSuccess(Void result) {
+                                _updateStatus.setValue("Adoption status and pet status updated successfully!");
+                                loadAdoptionRequests(); // Muat ulang daftar setelah semua berhasil
+                            }
+                            @Override
+                            public void onError(Exception e) {
+                                _error.setValue("Failed to update pet status: " + e.getMessage());
+                            }
+                        });
+                    } else {
+                        _updateStatus.setValue("Adoption status updated successfully!");
+                        loadAdoptionRequests(); // Muat ulang daftar
+                    }
                 })
                 .addOnFailureListener(e -> _error.setValue("Failed to update adoption status: " + e.getMessage()));
     }

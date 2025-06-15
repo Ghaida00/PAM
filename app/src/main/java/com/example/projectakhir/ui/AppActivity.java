@@ -132,6 +132,7 @@ public class AppActivity extends AppCompatActivity {
                 if (isTopLevel) {
                     // Jika di halaman utama, tampilkan layout profil kustom
                     setupCustomActionBar();
+                    userViewModel.loadUserProfile();
                 } else {
                     // Jika di halaman lain, kembalikan ke tampilan default (hanya judul)
                     actionBar.setDisplayShowCustomEnabled(false);

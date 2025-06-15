@@ -210,7 +210,25 @@ public class AdoptionRepository {
                 .add(adoptionData)
                 .addOnSuccessListener(documentReference -> {
                     Log.d(TAG, "Adoption form submitted with ID: " + documentReference.getId());
-                    callback.onSuccess(documentReference.getId());
+                    // --- TAMBAHKAN LOGIKA DI SINI ---
+                    // Setelah request berhasil dibuat, ubah status hewan menjadi "inProgress"
+                    updatePetAdoptionStatus(petId, "inProgress", new FirestoreCallback<Void>() {
+                        @Override
+                        public void onSuccess(Void result) {
+                            Log.d(TAG, "Pet status updated to inProgress for petId: " + petId);
+                            // Tetap panggil callback utama untuk memberi tahu UI bahwa form berhasil dikirim
+                            callback.onSuccess(documentReference.getId());
+                        }
+
+                        @Override
+                        public void onError(Exception e) {
+                            Log.e(TAG, "Failed to update pet status for petId: " + petId, e);
+                            // Tetap panggil callback utama, karena form adopsi sudah masuk.
+                            // Penanganan error bisa lebih kompleks jika diperlukan.
+                            callback.onSuccess(documentReference.getId());
+                        }
+                    });
+                    // --- AKHIR DARI LOGIKA TAMBAHAN ---
                 })
                 .addOnFailureListener(e -> {
                     Log.e(TAG, "Error submitting adoption form: ", e);
