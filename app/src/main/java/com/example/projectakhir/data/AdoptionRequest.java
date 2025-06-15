@@ -14,6 +14,11 @@ public class AdoptionRequest {
     @ServerTimestamp
     public Date timestamp;
 
+    // TAMBAHKAN KONSTRUKTOR KOSONG INI
+    public AdoptionRequest() {
+        // Konstruktor kosong diperlukan oleh Firestore
+    }
+
     public AdoptionRequest(String id, String namaHewan, String jenisHewan, String kotaPengambilan, String status, String userId) {
         this.id = id;
         this.namaHewan = namaHewan;
@@ -25,6 +30,10 @@ public class AdoptionRequest {
 
     public String getId() {
         return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getNamaHewan() {

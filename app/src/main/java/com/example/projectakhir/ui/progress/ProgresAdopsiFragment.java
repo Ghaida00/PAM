@@ -1,4 +1,3 @@
-// In main/java/com/example/projectakhir/ui/progress/ProgresAdopsiFragment.java
 package com.example.projectakhir.ui.progress;
 
 import android.content.DialogInterface;
@@ -12,23 +11,22 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider; // Import ViewModelProvider
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 import com.example.projectakhir.R;
 import com.example.projectakhir.databinding.FragmentProgresAdopsiBinding;
-import com.google.firebase.firestore.DocumentSnapshot; // Import DocumentSnapshot
+import com.google.firebase.firestore.DocumentSnapshot;
 
 public class ProgresAdopsiFragment extends Fragment {
 
     private FragmentProgresAdopsiBinding binding;
-    private ProgresAdopsiViewModel viewModel; // ViewModel
-    // Hapus: private String currentStatusAdopsi = "";
+    private ProgresAdopsiViewModel viewModel;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = FragmentProgresAdopsiBinding.inflate(inflater, container, false);
-        viewModel = new ViewModelProvider(this).get(ProgresAdopsiViewModel.class); // Inisialisasi ViewModel
+        viewModel = new ViewModelProvider(this).get(ProgresAdopsiViewModel.class);
         return binding.getRoot();
     }
 
@@ -41,9 +39,11 @@ public class ProgresAdopsiFragment extends Fragment {
         observeViewModel();
 
         binding.btnBatalkanAdopsi.setOnClickListener(v -> {
+            // Mengambil status langsung dari LiveData di ViewModel
             String currentStatus = viewModel.status.getValue();
             if (currentStatus != null) {
-                if ("Diterima".equalsIgnoreCase(currentStatus) || "Dibatalkan".equalsIgnoreCase(currentStatus)) {
+                // Logika pembatalan tetap sama, karena status sudah di-handle di ViewModel
+                if ("Diterima".equalsIgnoreCase(currentStatus) || "Ditolak".equalsIgnoreCase(currentStatus) || "Dibatalkan".equalsIgnoreCase(currentStatus)) {
                     showInfoDialog("Pengajuan yang sudah " + currentStatus.toLowerCase() + " tidak dapat dibatalkan lagi.");
                 } else {
                     showConfirmationDialog(
@@ -60,15 +60,14 @@ public class ProgresAdopsiFragment extends Fragment {
 
     private void observeViewModel() {
         viewModel.isLoading.observe(getViewLifecycleOwner(), isLoading -> {
-            // Tampilkan/sembunyikan ProgressBar jika ada di layout
+            binding.btnBatalkanAdopsi.setEnabled(!isLoading);
+            // Anda bisa menambahkan ProgressBar di layout dan mengaturnya di sini
             // binding.progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
-            binding.btnBatalkanAdopsi.setEnabled(!isLoading); // Nonaktifkan tombol saat loading
         });
 
         viewModel.error.observe(getViewLifecycleOwner(), error -> {
             if (error != null && !error.isEmpty()) {
                 Toast.makeText(requireContext(), error, Toast.LENGTH_LONG).show();
-                // Kosongkan field jika ada error signifikan (misal, tidak ada data)
                 if (error.equals("Belum ada pengajuan adopsi.")) {
                     binding.txtNamaHewanProgres.setText("-");
                     binding.txtJenisHewanProgres.setText("-");
@@ -77,52 +76,27 @@ public class ProgresAdopsiFragment extends Fragment {
                     binding.txtStatusProgresAdopsi.setTextColor(ContextCompat.getColor(requireContext(), R.color.default_text_color));
                     binding.btnBatalkanAdopsi.setEnabled(false);
                 }
-                viewModel.clearError(); // Bersihkan error setelah ditampilkan
+                viewModel.clearError();
             }
         });
 
-        // Observe nama hewan dari ViewModel
-        viewModel.hewanNama.observe(getViewLifecycleOwner(), nama -> {
-            binding.txtNamaHewanProgres.setText(nama != null ? nama : "-");
-        });
-
-        // Observe jenis hewan dari ViewModel
-        viewModel.hewanJenis.observe(getViewLifecycleOwner(), jenis -> {
-            binding.txtJenisHewanProgres.setText(jenis != null ? jenis : "-");
-        });
-
-        // Observe kota hewan dari ViewModel
-        viewModel.hewanKota.observe(getViewLifecycleOwner(), kota -> {
-            binding.txtKotaProgres.setText(kota != null ? kota : "-");
-        });
-
-
+        // HANYA PERLU MENGAMATI SATU LIVEDATA
         viewModel.adoptionRequest.observe(getViewLifecycleOwner(), snapshot -> {
             if (snapshot != null && snapshot.exists()) {
-                // Data sudah di-set oleh observer status, nama, jenis, kota
-            } else if (viewModel.error.getValue() == null || !viewModel.error.getValue().equals("Belum ada pengajuan adopsi.")){
-                // Handle jika snapshot null tapi bukan karena "Belum ada pengajuan"
-                // Ini bisa terjadi jika fetch awal gagal karena alasan lain
-                // binding.txtNamaHewanProgres.setText("-");
-                // binding.txtJenisHewanProgres.setText("-");
-                // binding.txtKotaProgres.setText("-");
-                // binding.txtStatusProgresAdopsi.setText("Gagal memuat");
-                // binding.btnBatalkanAdopsi.setEnabled(false);
-            }
-        });
-
-        viewModel.status.observe(getViewLifecycleOwner(), status -> {
-            if (status != null) {
-                updateStatusUI(status);
-            } else if (viewModel.error.getValue() == null || !viewModel.error.getValue().equals("Belum ada pengajuan adopsi.")){
-                // Jika status null tapi tidak ada error spesifik "belum ada pengajuan"
-                // Bisa jadi ini adalah state awal sebelum data di-load atau ada error lain
-                // binding.txtStatusProgresAdopsi.setText("Memuat...");
+                // Ambil semua data langsung dari satu snapshot
+                binding.txtNamaHewanProgres.setText(snapshot.getString("namaHewan"));
+                binding.txtJenisHewanProgres.setText(snapshot.getString("jenisHewan"));
+                binding.txtKotaProgres.setText(snapshot.getString("kotaPengambilan"));
+                updateStatusUI(snapshot.getString("status"));
+            } else if (viewModel.error.getValue() == null) {
+                // Handle jika snapshot null dan tidak ada pesan error spesifik
+                binding.txtStatusProgresAdopsi.setText("Memuat...");
             }
         });
     }
 
     private void updateStatusUI(String status) {
+        if (status == null) return;
         binding.txtStatusProgresAdopsi.setText(status);
         int statusColor;
         boolean canCancel = true;
@@ -145,7 +119,7 @@ public class ProgresAdopsiFragment extends Fragment {
                 canCancel = false;
                 buttonText = "Telah Dibatalkan";
                 break;
-            default: // "Diajukan" atau status lain
+            default: // "Diajukan"
                 statusColor = ContextCompat.getColor(requireContext(), R.color.default_text_color);
                 break;
         }
@@ -156,6 +130,7 @@ public class ProgresAdopsiFragment extends Fragment {
     }
 
     private void showInfoDialog(String message) {
+        if (!isAdded()) return;
         new AlertDialog.Builder(requireContext())
                 .setTitle("Informasi")
                 .setMessage(message)
@@ -165,6 +140,7 @@ public class ProgresAdopsiFragment extends Fragment {
     }
 
     private void showConfirmationDialog(String title, String message, DialogInterface.OnClickListener positiveAction) {
+        if (!isAdded()) return;
         new AlertDialog.Builder(requireContext())
                 .setTitle(title)
                 .setMessage(message)

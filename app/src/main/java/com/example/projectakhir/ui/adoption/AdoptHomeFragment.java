@@ -50,11 +50,16 @@ public class AdoptHomeFragment extends Fragment {
         // Inisialisasi ViewModel
         adoptHomeViewModel = new ViewModelProvider(this).get(AdoptHomeViewModel.class);
 
-        // Setup Observers
-        // observeUserProfile(); // Observe user data
         observeNewestHewan(); // Observe newest animal data
+        observeProgressStatus(); // Observe progress card data
 
-        // Setup Listener Navigasi (tetap sama)
+        // Setup Listener Navigasi
+        setupNavigationListeners();
+
+        setupGridKota(); // Grid kota bisa tetap statis atau dinamis dari Firestore nanti
+    }
+
+    private void setupNavigationListeners() {
         binding.cardFormPengaduan.setOnClickListener(v -> {
             try {
                 NavHostFragment.findNavController(this)
@@ -64,54 +69,49 @@ public class AdoptHomeFragment extends Fragment {
             }
         });
 
-
-        // --- Implementasi Navigasi Header Profile Picture ---
-        /*binding.ivHeaderUserProfile.setOnClickListener(v -> {
+        binding.cardProgresAdopsi.setOnClickListener(v -> {
             try {
-                NavHostFragment.findNavController(this).navigate(R.id.action_adoptHomeFragment_to_profileFragment);
-            } catch (IllegalArgumentException e) {
-                Toast.makeText(requireContext(), "Navigasi ke Profil belum siap.", Toast.LENGTH_SHORT).show();
-            }
-        });*/
-        // --- Akhir Implementasi Navigasi Header Profile Picture ---
-
-        binding.cardProgres.setOnClickListener(v -> {
-            try {
+                // Navigate directly to the adoption progress screen
                 NavHostFragment.findNavController(this)
                         .navigate(R.id.action_adoptHomeFragment_to_progresMainFragment);
             } catch (IllegalArgumentException e) {
-                Toast.makeText(requireContext(), "Navigasi ke Progres belum siap.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Navigasi ke Progres Adopsi belum siap.", Toast.LENGTH_SHORT).show();
             }
         });
 
-        setupGridKota(); // Grid kota bisa tetap statis atau dinamis dari Firestore nanti
+        binding.cardProgresPengaduan.setOnClickListener(v -> {
+            try {
+                // Navigate directly to the complaint progress screen
+                NavHostFragment.findNavController(this)
+                        .navigate(R.id.action_adoptHomeFragment_to_progresMainFragment);
+            } catch (IllegalArgumentException e) {
+                Toast.makeText(requireContext(), "Navigasi ke Progres Pengaduan belum siap.", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
-    /*private void observeUserProfile() {
-        adoptHomeViewModel.userName.observe(getViewLifecycleOwner(), name -> {
-            if (name != null && !name.isEmpty()) {
-                binding.tvHeaderUsername.setText(name);
+    private void observeProgressStatus() {
+        adoptHomeViewModel.adoptionRequestStatus.observe(getViewLifecycleOwner(), doc -> {
+            if (doc != null && doc.exists()) {
+                binding.cardProgresAdopsi.setVisibility(View.VISIBLE);
+                ((TextView) binding.cardProgresAdopsi.findViewById(R.id.tv_adoption_pet_name)).setText(doc.getString("namaHewan"));
+                ((TextView) binding.cardProgresAdopsi.findViewById(R.id.tv_adoption_status)).setText(doc.getString("status"));
             } else {
-                binding.tvHeaderUsername.setText("Guest"); // Fallback
+                // Hide the card if no adoption request is found
+                binding.cardProgresAdopsi.setVisibility(View.GONE);
             }
         });
 
-        adoptHomeViewModel.userProfileImageUrl.observe(getViewLifecycleOwner(), imageUrl -> {
-            if (getContext() != null) {
-                if (imageUrl != null && !imageUrl.isEmpty()) {
-                    Glide.with(requireContext())
-                            .load(imageUrl)
-                            .placeholder(R.drawable.ic_profile) // Placeholder image
-                            .error(R.drawable.profile)          // Error fallback image
-                            .circleCrop()                       // Make the image circular
-                            .into(binding.ivHeaderUserProfile);
-                } else {
-                    // Set a default image if URL is null or empty
-                    binding.ivHeaderUserProfile.setImageResource(R.drawable.profile);
-                }
+        adoptHomeViewModel.userReportStatus.observe(getViewLifecycleOwner(), doc -> {
+            if (doc != null && doc.exists()) {
+                binding.cardProgresPengaduan.setVisibility(View.VISIBLE);
+                ((TextView) binding.cardProgresPengaduan.findViewById(R.id.tv_complaint_status)).setText(doc.getString("status"));
+            } else {
+                binding.cardProgresPengaduan.setVisibility(View.GONE);
             }
         });
-    }*/
+    }
+
 
     private void observeNewestHewan() {
         // Observe LiveData dari ViewModel untuk hewan terbaru
@@ -266,6 +266,14 @@ public class AdoptHomeFragment extends Fragment {
         });
         binding.gridKota.addView(card);
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Refresh the status every time the fragment is resumed
+        adoptHomeViewModel.fetchProgressStatus();
+    }
+
 
     @Override
     public void onDestroyView() {

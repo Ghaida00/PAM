@@ -1,4 +1,10 @@
 <resources>
     <string name="app_name">Project Akhir</string>
     <string name="detail_hewan_format">%1$s  •  %2$s  •  %3$s</string>
+
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="category_prompt">Choose the category</string>
+    <string name="meal_planner_title">Pet Meal Planner</string>
+    <string name="meal_planner_description">Pet Meal Planner merupakan fitur aplikasi Paw Pal yang dapat membantu pengguna memantau makanan hewan peliharaannya melalui maintenance pola makan</string>
 </resources>

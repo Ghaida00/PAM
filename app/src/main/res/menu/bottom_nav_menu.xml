@@ -7,6 +7,14 @@
         android:id="@+id/adoptHomeFragment" android:icon="@drawable/ic_paw"
         android:title="Adopt" />
     <item
+        android:id="@+id/navigation_katalog"
+        android:icon="@drawable/ic_katalog"
+        android:title="Katalog"/>
+    <item
         android:id="@+id/heartFragment" android:icon="@drawable/ic_heart"
         android:title="Grooming" />
+    <item
+        android:id="@+id/navigation_meal"
+        android:icon="@drawable/ic_meal"
+        android:title="Meal Planner"/>
 </menu>

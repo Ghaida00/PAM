@@ -281,6 +281,7 @@ public class RegisterFragment extends Fragment {
                             userData.put("username", username); // Simpan username unik yang digenerasi
                             userData.put("profileImageUrl", profileImageUrl); // Simpan URL gambar profil yang digenerasi
                             userData.put("createdAt", com.google.firebase.firestore.FieldValue.serverTimestamp());
+                            userData.put("role", "user");
 
                             // Simpan data pengguna ke Firestore
                             db.collection("users").document(firebaseUser.getUid())
