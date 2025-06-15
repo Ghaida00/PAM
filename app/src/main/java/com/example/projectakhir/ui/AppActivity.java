@@ -14,7 +14,10 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import com.bumptech.glide.Glide;
 import com.example.projectakhir.R;
+import com.example.projectakhir.data.FirestoreDataSeeder;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.util.HashSet;
 import java.util.Set;
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -63,6 +66,10 @@ public class AppActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         // Hubungkan NavController dengan BottomNavigationView
         NavigationUI.setupWithNavController(bottomNavView, navController);
+
+        // Panggil seeder untuk menambahkan data (HANYA UNTUK PERCOBAAN)
+        // HAPUS ATAU BERI KOMENTAR BARIS INI SETELAH DATA BERHASIL DITAMBAHKAN
+        // FirestoreDataSeeder.addSampleServices(FirebaseFirestore.getInstance());
 
         // Otak dari logika tampilan App Bar
         setupAppBarAndNavVisibility();
