@@ -93,6 +93,13 @@ public class AppActivity extends AppCompatActivity {
             boolean isTopLevel = topLevelDestinations.contains(destination.getId());
             boolean isAuthOrProfileScreen = destination.getId() == R.id.loginFragment ||
                     destination.getId() == R.id.registerFragment ||
+                    destination.getId() == R.id.personalDetailFragment ||
+                    destination.getId() == R.id.yourPetListFragment ||
+                    destination.getId() == R.id.aboutAppFragment ||
+                    destination.getId() == R.id.addPetFragment ||
+                    destination.getId() == R.id.deliveryAddressFragment ||
+                    destination.getId() == R.id.paymentMethodFragment ||
+                    destination.getId() == R.id.putForAdoptionFragment ||
                     destination.getId() == R.id.profileFragment;
 
             boolean hideToolbarOnly = destination.getId() == R.id.groomingFragment ||
