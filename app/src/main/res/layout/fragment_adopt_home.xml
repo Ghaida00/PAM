@@ -160,9 +160,10 @@
                     android:layout_marginEnd="8dp"
                     android:clickable="true"
                     android:focusable="true"
+                    android:visibility="gone"
+                    tools:visibility="visible"
                     android:foreground="?android:attr/selectableItemBackground">
 
-                    <!-- Ikon -->
                     <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
@@ -170,31 +171,30 @@
                         android:layout_marginEnd="12dp"
                         app:tint="#000000" />
 
-                    <!-- Wadah untuk Teks -->
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:orientation="vertical">
 
                         <TextView
+                            android:id="@+id/tv_adoption_pet_name"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Claire"
+                            tools:text="Claire"
                             android:textSize="14sp"
                             android:textStyle="bold"
                             android:textColor="#000000"/>
 
                         <TextView
+                            android:id="@+id/tv_adoption_status"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Diterima"
+                            tools:text="Diterima"
                             android:textSize="12sp"
                             android:textColor="#555555"/>
                     </LinearLayout>
-
                 </LinearLayout>
 
-                <!-- Card Progres Pengaduan -->
                 <LinearLayout
                     android:id="@+id/cardProgresPengaduan"
                     android:layout_width="0dp"
@@ -207,9 +207,10 @@
                     android:layout_marginStart="8dp"
                     android:clickable="true"
                     android:focusable="true"
+                    android:visibility="gone"
+                    tools:visibility="visible"
                     android:foreground="?android:attr/selectableItemBackground">
 
-                    <!-- Ikon Tanda Seru -->
                     <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
@@ -217,7 +218,6 @@
                         android:layout_marginEnd="12dp"
                         app:tint="#000000" />
 
-                    <!-- Wadah untuk Teks -->
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -232,9 +232,10 @@
                             android:textColor="#000000"/>
 
                         <TextView
+                            android:id="@+id/tv_complaint_status"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Diproses"
+                            tools:text="Diproses"
                             android:textSize="12sp"
                             android:textColor="#555555"/>
                     </LinearLayout>

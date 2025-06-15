@@ -87,7 +87,7 @@ public class DetailHewanFragment extends Fragment {
             } else {
                 // Jika hewan null setelah loading selesai dan tidak ada error spesifik,
                 // mungkin karena tidak ditemukan. Error spesifik ditangani di observer error.
-                if (!viewModel.isLoading.getValue()){ // Hanya jika tidak sedang loading
+                if (viewModel.isLoading.getValue() != null && !viewModel.isLoading.getValue()){ // Hanya jika tidak sedang loading
                     binding.txtErrorDetailHewan.setText("Data hewan tidak ditemukan.");
                     binding.txtErrorDetailHewan.setVisibility(View.VISIBLE);
                     binding.contentLayoutDetailHewan.setVisibility(View.GONE);
@@ -125,27 +125,32 @@ public class DetailHewanFragment extends Fragment {
 
         // Setup Tombol Adopt
         binding.btnAdopt.setOnClickListener(v -> {
-            if (currentHewanData != null && currentHewanData.getNama() != null) {
+            if (currentHewanData != null && currentHewanData.getId() != null) {
                 try {
+                    // ▼▼▼ PERUBAHAN DI SINI ▼▼▼
+                    // Mengirim semua data yang diperlukan ke FormAdopsiFragment
                     DetailHewanFragmentDirections.ActionDetailHewanFragmentToFormAdopsiFragment action =
-                            DetailHewanFragmentDirections.actionDetailHewanFragmentToFormAdopsiFragment(currentHewanData.getNama());
+                            DetailHewanFragmentDirections.actionDetailHewanFragmentToFormAdopsiFragment(
+                                    currentHewanData.getId(),
+                                    currentHewanData.getNama(),
+                                    currentHewanData.getJenis(),
+                                    currentHewanData.getKota()
+                            );
                     NavHostFragment.findNavController(DetailHewanFragment.this).navigate(action);
+                    // ▲▲▲ AKHIR DARI PERUBAHAN ▲▲▲
                 } catch (IllegalArgumentException e) {
                     Toast.makeText(requireContext(), "Navigasi ke Form Adopsi belum siap.", Toast.LENGTH_SHORT).show();
                 }
             } else {
-                Toast.makeText(requireContext(), "Data hewan belum dimuat.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Data hewan belum dimuat atau ID tidak valid.", Toast.LENGTH_SHORT).show();
             }
         });
-
-        // Tombol back (jika tidak menggunakan NavController otomatis dari AppActivity Toolbar)
-        // ImageView btnBack = view.findViewById(R.id.btnBackDetailHewan);
-        // if (btnBack != null) {
-        //     btnBack.setOnClickListener(v -> NavHostFragment.findNavController(this).popBackStack());
-        // }
     }
 
     private void displayHewanDetails(Hewan hewan) {
+        // Simpan data hewan untuk digunakan nanti
+        currentHewanData = hewan;
+
         // Memuat gambar detail menggunakan Glide
         if (hewan.getDetailImageUrl() != null && !hewan.getDetailImageUrl().isEmpty()) {
             Glide.with(requireContext())
@@ -178,17 +183,13 @@ public class DetailHewanFragment extends Fragment {
     }
 
     // Fungsi untuk setup layout traits (kode tetap sama)
-    private void setupTraitsLayout(ArrayList<String> traits) { //
+    private void setupTraitsLayout(ArrayList<String> traits) {
         if (traits == null || traits.isEmpty()) {
             binding.traitsLayout.setVisibility(View.GONE);
             return;
         }
         binding.traitsLayout.setVisibility(View.VISIBLE);
         binding.traitsLayout.removeAllViews();
-
-        // ... (Sisa kode setupTraitsLayout sama seperti sebelumnya, pastikan menggunakan requireContext()) ...
-        // Pastikan Anda memiliki R.dimen.trait_horizontal_margin dan R.dimen.trait_icon_size
-        // Atau ganti dengan nilai dp yang di-hardcode dan dikonversi ke pixel jika perlu.
 
         if (traits.size() == 3) {
             binding.traitsLayout.setOrientation(LinearLayout.VERTICAL);
@@ -206,7 +207,7 @@ public class DetailHewanFragment extends Fragment {
                     LinearLayout.LayoutParams.WRAP_CONTENT
             );
             try {
-                leftParams.setMarginEnd(getResources().getDimensionPixelSize(R.dimen.trait_horizontal_margin)); //
+                leftParams.setMarginEnd(getResources().getDimensionPixelSize(R.dimen.trait_horizontal_margin));
             } catch (Exception e) { leftParams.setMarginEnd(16); /* fallback */ }
             traitLeft.setLayoutParams(leftParams);
 
@@ -217,7 +218,7 @@ public class DetailHewanFragment extends Fragment {
                     LinearLayout.LayoutParams.WRAP_CONTENT
             );
             try {
-                rightParams.setMarginStart(getResources().getDimensionPixelSize(R.dimen.trait_horizontal_margin)); //
+                rightParams.setMarginStart(getResources().getDimensionPixelSize(R.dimen.trait_horizontal_margin));
             } catch (Exception e) { rightParams.setMarginStart(16); /* fallback */ }
             traitRight.setLayoutParams(rightParams);
 
@@ -247,9 +248,7 @@ public class DetailHewanFragment extends Fragment {
     }
 
 
-    private LinearLayout createTraitView(String trait) { //
-        // ... (Kode createTraitView sama seperti sebelumnya, pastikan menggunakan requireContext()) ...
-        // Pastikan R.dimen.trait_icon_size ada atau ganti dengan nilai hardcode
+    private LinearLayout createTraitView(String trait) {
         LinearLayout layout = new LinearLayout(requireContext());
         layout.setOrientation(LinearLayout.VERTICAL);
         layout.setGravity(Gravity.CENTER);
@@ -264,7 +263,7 @@ public class DetailHewanFragment extends Fragment {
         icon.setImageResource(getIconForTrait(trait));
         int iconSize = 80; // fallback
         try {
-            iconSize = getResources().getDimensionPixelSize(R.dimen.trait_icon_size); //
+            iconSize = getResources().getDimensionPixelSize(R.dimen.trait_icon_size);
         } catch (Exception e) { /* biarkan default */ }
         icon.setLayoutParams(new LinearLayout.LayoutParams(iconSize, iconSize));
 
@@ -280,8 +279,7 @@ public class DetailHewanFragment extends Fragment {
         return layout;
     }
 
-    // getIconForTrait dan capitalize tetap sama
-    private int getIconForTrait(String trait) { //
+    private int getIconForTrait(String trait) {
         if (trait == null) return R.drawable.ic_paw;
         switch (trait.toLowerCase()) {
             case "friendly": return R.drawable.ic_paw;
@@ -295,7 +293,7 @@ public class DetailHewanFragment extends Fragment {
         }
     }
 
-    private String capitalize(String input) { //
+    private String capitalize(String input) {
         if (input == null || input.isEmpty()) return input;
         return input.substring(0, 1).toUpperCase() + input.substring(1).toLowerCase();
     }

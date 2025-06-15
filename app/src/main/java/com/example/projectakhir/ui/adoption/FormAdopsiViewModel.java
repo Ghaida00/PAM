@@ -22,14 +22,15 @@ public class FormAdopsiViewModel extends ViewModel {
         this.repository = new AdoptionRepository();
     }
 
-    public void submitAdoptionForm(String namaHewan, String namaPemohon, String alamat, String noHp, String alasan) {
+    public void submitAdoptionForm(String petId, String petNama, String petJenis, String petKota,
+                                   String namaPemohon, String alamat, String noHp, String alasan) {
         _isSubmitting.setValue(true);
-        _submissionStatus.setValue(null); // Reset status
+        _submissionStatus.setValue(null);
 
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         String userId = (currentUser != null) ? currentUser.getUid() : "anonymous"; // Handle jika user tidak login
 
-        repository.submitAdoptionForm(namaHewan, namaPemohon, alamat, noHp, alasan, userId,
+        repository.submitAdoptionForm(petId, petNama, petJenis, petKota, namaPemohon, alamat, noHp, alasan, userId,
                 new AdoptionRepository.FirestoreCallback<String>() {
                     @Override
                     public void onSuccess(String documentId) {

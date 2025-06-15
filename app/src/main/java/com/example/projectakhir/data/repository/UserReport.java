@@ -14,6 +14,11 @@ public class UserReport {
     @ServerTimestamp
     public Date timestamp;
 
+    // TAMBAHKAN KONSTRUKTOR KOSONG INI
+    public UserReport() {
+        // Konstruktor kosong diperlukan oleh Firestore
+    }
+
     public UserReport(String id, String namaPelapor, String jenisHewan, String alamatLokasi, String status, String userId) {
         this.id = id;
         this.namaPelapor = namaPelapor;
@@ -25,6 +30,10 @@ public class UserReport {
 
     public String getId() {
         return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getNamaPelapor() {

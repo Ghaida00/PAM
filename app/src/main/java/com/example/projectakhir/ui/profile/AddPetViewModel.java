@@ -20,11 +20,11 @@ public class AddPetViewModel extends ViewModel {
     public LiveData<String> submissionResult = _submissionResult;
 
     public AddPetViewModel() {
-        // Kita gunakan AdoptionRepository karena sudah ada fungsi addHewanWithImage
         this.repository = new AdoptionRepository();
     }
 
-    public void addPet(String name, String age, String sex, String about, List<String> personality, String weight, String location, Uri imageUri) {
+    // ▼▼▼ PERBARUI PARAMETER METHOD INI ▼▼▼
+    public void addPet(String name, String jenis, String age, String sex, String about, List<String> personality, String weight, String location, Uri imageUri) {
         _isSubmitting.setValue(true);
 
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -38,14 +38,14 @@ public class AddPetViewModel extends ViewModel {
         Hewan newPet = new Hewan();
         newPet.setOwnerId(ownerId);
         newPet.setNama(name);
+        newPet.setJenis(jenis); // Set data jenis hewan
         newPet.setUmur(age);
         newPet.setGender(sex);
         newPet.setDeskripsi(about);
-        newPet.setTraits(personality);
+        newPet.setTraits(personality); // Set list kepribadian
         newPet.setBerat(weight + " kg");
         newPet.setKota(location);
-        newPet.setJenis("");
-        newPet.setAdoptionStatus("none");
+        newPet.setAdoptionStatus("none"); // Default status saat ditambahkan
 
         repository.addHewanWithImage(newPet, imageUri, new AdoptionRepository.FirestoreCallback<String>() {
             @Override
