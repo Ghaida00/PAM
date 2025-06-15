@@ -87,31 +87,6 @@ public class AdoptHomeFragment extends Fragment {
         setupGridKota(); // Grid kota bisa tetap statis atau dinamis dari Firestore nanti
     }
 
-    /*private void observeUserProfile() {
-        adoptHomeViewModel.userName.observe(getViewLifecycleOwner(), name -> {
-            if (name != null && !name.isEmpty()) {
-                binding.tvHeaderUsername.setText(name);
-            } else {
-                binding.tvHeaderUsername.setText("Guest"); // Fallback
-            }
-        });
-
-        adoptHomeViewModel.userProfileImageUrl.observe(getViewLifecycleOwner(), imageUrl -> {
-            if (getContext() != null) {
-                if (imageUrl != null && !imageUrl.isEmpty()) {
-                    Glide.with(requireContext())
-                            .load(imageUrl)
-                            .placeholder(R.drawable.ic_profile) // Placeholder image
-                            .error(R.drawable.profile)          // Error fallback image
-                            .circleCrop()                       // Make the image circular
-                            .into(binding.ivHeaderUserProfile);
-                } else {
-                    // Set a default image if URL is null or empty
-                    binding.ivHeaderUserProfile.setImageResource(R.drawable.profile);
-                }
-            }
-        });
-    }*/
 
     private void observeNewestHewan() {
         // Observe LiveData dari ViewModel untuk hewan terbaru
