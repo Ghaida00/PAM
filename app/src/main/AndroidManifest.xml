@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" >
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
 
     <application
         android:allowBackup="true"
@@ -11,46 +17,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ProjectAkhir"
-        tools:targetApi="31" >
-
-        <activity
-            android:name=".newpawpal.PenilaianProduk"
-            android:exported="false" />
-        <activity
-            android:name=".newpawpal.DetailProduk"
-            android:exported="false" />
-        <activity
-            android:name=".newpawpal.NilaiProduk"
-            android:exported="false" />
-        <activity
-            android:name=".newpawpal.Notifikasi"
-            android:exported="false" />
-        <activity
-            android:name=".newpawpal.Keranjang"
-            android:exported="false" />
-        <activity
-            android:name=".newpawpal.CategoryAdapter"
-            android:exported="false" />
-        <activity
-            android:name=".newpawpal.ProductAdapter"
-            android:exported="false" />
-        <activity
-            android:name=".newpawpal.Katalog"
-            android:exported="false" />
-        <activity
-            android:name=".newpawpal.Register"
-            android:exported="false" />
-        <activity
-            android:name=".newpawpal.Login"
-            android:exported="false" />
+        tools:targetApi="31">
         <activity
             android:name=".ui.AppActivity"
-            android:exported="false" />
-        <activity
-            android:name=".newpawpal.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

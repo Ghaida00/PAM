@@ -3,47 +3,160 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/loginFragment">
+    app:startDestination="@+id/splashFragment">
 
+    <!-- Splash Screen -->
+    <fragment
+        android:id="@+id/splashFragment"
+        android:name="com.example.projectakhir.ui.SplashFragment"
+        android:label="Splash"
+        tools:layout="@layout/activity_splash">
+        <action
+            android:id="@+id/action_splashFragment_to_loginFragment"
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/splashFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_splashFragment_to_registerFragment"
+            app:destination="@id/registerFragment"
+            app:popUpTo="@id/splashFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <!-- Auth Fragments -->
     <fragment
         android:id="@+id/loginFragment"
         android:name="com.example.projectakhir.ui.auth.LoginFragment"
-        android:label="fragment_login"
+        android:label="Login"
         tools:layout="@layout/fragment_login">
         <action
             android:id="@+id/action_loginFragment_to_blankHomepageFragment"
-            app:destination="@id/blankHomepageFragment" />
+            app:destination="@id/blankHomepageFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_loginFragment_to_registerFragment"
-            app:destination="@id/registerFragment" />
+            app:destination="@id/registerFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
     </fragment>
 
     <fragment
         android:id="@+id/registerFragment"
         android:name="com.example.projectakhir.ui.auth.RegisterFragment"
-        android:label="fragment_register"
+        android:label="Register"
         tools:layout="@layout/fragment_register">
         <action
             android:id="@+id/action_registerFragment_to_loginFragment"
             app:destination="@id/loginFragment"
             app:popUpTo="@id/loginFragment"
-            app:popUpToInclusive="true"/>
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_registerFragment_to_blankHomepageFragment"
+            app:destination="@id/blankHomepageFragment"
+            app:popUpTo="@id/registerFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <!-- Main App Fragments (Shop) -->
+    <fragment
+        android:id="@+id/catalogFragment"
+        android:name="com.example.projectakhir.ui.shop.Catalog.CatalogFragment"
+        android:label="Katalog"
+        tools:layout="@layout/fragment_catalog">
+        <action
+            android:id="@+id/action_catalogFragment_to_reviewFragment"
+            app:destination="@id/reviewFragment" />
+        <action
+            android:id="@+id/action_catalogFragment_to_notificationFragment"
+            app:destination="@id/notificationFragment" />
+        <action
+            android:id="@+id/action_catalogFragment_to_cartFragment"
+            app:destination="@id/cartFragment" />
     </fragment>
 
     <fragment
+        android:id="@+id/cartFragment"
+        android:name="com.example.projectakhir.ui.shop.Cart.CartFragment"
+        android:label="Keranjang"
+        tools:layout="@layout/fragment_cart">
+        <action
+            android:id="@+id/action_cartFragment_to_checkoutFragment"
+            app:destination="@id/checkoutFragment">
+            <argument
+                android:name="total_amount"
+                app:argType="float"
+                android:defaultValue="0.0" />
+        </action>
+    </fragment>
+
+    <fragment
+        android:id="@+id/notificationFragment"
+        android:name="com.example.projectakhir.ui.shop.Notification.NotificationFragment"
+        android:label="Notifikasi"
+        tools:layout="@layout/fragment_notification" />
+
+    <fragment
+        android:id="@+id/reviewFragment"
+        android:name="com.example.projectakhir.ui.shop.Review.ReviewFragment"
+        android:label="Penilaian Produk"
+        tools:layout="@layout/fragment_review">
+        <argument
+            android:name="productId"
+            app:argType="string"
+            android:defaultValue="" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/checkoutFragment"
+        android:name="com.example.projectakhir.ui.shop.Checkout.CheckoutFragment"
+        android:label="Checkout"
+        tools:layout="@layout/fragment_checkout">
+        <action
+            android:id="@+id/action_checkoutFragment_to_paymentFragment"
+            app:destination="@id/paymentFragment" />
+        <argument
+            android:name="total_amount"
+            app:argType="float"
+            android:defaultValue="0.0" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/paymentFragment"
+        android:name="com.example.projectakhir.ui.shop.Payment.PaymentFragment"
+        android:label="Pembayaran"
+        tools:layout="@layout/fragment_payment">
+        <argument
+            android:name="payment_method"
+            app:argType="string" />
+        <argument
+            android:name="total_amount"
+            app:argType="float"
+            android:defaultValue="0.0" />
+        <action
+            android:id="@+id/action_paymentFragment_to_blankHomepageFragment"
+            app:destination="@id/blankHomepageFragment" />
+    </fragment>
+
+
+    <!-- Fragment Teman Anda -->
+    <fragment
         android:id="@+id/blankHomepageFragment"
         android:name="com.example.projectakhir.ui.homepage.BlankHomepageFragment"
-        android:label="fragment_blank_homepage"
+        android:label="Homepage"
         tools:layout="@layout/fragment_blank_homepage">
         <action
             android:id="@+id/action_blankHomepageFragment_to_profileFragment"
             app:destination="@id/profileFragment" />
+        <action
+            android:id="@+id/action_blankHomepageFragment_to_catalogFragment"
+            app:destination="@id/catalogFragment" />
     </fragment>
 
     <fragment
         android:id="@+id/profileFragment"
         android:name="com.example.projectakhir.ui.profile.ProfileFragment"
-        android:label="fragment_profile"
+        android:label="Profil"
         tools:layout="@layout/fragment_profile" >
         <action
             android:id="@+id/action_profileFragment_to_personalDetailFragment"
@@ -62,7 +175,9 @@
             app:destination="@id/aboutAppFragment" />
         <action
             android:id="@+id/action_profileFragment_to_loginFragment"
-            app:destination="@id/loginFragment" />
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/nav_graph"
+            app:popUpToInclusive="true" />
     </fragment>
 
     <fragment
@@ -110,7 +225,7 @@
         android:id="@+id/aboutAppFragment"
         android:name="com.example.projectakhir.ui.profile.AboutAppFragment"
         android:label="About PawPal"
-        tools:layout="@layout/fragment_about_app" />
+        tools:layout="@layout/fragment_about" />
 
     <fragment
         android:id="@+id/adoptHomeFragment"
@@ -137,7 +252,7 @@
     <fragment
         android:id="@+id/daftarHewanFragment"
         android:name="com.example.projectakhir.ui.adoption.DaftarHewanFragment"
-        android:label="fragment_daftar_hewan"
+        android:label="Daftar Hewan"
         tools:layout="@layout/fragment_daftar_hewan">
         <argument
             android:name="kota"
@@ -150,7 +265,7 @@
     <fragment
         android:id="@+id/detailHewanFragment"
         android:name="com.example.projectakhir.ui.adoption.DetailHewanFragment"
-        android:label="fragment_detail_hewan"
+        android:label="Detail Hewan"
         tools:layout="@layout/fragment_detail_hewan">
         <argument
             android:name="namaHewan" app:argType="string" />
@@ -162,7 +277,7 @@
     <fragment
         android:id="@+id/formAdopsiFragment"
         android:name="com.example.projectakhir.ui.adoption.FormAdopsiFragment"
-        android:label="fragment_form_adopsi"
+        android:label="Form Adopsi"
         tools:layout="@layout/fragment_form_adopsi">
         <argument
             android:name="namaHewan"
@@ -172,12 +287,12 @@
     <fragment
         android:id="@+id/formPengaduanFragment"
         android:name="com.example.projectakhir.ui.adoption.FormPengaduanFragment"
-        android:label="fragment_form_pengaduan"
+        android:label="Form Pengaduan"
         tools:layout="@layout/fragment_form_pengaduan" />
     <fragment
         android:id="@+id/progresMainFragment"
         android:name="com.example.projectakhir.ui.progress.ProgresMainFragment"
-        android:label="fragment_progres_main"
+        android:label="Progress Utama"
         tools:layout="@layout/fragment_progres_main" >
         <action
             android:id="@+id/action_progresMainFragment_to_progresAdopsiFragment"
@@ -190,13 +305,13 @@
     <fragment
         android:id="@+id/progresAdopsiFragment"
         android:name="com.example.projectakhir.ui.progress.ProgresAdopsiFragment"
-        android:label="fragment_progres_adopsi"
+        android:label="Progress Adopsi"
         tools:layout="@layout/fragment_progres_adopsi" />
 
     <fragment
         android:id="@+id/progresPengaduanFragment"
         android:name="com.example.projectakhir.ui.progress.ProgresPengaduanFragment"
-        android:label="fragment_progres_pengaduan"
+        android:label="Progress Pengaduan"
         tools:layout="@layout/fragment_progres_pengaduan" />
 
     <fragment
@@ -221,7 +336,7 @@
     <fragment
         android:id="@+id/groomingFragment"
         android:name="com.example.projectakhir.ui.grooming.GroomingFragment"
-        android:label="fragment_grooming"
+        android:label="Grooming"
         tools:layout="@layout/fragment_grooming" >
         <action
             android:id="@+id/action_groomingFragment_to_detailSalonFragment"
@@ -231,7 +346,7 @@
     <fragment
         android:id="@+id/doctorFragment"
         android:name="com.example.projectakhir.ui.grooming.DoctorFragment"
-        android:label="fragment_doctor"
+        android:label="Dokter"
         tools:layout="@layout/fragment_doctor" >
         <action
             android:id="@+id/action_doctorFragment_to_detailVetFragment"
@@ -241,7 +356,7 @@
     <fragment
         android:id="@+id/detailSalonFragment"
         android:name="com.example.projectakhir.ui.grooming.DetailSalonFragment"
-        android:label="fragment_salon_detail"
+        android:label="Detail Salon"
         tools:layout="@layout/fragment_salon_detail">
         <argument
             android:name="serviceId"
@@ -254,7 +369,7 @@
     <fragment
         android:id="@+id/detailVetFragment"
         android:name="com.example.projectakhir.ui.grooming.DetailVetFragment"
-        android:label="fragment_detail_vet"
+        android:label="Detail Dokter Hewan"
         tools:layout="@layout/fragment_detail_vet">
         <argument
             android:name="serviceId"
@@ -267,7 +382,7 @@
     <fragment
         android:id="@+id/bookingFragment"
         android:name="com.example.projectakhir.ui.booking.BookingFragment"
-        android:label="fragment_booking"
+        android:label="Booking"
         tools:layout="@layout/fragment_booking">
         <argument
             android:name="namaProvider"
@@ -285,11 +400,10 @@
     <fragment
         android:id="@+id/appointmentDetailFragment"
         android:name="com.example.projectakhir.ui.booking.AppointmentDetailFragment"
-        android:label="fragment_appointment_detail"
+        android:label="Detail Janji Temu"
         tools:layout="@layout/fragment_appointment_detail">
         <argument
             android:name="appointmentId"
             app:argType="string" />
     </fragment>
-
 </navigation>

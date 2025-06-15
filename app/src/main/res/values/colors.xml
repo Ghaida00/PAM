@@ -23,4 +23,9 @@
     <color name="yellow_button">#FFD700</color>
     <color name="gray_button">#E0E0E0</color>
     <color name="light_teal">#EFFBF6</color>
+    <color name="green_primary">#4CAF50</color>
+    <color name="red_error">#F44336</color>
+    <color name="medium_gray">#CCCCCC</color>
+    <color name="background_light">#F5F5F5</color>
+    <color name="unread_notification_background">#E0F7FA</color>
 </resources>

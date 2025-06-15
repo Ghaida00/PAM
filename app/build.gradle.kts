@@ -44,6 +44,8 @@ dependencies {
     implementation ("com.google.android.gms:play-services-auth:21.0.0")
     implementation ("androidx.core:core-ktx:1.13.1")
     implementation ("androidx.recyclerview:recyclerview:1.3.2")
+    implementation ("androidx.navigation:navigation-fragment-ktx:2.7.7")
+    implementation ("androidx.navigation:navigation-ui-ktx:2.7.7")
     implementation(libs.flexbox)
     implementation(libs.appcompat)
     implementation(libs.material)

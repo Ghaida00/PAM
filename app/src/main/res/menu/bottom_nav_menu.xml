@@ -1,12 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/blankHomepageFragment" android:icon="@drawable/ic_home"
+        android:id="@+id/blankHomepageFragment"
+        android:icon="@drawable/ic_home"
         android:title="Home" />
     <item
-        android:id="@+id/adoptHomeFragment" android:icon="@drawable/ic_paw"
-        android:title="Adopt" />
+        android:id="@+id/adoptHomeFragment"
+        android:icon="@drawable/ic_paw"
+        android:title="Adopsi" />
     <item
-        android:id="@+id/heartFragment" android:icon="@drawable/ic_heart"
-        android:title="Grooming" />
+        android:id="@+id/catalogFragment"
+        android:icon="@drawable/ic_shop"
+        android:title="Katalog" />
+    <item
+        android:id="@+id/heartFragment"
+        android:icon="@drawable/ic_heart"
+        android:title="Favorit" />
+    <item
+        android:id="@+id/profileFragment"
+        android:icon="@drawable/ic_profile"
+        android:title="Profil" />
 </menu>

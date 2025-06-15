@@ -42,5 +42,10 @@
         <item name="android:drawablePadding">16dp</item>
     </style>
 
+    <style name="RatingBarYellow" parent="Theme.AppCompat">
+        <item name="colorControlNormal">@android:color/darker_gray</item>
+        <item name="colorControlActivated">@color/teal_700</item>
+    </style>
+
 </resources>
 

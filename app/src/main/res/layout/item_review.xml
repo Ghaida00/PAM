@@ -18,12 +18,12 @@
             android:id="@+id/ivProfileImage"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:src="@drawable/profile_placeholder"
-            app:civ_border_width="1dp"
-            app:civ_border_color="@color/dark_gray"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:contentDescription="@string/profile_picture" />
+            android:src="@drawable/ic_profile"
+        app:civ_border_width="1dp"
+        app:civ_border_color="@color/dark_gray"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:contentDescription="@string/profile_picture" />
 
         <!-- Username Reviewer -->
         <TextView
@@ -40,18 +40,34 @@
             app:layout_constraintEnd_toEndOf="parent"
             tools:text="Emilyq1032iwes" />
 
-        <!-- Bintang Penilaian -->
-        <LinearLayout
-            android:id="@+id/ratingStarsLayout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="4dp"
-            app:layout_constraintStart_toEndOf="@id/ivProfileImage"
-            app:layout_constraintTop_toBottomOf="@id/tvUsername">
-            <!-- Bintang akan ditambahkan secara programatis di adapter -->
-        </LinearLayout>
+        <!-- Bintang Penilaian (RatingBar) -->
+        <RatingBar
+            android:id="@+id/rbReviewRating"
+        style="?android:attr/ratingBarStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:numStars="5"
+        android:stepSize="0.5"
+        android:rating="3.5"
+        android:isIndicator="true"
+        android:theme="@style/RatingBarYellow"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="4dp"
+        app:layout_constraintStart_toEndOf="@id/ivProfileImage"
+        app:layout_constraintTop_toBottomOf="@id/tvUsername" />
+
+        <!-- Tanggal Ulasan -->
+        <TextView
+            android:id="@+id/tvReviewDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:textColor="@color/dark_gray"
+        android:textSize="12sp"
+        app:layout_constraintStart_toEndOf="@id/rbReviewRating"
+        app:layout_constraintTop_toTopOf="@id/rbReviewRating"
+        app:layout_constraintBottom_toBottomOf="@id/rbReviewRating"
+        tools:text="12 Juni 2025" />
 
         <!-- Komentar Ulasan -->
         <TextView
@@ -63,7 +79,7 @@
             android:textSize="14sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/ivReviewImage"
-            app:layout_constraintTop_toBottomOf="@id/ratingStarsLayout"
+            app:layout_constraintTop_toBottomOf="@id/rbReviewRating"
             tools:text="Desain berbeda dengan gambar" />
 
         <!-- Gambar Ulasan (opsional) -->
@@ -72,14 +88,14 @@
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/placeholder_image"
-            android:layout_marginStart="16dp"
-            android:background="@drawable/rounded_image_background"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/tvComment"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:contentDescription="@string/review_image"
-            android:visibility="gone"/> <!-- Default hidden -->
+            android:src="@drawable/ic_placeholder_image"
+        android:layout_marginStart="16dp"
+        android:background="@drawable/rounded_image_background"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tvComment"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:contentDescription="@string/review_image"
+        android:visibility="gone"/> <!-- Default hidden -->
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

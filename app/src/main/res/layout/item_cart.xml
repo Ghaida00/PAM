@@ -23,11 +23,11 @@
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/placeholder_image"
+            android:src="@drawable/ic_placeholder_image"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            tools:src="@drawable/placeholder_image" />
+            tools:src="@drawable/ic_placeholder_image" />
 
         <TextView
             android:id="@+id/productName"
@@ -63,7 +63,8 @@
             android:src="@drawable/delete"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:tint="@android:color/holo_red_dark" />
+            app:tint="@android:color/holo_red_dark"
+            android:contentDescription="Hapus Item" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -78,7 +79,8 @@
                 android:id="@+id/minusButton"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/rounded_minus"/>
+                android:src="@drawable/rounded_minus"
+            android:contentDescription="Kurangi Kuantitas"/> <!-- Added contentDescription -->
 
             <TextView
                 android:id="@+id/productQuantity"
@@ -95,7 +97,8 @@
                 android:id="@+id/plusButton"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/rounded_plus"/>
+                android:src="@drawable/rounded_plus"
+            android:contentDescription="Tambah Kuantitas"/> <!-- Added contentDescription -->
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
