@@ -3,7 +3,7 @@
     <style name="Base.Theme.ProjectAkhir" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your dark theme here. -->
         <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
-        <item name="materialButtonStyle">@style/App.Button.Rectangular</item>
+        <item name="materialButtonStyle">@style/GlobalButtonStyle</item>
     </style>
     <style name="Theme.ProjectAkhir" parent="Base.Theme.ProjectAkhir" />
 </resources>
