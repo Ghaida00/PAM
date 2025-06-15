@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:background="@drawable/bg_explore_card"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="10dp"
+    android:layout_margin="8dp"
+    android:elevation="4dp">
+
+    <ImageView
+        android:id="@+id/img_explore"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:scaleType="centerCrop"
+        android:layout_gravity="center"/>
+
+    <TextView
+        android:id="@+id/tv_explore_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Item Title"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:layout_marginTop="6dp"/>
+
+    <TextView
+        android:id="@+id/tv_explore_subtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Subtitle"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:layout_marginTop="1dp"/>
+
+    <TextView
+        android:id="@+id/tv_explore_price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Rp 49.999"
+        android:textColor="#1F7A2F"
+        android:textStyle="bold"
+        android:textSize="15sp"
+        android:layout_marginTop="2dp"/>
+</LinearLayout>

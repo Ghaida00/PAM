@@ -75,7 +75,7 @@ public class AdoptHomeFragment extends Fragment {
         });*/
         // --- Akhir Implementasi Navigasi Header Profile Picture ---
 
-        binding.cardProgres.setOnClickListener(v -> {
+        binding.cardProgresAdopsi.setOnClickListener(v -> {
             try {
                 NavHostFragment.findNavController(this)
                         .navigate(R.id.action_adoptHomeFragment_to_progresMainFragment);
