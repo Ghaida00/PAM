@@ -72,7 +72,13 @@ public class HeartViewModel extends ViewModel {
         if (doc == null || !doc.exists()) return null;
 
         String serviceType = doc.getString("serviceType");
-        if (serviceType == null) serviceType = "Grooming"; // Fallback
+        // if (serviceType == null) serviceType = "Grooming"; // Fallback
+
+        // Anda bisa menambahkan pengecekan jika serviceType masih null untuk debugging
+        if (serviceType == null) {
+            // Logika jika serviceType tidak ditemukan, misalnya mengabaikan data ini
+            return null;
+        }
 
         // Gabungkan layanan yang dipilih menjadi satu string
         List<String> layananList = (List<String>) doc.get("layananDipilih");

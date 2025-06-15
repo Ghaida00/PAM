@@ -104,7 +104,7 @@ public class AppointmentRepository {
                 .addOnFailureListener(callback::onError);
     }
 
-    public void createAppointment(String serviceId, String providerName, String petName,
+    public void createAppointment(String serviceId, String serviceType, String providerName, String petName, // Tambahkan serviceType
                                   List<String> layananDipilih, String tanggal, String waktu,
                                   FirestoreCallback<String> callback) {
 
@@ -118,22 +118,21 @@ public class AppointmentRepository {
         Map<String, Object> appointment = new HashMap<>();
         appointment.put("userId", userId);
         appointment.put("serviceId", serviceId);
+        appointment.put("serviceType", serviceType); // <-- TAMBAHKAN BARIS INI
         appointment.put("providerName", providerName);
         appointment.put("petName", petName);
         appointment.put("layananDipilih", layananDipilih);
         appointment.put("tanggalDipilih", tanggal);
         appointment.put("waktuDipilih", waktu);
-        appointment.put("status", "Menunggu Konfirmasi"); // Status awal
+        appointment.put("status", "Menunggu Konfirmasi");
         appointment.put("timestamp", FieldValue.serverTimestamp());
 
         db.collection("appointments")
                 .add(appointment)
                 .addOnSuccessListener(documentReference -> {
-                    Log.d(TAG, "Appointment created with ID: " + documentReference.getId());
                     callback.onSuccess(documentReference.getId());
                 })
                 .addOnFailureListener(e -> {
-                    Log.e(TAG, "Error creating appointment", e);
                     callback.onError(e);
                 });
     }

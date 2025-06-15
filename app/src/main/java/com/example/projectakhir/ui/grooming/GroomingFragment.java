@@ -63,7 +63,7 @@ public class GroomingFragment extends Fragment {
             }
             // Navigasi dengan ID unik
             GroomingFragmentDirections.ActionGroomingFragmentToDetailSalonFragment action =
-                    GroomingFragmentDirections.actionGroomingFragmentToDetailSalonFragment(salon.getNama()); //sementara
+                    GroomingFragmentDirections.actionGroomingFragmentToDetailSalonFragment(salon.getId());
             NavHostFragment.findNavController(GroomingFragment.this).navigate(action);
         });
         binding.recyclerSalon.setAdapter(adapter);

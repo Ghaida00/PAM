@@ -166,7 +166,11 @@ public class DetailSalonFragment extends Fragment {
     private void navigateToBooking(String providerName, String providerId) {
         try {
             DetailSalonFragmentDirections.ActionDetailSalonFragmentToBookingFragment action =
-                    DetailSalonFragmentDirections.actionDetailSalonFragmentToBookingFragment(providerName, providerId);
+                    DetailSalonFragmentDirections.actionDetailSalonFragmentToBookingFragment(
+                            providerName,
+                            providerId,
+                            currentSalonData.getTipe() // <-- Kirim tipe "grooming"
+                    );
             action.setLayananDipilih(layananDipilih.toArray(new String[0]));
             NavHostFragment.findNavController(this).navigate(action);
         } catch (IllegalArgumentException e) {

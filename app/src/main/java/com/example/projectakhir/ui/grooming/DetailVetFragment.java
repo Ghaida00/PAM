@@ -195,13 +195,13 @@ public class DetailVetFragment extends Fragment {
     // Fungsi untuk navigasi ke BookingFragment
     private void navigateToBooking(String providerName, String providerId) {
         try {
-            // Pastikan action dan argumen sudah didefinisikan di nav_graph.xml
             DetailVetFragmentDirections.ActionDetailVetFragmentToBookingFragment action =
-                    DetailVetFragmentDirections.actionDetailVetFragmentToBookingFragment(providerName, providerId); // Kirim nama vet
-
-            // Kirim layanan yang dipilih sebagai String array
+                    DetailVetFragmentDirections.actionDetailVetFragmentToBookingFragment(
+                            providerName,
+                            providerId,
+                            currentVetData.getTipe() // <-- Kirim tipe "doctor"
+                    );
             action.setLayananDipilih(layananDipilih.toArray(new String[0]));
-
             NavHostFragment.findNavController(this).navigate(action);
         } catch (IllegalArgumentException e) {
             Toast.makeText(requireContext(), "Navigasi ke Booking belum siap.", Toast.LENGTH_SHORT).show();

@@ -299,6 +299,9 @@
         <argument
             android:name="serviceId"
             app:argType="string" />
+        <argument
+            android:name="serviceType"
+            app:argType="string" />
     </fragment>
 
     <fragment
