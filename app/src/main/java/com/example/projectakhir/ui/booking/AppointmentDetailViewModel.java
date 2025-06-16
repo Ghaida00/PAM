@@ -1,4 +1,4 @@
-// File BARU: main/java/com/example/projectakhir/ui/booking/AppointmentDetailViewModel.java
+// File: main/java/com/example/projectakhir/ui/booking/AppointmentDetailViewModel.java
 package com.example.projectakhir.ui.booking;
 
 import android.net.Uri;
@@ -59,6 +59,8 @@ public class AppointmentDetailViewModel extends ViewModel {
         repository.updateAppointmentStatus(appointmentId, "Dibatalkan", new AppointmentRepository.FirestoreCallback<Void>() {
             @Override
             public void onSuccess(Void result) {
+                // Refresh data setelah update status
+                loadAppointmentDetails(appointmentId);
                 _updateResult.setValue("cancelled_success");
                 _isLoading.setValue(false);
             }
@@ -84,6 +86,8 @@ public class AppointmentDetailViewModel extends ViewModel {
         repository.uploadPaymentProofAndUpdateUrl(appointmentId, imageUri, new AppointmentRepository.StorageUploadCallback() {
             @Override
             public void onSuccess(String imageUrl) {
+                // Refresh data setelah konfirmasi
+                loadAppointmentDetails(appointmentId);
                 _updateResult.setValue("confirmed_success");
                 _isLoading.setValue(false);
             }
@@ -91,6 +95,28 @@ public class AppointmentDetailViewModel extends ViewModel {
             @Override
             public void onError(Exception e) {
                 _error.setValue("Gagal konfirmasi: " + e.getMessage());
+                _isLoading.setValue(false);
+            }
+        });
+    }
+
+    // --- FUNGSI BARU UNTUK DELETE ---
+    public void deleteAppointment() {
+        if (appointmentId == null) {
+            _error.setValue("ID Appointment tidak ditemukan untuk dihapus.");
+            return;
+        }
+        _isLoading.setValue(true);
+        repository.deleteAppointmentById(appointmentId, new AppointmentRepository.FirestoreCallback<Void>() {
+            @Override
+            public void onSuccess(Void result) {
+                _updateResult.postValue("deleted_success");
+                _isLoading.setValue(false);
+            }
+
+            @Override
+            public void onError(Exception e) {
+                _error.setValue("Gagal menghapus appointment: " + e.getMessage());
                 _isLoading.setValue(false);
             }
         });

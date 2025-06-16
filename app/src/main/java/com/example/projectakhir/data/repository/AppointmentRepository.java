@@ -137,4 +137,11 @@ public class AppointmentRepository {
                     callback.onError(e);
                 });
     }
+
+    // --- METODE BARU UNTUK MENGHAPUS ---
+    public void deleteAppointmentById(String appointmentId, FirestoreCallback<Void> callback) {
+        db.collection("appointments").document(appointmentId).delete()
+                .addOnSuccessListener(aVoid -> callback.onSuccess(null))
+                .addOnFailureListener(callback::onError);
+    }
 }
