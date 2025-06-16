@@ -323,6 +323,9 @@
         <argument
             android:name="serviceType"
             app:argType="string" />
+        <argument
+            android:name="petType"
+            app:argType="string" />
     </fragment>
 
     <fragment

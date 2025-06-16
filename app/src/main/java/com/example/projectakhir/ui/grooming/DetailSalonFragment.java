@@ -31,12 +31,12 @@ public class DetailSalonFragment extends Fragment {
     private String serviceId;
     private Salon currentSalonData;
     private final ArrayList<String> layananDipilih = new ArrayList<>();
+    private String jenisHewanDipilih = "Dog";
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            // Ambil serviceId dari argumen navigasi
             serviceId = DetailSalonFragmentArgs.fromBundle(getArguments()).getServiceId();
         }
     }
@@ -79,6 +79,30 @@ public class DetailSalonFragment extends Fragment {
                 navigateToBooking(currentSalonData.getNama(), currentSalonData.getId());
             }
         });
+
+        setupJenisHewanSelection();
+    }
+
+    private void setupJenisHewanSelection() {
+        View.OnClickListener jenisHewanListener = v -> {
+            binding.txtJenisDog.setBackgroundResource(R.drawable.bg_tag_kuning);
+            binding.txtJenisDog.setTextColor(Color.BLACK);
+            binding.txtJenisCat.setBackgroundResource(R.drawable.bg_tag_kuning);
+            binding.txtJenisCat.setTextColor(Color.BLACK);
+            binding.txtJenisOthers.setBackgroundResource(R.drawable.bg_tag_kuning);
+            binding.txtJenisOthers.setTextColor(Color.BLACK);
+
+            v.setBackgroundResource(R.drawable.bg_tag_hijau);
+            if (v instanceof TextView) {
+                ((TextView) v).setTextColor(Color.WHITE);
+                jenisHewanDipilih = ((TextView) v).getText().toString();
+            }
+        };
+
+        binding.txtJenisDog.setOnClickListener(jenisHewanListener);
+        binding.txtJenisCat.setOnClickListener(jenisHewanListener);
+        binding.txtJenisOthers.setOnClickListener(jenisHewanListener);
+        binding.txtJenisDog.performClick();
     }
 
     private void observeViewModel() {
@@ -169,7 +193,8 @@ public class DetailSalonFragment extends Fragment {
                     DetailSalonFragmentDirections.actionDetailSalonFragmentToBookingFragment(
                             providerName,
                             providerId,
-                            currentSalonData.getTipe() // <-- Kirim tipe "grooming"
+                            currentSalonData.getTipe(),
+                            jenisHewanDipilih
                     );
             action.setLayananDipilih(layananDipilih.toArray(new String[0]));
             NavHostFragment.findNavController(this).navigate(action);

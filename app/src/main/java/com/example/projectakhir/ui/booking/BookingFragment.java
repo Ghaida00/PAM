@@ -35,6 +35,7 @@ public class BookingFragment extends Fragment {
     private BookingViewModel viewModel;
     private String serviceId;
     private String serviceType;
+    private String petType;
     private String namaProviderDiterima;
     private ArrayList<String> layananYangDipilih = new ArrayList<>();
     private String tanggalDipilih = "";
@@ -49,6 +50,7 @@ public class BookingFragment extends Fragment {
             String[] layananArray = BookingFragmentArgs.fromBundle(getArguments()).getLayananDipilih();
             serviceId = BookingFragmentArgs.fromBundle(getArguments()).getServiceId();
             serviceType = BookingFragmentArgs.fromBundle(getArguments()).getServiceType();
+            petType = BookingFragmentArgs.fromBundle(getArguments()).getPetType();
 
             if (layananArray != null) {
                 layananYangDipilih.clear();
@@ -101,8 +103,7 @@ public class BookingFragment extends Fragment {
             if (tanggalDipilih.isEmpty() || waktuDipilih.isEmpty()) {
                 Toast.makeText(requireContext(), "Pilih tanggal dan waktu dulu ya!", Toast.LENGTH_SHORT).show();
             } else {
-                // Panggil method di ViewModel untuk membuat appointment
-                viewModel.createAppointment(serviceId, serviceType, namaProviderDiterima, petName, layananYangDipilih, tanggalDipilih, waktuDipilih); // <-- Gunakan serviceType
+                viewModel.createAppointment(serviceId, serviceType, namaProviderDiterima, petName, petType, layananYangDipilih, tanggalDipilih, waktuDipilih);
             }
         });
     }
