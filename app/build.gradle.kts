@@ -39,6 +39,10 @@ android {
 
 dependencies {
 
+    implementation ("com.google.android.gms:play-services-auth:21.0.0")
+
+    // AndroidX & Common Libraries
+    implementation ("androidx.core:core:1.12.0")
     implementation(libs.flexbox)
     implementation(libs.appcompat)
     implementation(libs.material)
@@ -47,9 +51,18 @@ dependencies {
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.play.services.auth)
     implementation(libs.googleid)
+    implementation(libs.firebase.database)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+
+    // Activity & Fragment KTX (untuk ActivityResultLauncher)
+    implementation ("androidx.activity:activity:1.8.2")
+    implementation ("androidx.fragment:fragment:1.6.2")
+
+    // RecyclerView & CardView
+    implementation ("androidx.recyclerview:recyclerview:1.3.2")
+    implementation ("androidx.cardview:cardview:1.0.0")
 
     // ViewModel
     implementation(libs.lifecycle.viewmodel.ktx) // Or latest version

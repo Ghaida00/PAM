@@ -3,7 +3,58 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/loginFragment">
+    app:startDestination="@id/splashscreenFragment">
+
+    <fragment
+        android:id="@+id/splashscreenFragment"
+        android:name="com.example.projectakhir.ui.auth.SplashScreenFragment"
+        android:label="SplashscreenFragment">
+        <action
+            android:id="@+id/action_splashscreenFragment_to_homeFragment"
+            app:destination="@id/blankHomepageFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/catalogFragment"
+        android:name="com.example.projectakhir.ui.shop.Catalog.CatalogFragment"
+        android:label="CatalogFragment" />
+
+    <fragment
+        android:id="@+id/cartFragment"
+        android:name="com.example.projectakhir.ui.shop.Keranjang.KeranjangFragment"
+        android:label="CartFragment"
+        tools:layout="@layout/fragment_cart">
+        <action
+            android:id="@+id/action_cartFragment_to_customizedMenuFragment"
+            app:destination="@id/customizedMenuFragment" />
+        <action
+            android:id="@+id/action_cartFragment_to_checkoutFragment"
+            app:destination="@id/checkoutFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.example.projectakhir.ui.profile.ProfileFragment"
+        android:label="ProfileFragment">
+        <action
+            android:id="@+id/action_profileFragment_to_personalDetailFragment"
+            app:destination="@id/personalDetailFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_yourPetListFragment"
+            app:destination="@id/yourPetListFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_deliveryAddressFragment"
+            app:destination="@id/deliveryAddressFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_paymentMethodFragment"
+            app:destination="@id/paymentMethodFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_adminFragment"
+            app:destination="@id/adminFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_aboutAppFragment"
+            app:destination="@id/aboutAppFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/loginFragment"
@@ -28,6 +79,9 @@
             app:destination="@id/loginFragment"
             app:popUpTo="@id/loginFragment"
             app:popUpToInclusive="true"/>
+        <action
+            android:id="@+id/action_registerFragment_to_blankHomepageFragment"
+            app:destination="@id/blankHomepageFragment" />
     </fragment>
 
     <fragment
@@ -45,34 +99,6 @@
         android:name="com.example.projectakhir.ui.admin.AdminFragment"
         android:label="Admin Panel"
         tools:layout="@layout/fragment_admin" />
-
-    <fragment
-        android:id="@+id/profileFragment"
-        android:name="com.example.projectakhir.ui.profile.ProfileFragment"
-        android:label="fragment_profile"
-        tools:layout="@layout/fragment_profile" >
-        <action
-            android:id="@+id/action_profileFragment_to_personalDetailFragment"
-            app:destination="@id/personalDetailFragment" />
-        <action
-            android:id="@+id/action_profileFragment_to_yourPetListFragment"
-            app:destination="@id/yourPetListFragment" />
-        <action
-            android:id="@+id/action_profileFragment_to_deliveryAddressFragment"
-            app:destination="@id/deliveryAddressFragment" />
-        <action
-            android:id="@+id/action_profileFragment_to_paymentMethodFragment"
-            app:destination="@id/paymentMethodFragment" />
-        <action
-            android:id="@+id/action_profileFragment_to_aboutAppFragment"
-            app:destination="@id/aboutAppFragment" />
-        <action
-            android:id="@+id/action_profileFragment_to_loginFragment"
-            app:destination="@id/loginFragment" />
-        <action
-            android:id="@+id/action_profileFragment_to_adminFragment"
-            app:destination="@id/adminFragment" />
-    </fragment>
 
     <fragment
         android:id="@+id/personalDetailFragment"
@@ -391,16 +417,6 @@
     </fragment>
 
     <fragment
-        android:id="@+id/cartFragment"
-        android:name="com.example.projectakhir.mealplannerfragment.fragments.CartFragment"
-        android:label="Cart"
-        tools:layout="@layout/fragment_cart">
-        <action
-            android:id="@+id/action_cartFragment_to_customizedMenuFragment"
-            app:destination="@id/customizedMenuFragment"/>
-    </fragment>
-
-    <fragment
         android:id="@+id/customizedMenuFragment"
         android:name="com.example.projectakhir.mealplannerfragment.fragments.CustomizedMenuFragment"
         android:label="Customized Menu"
@@ -420,7 +436,52 @@
             app:destination="@id/yourCustomMenuFragment"/>
     </fragment>
 
+    <!-- Main App Fragments (Sekarang di ui.shop) -->
+    <fragment
+        android:id="@+id/navigation_katalog"
+        android:name="com.example.projectakhir.ui.shop.Catalog.CatalogFragment"
+        android:label="Katalog"
+        tools:layout="@layout/fragment_catalog">
+        <action
+            android:id="@+id/action_navigation_katalog_to_reviewFragment"
+            app:destination="@id/reviewFragment" />
+        <!-- Action to Product Detail if you create one -->
+    </fragment>
 
+    <fragment
+        android:id="@+id/keranjangFragment"
+        android:name="com.example.projectakhir.ui.shop.Keranjang.KeranjangFragment"
+        android:label="Keranjang"
+        tools:layout="@layout/fragment_cart" />
 
+    <fragment
+        android:id="@+id/notificationFragment"
+        android:name="com.example.projectakhir.ui.shop.Notification.NotificationFragment"
+        android:label="Notifikasi"
+        tools:layout="@layout/fragment_notification" />
 
+    <fragment
+        android:id="@+id/reviewFragment"
+        android:name="com.example.projectakhir.ui.shop.Review.ReviewFragment"
+        android:label="Penilaian Produk"
+        tools:layout="@layout/fragment_review">
+        <argument
+            android:name="productId"
+            app:argType="string"
+            android:defaultValue="" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/checkoutFragment"
+        android:name="com.example.projectakhir.ui.shop.Checkout.CheckoutFragment"
+        android:label="CheckoutFragment">
+        <action
+            android:id="@+id/action_checkoutFragment_to_paymentFragment"
+            app:destination="@id/paymentFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/paymentFragment"
+        android:name="com.example.projectakhir.ui.shop.Payment.PaymentFragment"
+        android:label="PaymentFragment" />
 </navigation>

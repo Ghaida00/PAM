@@ -1,44 +1,36 @@
 package com.example.projectakhir.ui.auth;
 
-import android.content.Context;
-import android.content.SharedPreferences;
+import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils; // Import TextUtils
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
-import androidx.navigation.NavOptions;
-import androidx.navigation.fragment.NavHostFragment;
-
+import androidx.navigation.Navigation; // Penting: import Navigation
 import com.example.projectakhir.R;
 import com.example.projectakhir.databinding.FragmentLoginBinding;
-import com.google.firebase.auth.FirebaseAuth; // Import FirebaseAuth
-import com.google.firebase.auth.FirebaseUser; // Import FirebaseUser
-
-import java.util.Objects; // Import Objects
+import com.example.projectakhir.ui.auth.LoginViewModel; // FIXED: Mengoreksi jalur import LoginViewModel
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.GoogleAuthProvider;
 
 public class LoginFragment extends Fragment {
 
     private FragmentLoginBinding binding;
-    private NavController navController;
-    // private SharedPreferences sharedPreferences; // Dihapus karena kita pakai Firebase Auth
-    public static final String PREFS_NAME = "LoginPrefs"; // Bisa tetap dipakai jika ada preferensi lain
-    public static final String KEY_IS_LOGGED_IN = "isLoggedIn"; // Dihapus
-
-    private FirebaseAuth mAuth; // Tambahkan FirebaseAuth
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // sharedPreferences = requireActivity().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE); // Dihapus
-        mAuth = FirebaseAuth.getInstance(); // Inisialisasi FirebaseAuth
-    }
+    private LoginViewModel loginViewModel;
+    private GoogleSignInClient mGoogleSignInClient;
+    private final static int RC_SIGN_IN = 123;
 
     @Nullable
     @Override
@@ -50,63 +42,80 @@ public class LoginFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        navController = NavHostFragment.findNavController(this);
 
-        // Cek jika pengguna sudah login menggunakan Firebase Auth
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser != null) {
-            navigateToBlankHomepage();
-            return;
-        }
+        loginViewModel = new ViewModelProvider(this).get(LoginViewModel.class);
 
-        binding.buttonLogin.setOnClickListener(v -> {
-            String email = Objects.requireNonNull(binding.editTextEmail.getText()).toString().trim();
-            String password = Objects.requireNonNull(binding.editTextPassword.getText()).toString().trim();
+        // Konfigurasi Google Sign-In
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+        mGoogleSignInClient = GoogleSignIn.getClient(requireActivity(), gso);
 
-            if (TextUtils.isEmpty(email)) {
-                binding.editTextEmail.setError("Email tidak boleh kosong");
-                binding.editTextEmail.requestFocus();
-                return;
+        // FIXED: Menggunakan ID yang benar dari fragment_login.xml yang baru (camelCase)
+        binding.buttonLogin.setOnClickListener(v -> { // ID di XML: buttonLogin
+            String email = binding.editTextUsername.getText().toString().trim(); // ID di XML: editTextUsername
+            String password = binding.editTextPassword.getText().toString().trim(); // ID di XML: editTextPassword
+
+            if (email.isEmpty() || password.isEmpty()) {
+                Toast.makeText(getContext(), "Email dan password tidak boleh kosong", Toast.LENGTH_SHORT).show();
+            } else {
+                loginViewModel.loginUser(email, password);
             }
-            if (TextUtils.isEmpty(password)) {
-                binding.editTextPassword.setError("Kata sandi tidak boleh kosong");
-                binding.editTextPassword.requestFocus();
-                return;
-            }
-
-            binding.buttonLogin.setEnabled(false); // Nonaktifkan tombol selama proses login
-            // Tambahkan ProgressBar jika ada
-            // binding.progressBarLogin.setVisibility(View.VISIBLE);
-
-
-            mAuth.signInWithEmailAndPassword(email, password)
-                    .addOnCompleteListener(requireActivity(), task -> {
-                        binding.buttonLogin.setEnabled(true); // Aktifkan kembali tombol
-                        // binding.progressBarLogin.setVisibility(View.GONE);
-
-                        if (task.isSuccessful()) {
-                            // Login berhasil
-                            Toast.makeText(getContext(), "Login Berhasil.", Toast.LENGTH_SHORT).show();
-                            navigateToBlankHomepage();
-                        } else {
-                            // Jika login gagal, tampilkan pesan ke pengguna.
-                            Toast.makeText(getContext(), "Login Gagal: " + Objects.requireNonNull(task.getException()).getMessage(),
-                                    Toast.LENGTH_LONG).show();
-                        }
-                    });
         });
 
-        binding.textViewRegister.setOnClickListener(v -> {
-            // Navigasi ke RegisterFragment
+        // FIXED: Menggunakan ID yang benar dari fragment_login.xml yang baru (camelCase)
+        // dan NavController untuk navigasi
+        binding.textViewRegister.setOnClickListener(v -> { // ID di XML: textViewRegister
+            NavController navController = Navigation.findNavController(v);
             navController.navigate(R.id.action_loginFragment_to_registerFragment);
+        });
+
+        // FIXED: Menggunakan ID yang benar dari fragment_login.xml yang baru (camelCase)
+        binding.buttonGoogleSignIn.setOnClickListener(v -> { // ID di XML: buttonGoogleSignIn
+            signInWithGoogle();
+        });
+
+        loginViewModel.loginResult.observe(getViewLifecycleOwner(), isSuccess -> {
+            if (isSuccess) {
+                Toast.makeText(getContext(), "Login berhasil!", Toast.LENGTH_SHORT).show();
+                // Setelah login berhasil, navigasi ke HomepageFragment dan bersihkan back stack
+                NavController navController = Navigation.findNavController(view);
+                navController.navigate(R.id.action_loginFragment_to_blankHomepageFragment); // Menggunakan action dari nav_graph
+            } else {
+                Toast.makeText(getContext(), "Login gagal. Cek kredensial Anda.", Toast.LENGTH_SHORT).show();
+            }
         });
     }
 
-    private void navigateToBlankHomepage() {
-        NavOptions navOptions = new NavOptions.Builder()
-                .setPopUpTo(R.id.loginFragment, true)
-                .build();
-        navController.navigate(R.id.action_loginFragment_to_blankHomepageFragment, null, navOptions);
+    private void signInWithGoogle() {
+        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+        startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RC_SIGN_IN) {
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            try {
+                GoogleSignInAccount account = task.getResult(ApiException.class);
+                if (account != null && account.getIdToken() != null) {
+                    firebaseAuthWithGoogle(account.getIdToken());
+                } else {
+                    Toast.makeText(getContext(), "ID Token Google kosong.", Toast.LENGTH_SHORT).show();
+                }
+            } catch (ApiException e) {
+                Toast.makeText(getContext(), "Google Sign-In gagal: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void firebaseAuthWithGoogle(String idToken) {
+        AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
+        // FIXED: Mendelegasikan sign-in Firebase dengan credential Google ke ViewModel
+        loginViewModel.signInWithGoogleCredential(credential);
     }
 
     @Override

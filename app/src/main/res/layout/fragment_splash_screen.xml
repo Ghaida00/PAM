@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="16dp"
+    android:background="@color/beige"
+    android:id="@+id/splashScreen"
+    tools:context=".ui.auth.SplashScreenFragment">
+
+    <ImageView
+        android:layout_width="292dp"
+        android:layout_height="298dp"
+        android:background="@drawable/logo1"
+        android:layout_marginBottom="45dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="Temukan Segala Kebutuhan Hewan Peliharaanmu di Sini!"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/black"
+        android:layout_marginBottom="40dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="Jelajahi berbagai produk dan layanan terbaik untuk anabul kesayanganmu, mulai dari makanan, grooming, hingga adopsi hewan."
+        android:textSize="12sp"
+        android:textStyle="normal"
+        android:textColor="@android:color/black"
+        android:layout_marginBottom="40dp"/>
+
+    <Button
+        android:id="@+id/buttonLogin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Login"
+        android:textSize="18sp"
+        android:padding="12dp"
+        android:backgroundTint="@color/yellow_primary"
+        android:textColor="@android:color/black"
+        android:layout_marginBottom="20dp" />
+
+    <Button
+        android:id="@+id/buttonRegister"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Register"
+        android:textSize="18sp"
+        android:padding="12dp"
+        android:backgroundTint="@color/teal_200"
+        android:textColor="@android:color/black" />
+
+</LinearLayout>
