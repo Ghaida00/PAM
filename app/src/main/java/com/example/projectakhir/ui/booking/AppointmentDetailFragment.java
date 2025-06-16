@@ -112,7 +112,13 @@ public class AppointmentDetailFragment extends Fragment {
         binding.txtProviderName.setText(doc.getString("providerName"));
         binding.txtProviderAddress.setText(doc.getString("providerAddress"));
         binding.txtAppointmentDateTime.setText(doc.getString("tanggalDipilih") + " - " + doc.getString("waktuDipilih"));
-        binding.txtPetNameType.setText(doc.getString("petName") + " - Kucing"); // Asumsi
+
+        String petType = doc.getString("petType");
+        if (petType == null || petType.isEmpty()) {
+            petType = "Hewan"; // Fallback
+        }
+
+        binding.txtPetNameType.setText(doc.getString("petName") + " - " + petType);
 
         if ("grooming".equalsIgnoreCase(serviceType)) {
             binding.imgServiceIcon.setImageResource(R.drawable.ic_spa);

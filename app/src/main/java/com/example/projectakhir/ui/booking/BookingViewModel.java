@@ -21,12 +21,12 @@ public class BookingViewModel extends ViewModel {
         this.repository = new AppointmentRepository();
     }
 
-    public void createAppointment(String serviceId, String serviceType, String providerName, String petName, // Tambahkan serviceType
+    public void createAppointment(String serviceId, String serviceType, String providerName, String petName, String petType, // Tambahkan serviceType
                                   List<String> layananDipilih, String tanggal, String waktu) {
         _isSubmitting.setValue(true);
         _submissionResult.setValue(null);
 
-        repository.createAppointment(serviceId, serviceType, providerName, petName, layananDipilih, tanggal, waktu, // Kirim ke repository
+        repository.createAppointment(serviceId, serviceType, providerName, petName, petType, layananDipilih, tanggal, waktu,
                 new AppointmentRepository.FirestoreCallback<String>() {
                     @Override
                     public void onSuccess(String documentId) {

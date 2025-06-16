@@ -12,6 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
 
 public class HeartViewModel extends ViewModel {
 
@@ -72,42 +75,68 @@ public class HeartViewModel extends ViewModel {
         if (doc == null || !doc.exists()) return null;
 
         String serviceType = doc.getString("serviceType");
-        // if (serviceType == null) serviceType = "Grooming"; // Fallback
+        if (serviceType == null) { return null; }
 
-        // Anda bisa menambahkan pengecekan jika serviceType masih null untuk debugging
-        if (serviceType == null) {
-            // Logika jika serviceType tidak ditemukan, misalnya mengabaikan data ini
-            return null;
-        }
-
-        // Gabungkan layanan yang dipilih menjadi satu string
         List<String> layananList = (List<String>) doc.get("layananDipilih");
         String serviceDetails = "";
         if (layananList != null) {
             serviceDetails = String.join(", ", layananList);
         }
 
-        // Tentukan icon berdasarkan tipe layanan
-        int iconRes = R.drawable.ic_self_care; // Default
+        int iconRes = R.drawable.ic_self_care;
         if ("grooming".equalsIgnoreCase(serviceType)) {
             iconRes = R.drawable.ic_spa;
         } else if ("doctor".equalsIgnoreCase(serviceType)) {
             iconRes = R.drawable.ic_stethoscope;
         }
 
+        String petType = doc.getString("petType");
+        if (petType == null || petType.isEmpty()) {
+            petType = "Hewan"; // Fallback
+        }
+
+        String appointmentDate = doc.getString("tanggalDipilih");
+        String displayDay = getRelativeDayString(appointmentDate);
         AppointmentData data = new AppointmentData(
                 doc.getString("petName"),
-                "Today", // Logika untuk "Today", "Tomorrow" bisa dibuat lebih kompleks
+                displayDay,
                 doc.getString("waktuDipilih"),
                 doc.getString("providerName"),
                 "Alamat belum tersedia", // Alamat bisa ditambahkan saat booking jika perlu
                 serviceType,
                 serviceDetails,
-                "Kucing", // Tipe peliharaan bisa ditambahkan saat booking
+                petType,
                 "Tidak ada catatan", // Catatan bisa ditambahkan saat booking
                 iconRes
         );
         data.setId(doc.getId()); // Simpan ID dokumen
         return data;
+    }
+
+    private String getRelativeDayString(String appointmentDateStr) {
+        if (appointmentDateStr == null || appointmentDateStr.isEmpty()) {
+            return "Unknown Date"; // Fallback jika tanggal tidak ada
+        }
+
+        // Format yang sama seperti yang Anda gunakan di BookingFragment
+        SimpleDateFormat sdf = new SimpleDateFormat("EEE, d", Locale.ENGLISH);
+
+        // Dapatkan tanggal hari ini dan besok dalam format yang sama
+        Calendar todayCal = Calendar.getInstance();
+        String todayStr = sdf.format(todayCal.getTime());
+
+        Calendar tomorrowCal = Calendar.getInstance();
+        tomorrowCal.add(Calendar.DAY_OF_YEAR, 1);
+        String tomorrowStr = sdf.format(tomorrowCal.getTime());
+
+        // Bandingkan
+        if (appointmentDateStr.equalsIgnoreCase(todayStr)) {
+            return "Today";
+        } else if (appointmentDateStr.equalsIgnoreCase(tomorrowStr)) {
+            return "Tomorrow";
+        } else {
+            // Jika bukan hari ini atau besok, tampilkan tanggal aslinya
+            return appointmentDateStr;
+        }
     }
 }

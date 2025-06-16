@@ -104,7 +104,7 @@ public class AppointmentRepository {
                 .addOnFailureListener(callback::onError);
     }
 
-    public void createAppointment(String serviceId, String serviceType, String providerName, String petName, // Tambahkan serviceType
+    public void createAppointment(String serviceId, String serviceType, String providerName, String petName, String petType,
                                   List<String> layananDipilih, String tanggal, String waktu,
                                   FirestoreCallback<String> callback) {
 
@@ -121,6 +121,7 @@ public class AppointmentRepository {
         appointment.put("serviceType", serviceType); // <-- TAMBAHKAN BARIS INI
         appointment.put("providerName", providerName);
         appointment.put("petName", petName);
+        appointment.put("petType", petType);
         appointment.put("layananDipilih", layananDipilih);
         appointment.put("tanggalDipilih", tanggal);
         appointment.put("waktuDipilih", waktu);

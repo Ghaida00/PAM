@@ -31,6 +31,7 @@ public class DetailVetFragment extends Fragment {
     private String serviceId;
     private Salon currentVetData;
     private final ArrayList<String> layananDipilih = new ArrayList<>();
+    private String jenisHewanDipilih = "Dog";
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -137,6 +138,7 @@ public class DetailVetFragment extends Fragment {
             v.setBackgroundResource(R.drawable.bg_tag_hijau); // Warna terpilih
             if (v instanceof TextView) {
                 ((TextView) v).setTextColor(Color.WHITE);
+                jenisHewanDipilih = ((TextView) v).getText().toString();
             }
         };
 
@@ -199,7 +201,8 @@ public class DetailVetFragment extends Fragment {
                     DetailVetFragmentDirections.actionDetailVetFragmentToBookingFragment(
                             providerName,
                             providerId,
-                            currentVetData.getTipe() // <-- Kirim tipe "doctor"
+                            currentVetData.getTipe(),
+                            jenisHewanDipilih
                     );
             action.setLayananDipilih(layananDipilih.toArray(new String[0]));
             NavHostFragment.findNavController(this).navigate(action);
