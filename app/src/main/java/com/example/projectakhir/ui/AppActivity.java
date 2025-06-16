@@ -60,17 +60,6 @@ public class AppActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(bottomNavView, navController);
 
-        String destinationFragment = getIntent().getStringExtra("destination_fragment");
-        if (savedInstanceState == null) {
-            if ("login".equals(destinationFragment)) {
-                navController.navigate(R.id.loginFragment, null, new androidx.navigation.NavOptions.Builder().setPopUpTo(navController.getGraph().getStartDestinationId(), true).build());
-            } else if ("homepage".equals(destinationFragment)) {
-                navController.navigate(R.id.blankHomepageFragment, null, new androidx.navigation.NavOptions.Builder().setPopUpTo(navController.getGraph().getStartDestinationId(), true).build());
-            } else {
-                navController.navigate(R.id.loginFragment, null, new androidx.navigation.NavOptions.Builder().setPopUpTo(navController.getGraph().getStartDestinationId(), true).build());
-            }
-        }
-
         setupAppBarAndNavVisibility();
     }
 

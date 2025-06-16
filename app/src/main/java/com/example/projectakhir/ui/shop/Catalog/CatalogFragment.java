@@ -56,15 +56,26 @@ public class CatalogFragment extends Fragment implements ProductAdapter.OnItemCl
                 Toast.makeText(getContext(), "Gagal menambahkan produk ke keranjang. Pastikan Anda login.", Toast.LENGTH_SHORT).show();
             }
         });
+
+        // Tambahkan navigasi icon bell ke notificationFragment
+        binding.iconNotification.setOnClickListener(v -> {
+            NavController navController = Navigation.findNavController(requireView());
+            navController.navigate(R.id.notificationFragment);
+        });
+
+        // Tambahkan navigasi icon cart ke cartFragment
+        binding.iconCart.setOnClickListener(v -> {
+            NavController navController = Navigation.findNavController(requireView());
+            navController.navigate(R.id.cartFragment);
+        });
     }
 
     @Override
     public void onProductClick(Product product) {
-        Toast.makeText(getContext(), "Produk diklik: " + product.getName(), Toast.LENGTH_SHORT).show();
         NavController navController = Navigation.findNavController(requireView());
-        Bundle bundle = new Bundle();
-        bundle.putString("productId", product.getId());
-        navController.navigate(R.id.action_catalogFragment_to_reviewFragment, bundle);
+        Bundle args = new Bundle();
+        args.putString("productId", product.getId());
+        navController.navigate(R.id.action_catalogFragment_to_detailFragment, args);
     }
 
     @Override

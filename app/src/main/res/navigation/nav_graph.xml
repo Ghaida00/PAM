@@ -73,6 +73,20 @@
         <action
             android:id="@+id/action_catalogFragment_to_cartFragment"
             app:destination="@id/cartFragment" />
+        <action
+            android:id="@+id/action_catalogFragment_to_detailFragment"
+            app:destination="@id/detailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/detailFragment"
+        android:name="com.example.projectakhir.ui.shop.Detail.DetailFragment"
+        android:label="Detail Produk"
+        tools:layout="@layout/fragment_detail">
+        <argument
+            android:name="productId"
+            app:argType="string"
+            app:nullable="true" />
     </fragment>
 
     <fragment
@@ -94,7 +108,11 @@
         android:id="@+id/notificationFragment"
         android:name="com.example.projectakhir.ui.shop.Notification.NotificationFragment"
         android:label="Notifikasi"
-        tools:layout="@layout/fragment_notification" />
+        tools:layout="@layout/fragment_notification" >
+        <action
+            android:id="@+id/action_notificationFragment_to_reviewFragment"
+            app:destination="@id/reviewFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/reviewFragment"
