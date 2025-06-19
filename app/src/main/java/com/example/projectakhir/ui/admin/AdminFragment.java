@@ -80,7 +80,7 @@ public class AdminFragment extends Fragment {
                 public void onReject(AdoptionRequest request) {
                     // Pastikan petId tidak null sebelum mengirim
                     if (request.getPetId() != null) {
-                        viewModel.updateAdoptionRequestStatus(request.getId(), request.getPetId(), "Ditolak");
+                        viewModel.updateAdoptionRequestStatus(request.getId(), request.getPetId(), "available");
                     } else {
                         Toast.makeText(getContext(), "Error: Pet ID not found in this request.", Toast.LENGTH_SHORT).show();
                     }
