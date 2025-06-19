@@ -135,12 +135,6 @@ public class DaftarHewanFragment extends Fragment {
 
         String[] kategoriList = {"Semua", "Kucing", "Anjing", "Reptil", "Burung"};
         setupCategoryButtons(binding.kategoriContainer, kategoriList);
-
-        // Tombol back (jika tidak menggunakan NavController otomatis dari AppActivity Toolbar)
-        // ImageView btnBack = view.findViewById(R.id.btnBackDaftarHewan); // Jika ada tombol back manual
-        // if (btnBack != null) {
-        //     btnBack.setOnClickListener(v -> NavHostFragment.findNavController(this).popBackStack());
-        // }
     }
 
     private void setupRecyclerView() {
