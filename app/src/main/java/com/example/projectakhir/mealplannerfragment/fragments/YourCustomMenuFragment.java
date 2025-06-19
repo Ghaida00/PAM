@@ -151,7 +151,9 @@ public class YourCustomMenuFragment extends Fragment {
         FirebaseManager.saveCustomMenu(customMenu, new FirebaseManager.OnCustomMenuSavedListener() {
             @Override
             public void onCustomMenuSaved(CustomMenu menu) {
+                customMenu = menu;
                 adapter.updateData(customMenu);
+                loadCustomMenu();
                 selectedCategories.clear();
                 Toast.makeText(requireContext(), "Menu Successfully Removed", Toast.LENGTH_SHORT).show();
             }

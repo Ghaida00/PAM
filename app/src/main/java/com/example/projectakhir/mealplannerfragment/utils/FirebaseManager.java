@@ -76,6 +76,7 @@ public class FirebaseManager {
             return;
         }
 
+
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         String dateString = sdf.format(date);
 
@@ -88,6 +89,7 @@ public class FirebaseManager {
                         if (!task.getResult().isEmpty()) {
                             QueryDocumentSnapshot document = (QueryDocumentSnapshot) task.getResult().getDocuments().get(0);
                             CustomMenu customMenu = document.toObject(CustomMenu.class);
+                            customMenu.setId(document.getId()); // <-- Fix: set id here!
                             listener.onCustomMenuLoaded(customMenu);
                         } else {
                             // No menu for this date

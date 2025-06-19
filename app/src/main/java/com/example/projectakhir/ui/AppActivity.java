@@ -141,7 +141,13 @@ public class AppActivity extends AppCompatActivity {
                     destination.getId() == R.id.detailVetFragment ||
                     destination.getId() == R.id.bookingFragment ||
                     destination.getId() == R.id.appointmentDetailFragment ||
-                    destination.getId() == R.id.editProfileFragment; // Menambahkan ini
+                    destination.getId() == R.id.editProfileFragment|| // Menambahkan ini
+                    destination.getId() == R.id.foodRecommendationFragment||
+                    destination.getId() == R.id.yourCustomMenuFragment||
+                    destination.getId() == R.id.makeYourOwnMenuFragment||
+                    destination.getId() == R.id.customizedMenuFragment||
+                    destination.getId() == R.id.foodSelectionFragment||
+                    destination.getId() == R.id.cartFragment;
 
             if (isAuthScreen || hideBoth) {
                 actionBar.hide();

@@ -31,7 +31,7 @@ public class MealPlannerFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         cardFoodRecommendation = view.findViewById(R.id.card_food_recommendation);
         cardCustomMenu = view.findViewById(R.id.card_custom_menu);
-        btnChoose = view.findViewById(R.id.btn_choose);
+//        btnChoose = view.findViewById(R.id.btn_choose);
         tvTitle = view.findViewById(R.id.tv_title);
         tvDescription = view.findViewById(R.id.tv_description);
 
@@ -44,8 +44,8 @@ public class MealPlannerFragment extends Fragment {
         cardCustomMenu.setOnClickListener(v ->
                 NavHostFragment.findNavController(this).navigate(R.id.action_navigation_meal_to_yourCustomMenuFragment)
         );
-        btnChoose.setOnClickListener(v ->
-                NavHostFragment.findNavController(this).navigate(R.id.action_navigation_meal_to_yourCustomMenuFragment)
-        );
+//        btnChoose.setOnClickListener(v ->
+//                NavHostFragment.findNavController(this).navigate(R.id.action_navigation_meal_to_yourCustomMenuFragment)
+//        );
     }
 }

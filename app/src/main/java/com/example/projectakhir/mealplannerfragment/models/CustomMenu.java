@@ -10,6 +10,7 @@ public class CustomMenu {
     private String id;
     private String userId;
     private Date date;
+    private String dateString;
     private Map<String, FoodItem> mealsByCategory; // e.g., "Breakfast" -> FoodItem
 
     public CustomMenu() {
@@ -66,5 +67,13 @@ public class CustomMenu {
 
     public List<Map.Entry<String, FoodItem>> getMealsAsList() {
         return new ArrayList<>(mealsByCategory.entrySet());
+    }
+
+    public String getDateString() {
+        return dateString;
+    }
+
+    public void setDateString(String dateString) {
+        this.dateString = dateString;
     }
 }

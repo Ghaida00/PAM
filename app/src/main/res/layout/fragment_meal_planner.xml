@@ -71,17 +71,17 @@
                 android:textColor="#000000"/>
         </androidx.cardview.widget.CardView>
 
-        <Button
-            android:id="@+id/btn_choose"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:text="Choose"
-            android:textSize="16sp"
-            android:padding="12dp"
-            android:layout_gravity="center"
-            android:textColor="@color/black"
-            android:backgroundTint="#FFCA28"
-            android:layout_marginTop="24dp"/>
+<!--        <Button-->
+<!--            android:id="@+id/btn_choose"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="60dp"-->
+<!--            android:text="Choose"-->
+<!--            android:textSize="16sp"-->
+<!--            android:padding="12dp"-->
+<!--            android:layout_gravity="center"-->
+<!--            android:textColor="@color/black"-->
+<!--            android:backgroundTint="#FFCA28"-->
+<!--            android:layout_marginTop="24dp"/>-->
 
     </LinearLayout>
 </LinearLayout>

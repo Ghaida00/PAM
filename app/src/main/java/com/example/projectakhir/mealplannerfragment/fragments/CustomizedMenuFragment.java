@@ -41,7 +41,7 @@ public class CustomizedMenuFragment extends Fragment {
     private Map<String, FoodItem> selectedMeals = new HashMap<>();
     private List<Map.Entry<String, FoodItem>> menuEntries = new ArrayList<>();
     private static final String[] MEAL_CATEGORIES = {
-            "Sarapan", "Snack", "Makan siang", "Snack", "Makan malam"
+            "Sarapan", "Snack", "Makan siang", "Snack sore", "Makan malam"
     };
     private int nextCategoryIndex = 0;
 
@@ -89,14 +89,14 @@ public class CustomizedMenuFragment extends Fragment {
         for (CartItem cartItem : selectedCartItems) {
             for (int i = 0; i < cartItem.getQuantity(); i++) {
                 if (nextCategoryIndex < MEAL_CATEGORIES.length) {
-                    String category = MEAL_CATEGORIES[nextCategoryIndex];
+                    String category = cartItem.getFoodItem().getCategory();
                     selectedMeals.put(category, cartItem.getFoodItem());
-                    nextCategoryIndex++;
                 }
             }
         }
         updateMenuEntries();
     }
+
 
     private void updateMenuEntries() {
         menuEntries.clear();
@@ -132,25 +132,87 @@ public class CustomizedMenuFragment extends Fragment {
             return;
         }
 
-        CustomMenu customMenu = new CustomMenu();
-        customMenu.setDate(selectedDate);
-
-        for (Map.Entry<String, FoodItem> entry : selectedMeals.entrySet()) {
-            customMenu.addMeal(entry.getKey(), entry.getValue());
-        }
-
-        FirebaseManager.saveCustomMenu(customMenu, new FirebaseManager.OnCustomMenuSavedListener() {
+        // 1. Load the current menu for the date and user
+        FirebaseManager.getCustomMenuForDate(selectedDate, new FirebaseManager.OnCustomMenuLoadedListener() {
             @Override
-            public void onCustomMenuSaved(CustomMenu menu) {
-                Toast.makeText(requireContext(), "Menu saved successfully!", Toast.LENGTH_SHORT).show();
-                CartManager.getInstance().clearSelectedItems();
-                // Back to YourCustomMenuFragment
-                NavHostFragment.findNavController(CustomizedMenuFragment.this).navigate(R.id.action_customizedMenuFragment_to_navigation_meal);
+            public void onCustomMenuLoaded(CustomMenu customMenu) {
+                // 2. Add/Update meals in the map
+                for (Map.Entry<String, FoodItem> entry : selectedMeals.entrySet()) {
+                    customMenu.addMeal(entry.getKey(), entry.getValue());
+                }
+                // 3. Save the updated menu
+                FirebaseManager.saveCustomMenu(customMenu, new FirebaseManager.OnCustomMenuSavedListener() {
+                    @Override
+                    public void onCustomMenuSaved(CustomMenu menu) {
+                        Toast.makeText(requireContext(), "Menu saved successfully!", Toast.LENGTH_SHORT).show();
+                        CartManager.getInstance().clearSelectedItems();
+                        // Use popBackStack or navigate to the right destination
+                        NavHostFragment.findNavController(CustomizedMenuFragment.this).navigate(R.id.navigation_meal);
+                    }
+                    @Override
+                    public void onCustomMenuSaveFailed(String errorMessage) {
+                        Toast.makeText(requireContext(), "Failed to save menu: " + errorMessage, Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
             @Override
-            public void onCustomMenuSaveFailed(String errorMessage) {
-                Toast.makeText(requireContext(), "Failed to save menu: " + errorMessage, Toast.LENGTH_SHORT).show();
+            public void onCustomMenuLoadFailed(String errorMessage) {
+                Toast.makeText(requireContext(), "Failed to load current menu: " + errorMessage, Toast.LENGTH_SHORT).show();
             }
         });
     }
 }
+//    private void saveCustomMenu() {
+//        if (selectedMeals.isEmpty()) {
+//            Toast.makeText(requireContext(), "Please add at least one meal to your menu", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//
+//        CustomMenu customMenu = new CustomMenu();
+//        customMenu.setDate(selectedDate);
+//
+//        for (Map.Entry<String, FoodItem> entry : selectedMeals.entrySet()) {
+//            customMenu.addMeal(entry.getKey(), entry.getValue());
+//        }
+//        // 1. Load the current menu for the date and user
+//        FirebaseManager.getCustomMenuForDate(selectedDate, new FirebaseManager.OnCustomMenuLoadedListener() {
+//            @Override
+//            public void onCustomMenuLoaded(CustomMenu customMenu) {
+//                // 2. Add/Update meals in the map
+//                for (Map.Entry<String, FoodItem> entry : selectedMeals.entrySet()) {
+//                    customMenu.addMeal(entry.getKey(), entry.getValue());
+//                }
+//                // 3. Save the updated menu
+//                FirebaseManager.saveCustomMenu(customMenu, new FirebaseManager.OnCustomMenuSavedListener() {
+//                    @Override
+//                    public void onCustomMenuSaved(CustomMenu menu) {
+//                        Toast.makeText(requireContext(), "Menu saved successfully!", Toast.LENGTH_SHORT).show();
+//                        CartManager.getInstance().clearSelectedItems();
+//                        NavHostFragment.findNavController(CustomizedMenuFragment.this).navigate(R.id.action_customizedMenuFragment_to_navigation_meal);
+//                    }
+//                    @Override
+//                    public void onCustomMenuSaveFailed(String errorMessage) {
+//                        Toast.makeText(requireContext(), "Failed to save menu: " + errorMessage, Toast.LENGTH_SHORT).show();
+//                    }
+//                });
+//            }
+//            @Override
+//            public void onCustomMenuLoadFailed(String errorMessage) {
+//                Toast.makeText(requireContext(), "Failed to load current menu: " + errorMessage, Toast.LENGTH_SHORT).show();
+//            }
+//        });
+//
+//        FirebaseManager.saveCustomMenu(customMenu, new FirebaseManager.OnCustomMenuSavedListener() {
+//            @Override
+//            public void onCustomMenuSaved(CustomMenu menu) {
+//                Toast.makeText(requireContext(), "Menu saved successfully!", Toast.LENGTH_SHORT).show();
+//                CartManager.getInstance().clearSelectedItems();
+//                // Back to YourCustomMenuFragment
+//                NavHostFragment.findNavController(CustomizedMenuFragment.this).navigate(R.id.action_customizedMenuFragment_to_navigation_meal);
+//            }
+//            @Override
+//            public void onCustomMenuSaveFailed(String errorMessage) {
+//                Toast.makeText(requireContext(), "Failed to save menu: " + errorMessage, Toast.LENGTH_SHORT).show();
+//            }
+//        });
+//    }
