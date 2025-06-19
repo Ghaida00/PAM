@@ -7,11 +7,6 @@
     android:background="#FFFBEF"
     tools:context=".ui.adoption.DaftarHewanFragment">
 
-    <ScrollView
-        android:id="@+id/scrollView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fillViewport="true">
 
         <LinearLayout
             android:orientation="vertical"
@@ -55,7 +50,6 @@
                 tools:listitem="@layout/item_hewan" />
 
         </LinearLayout>
-    </ScrollView>
 
     <ProgressBar
         android:id="@+id/progressBarDaftarHewan"
