@@ -1,8 +1,13 @@
 package com.example.projectakhir.data.model;
 
+import com.google.firebase.database.IgnoreExtraProperties;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 
+@IgnoreExtraProperties
 public class Order {
     public static final String STATUS_PAID = "PAID";
     public static final String STATUS_PACKED = "PACKED";
@@ -19,7 +24,7 @@ public class Order {
     private Map<String, Integer> productQuantities;
     private String id; // For Firestore compatibility
     private long orderDate; // For Firestore compatibility
-    private List<String> products; // Changed from items Map to products List
+    private Map<String, Object> items; // Changed back to Map since Firestore stores it as HashMap
 
     public Order() {
         // Required empty constructor for Firestore
@@ -29,7 +34,10 @@ public class Order {
         this.orderId = orderId;
         this.userId = userId;
         this.productIds = productIds;
-        this.products = productIds; // Set products same as productIds
+        this.items = new HashMap<>(); // Initialize empty map
+        for (String productId : productIds) {
+            this.items.put(productId, true); // or any other default value
+        }
         this.totalAmount = totalAmount;
         this.paymentMethod = paymentMethod;
         this.status = STATUS_PAID; // Default status
@@ -67,7 +75,14 @@ public class Order {
 
     public void setProductIds(List<String> productIds) {
         this.productIds = productIds;
-        this.products = productIds; // Keep products in sync with productIds
+        // Update items map
+        if (this.items == null) {
+            this.items = new HashMap<>();
+        }
+        this.items.clear();
+        for (String productId : productIds) {
+            this.items.put(productId, true);
+        }
     }
 
     public double getTotalAmount() {
@@ -125,14 +140,5 @@ public class Order {
 
     public void setOrderDate(long orderDate) {
         this.orderDate = orderDate;
-    }
-
-    public List<String> getProducts() {
-        return products;
-    }
-
-    public void setProducts(List<String> products) {
-        this.products = products;
-        this.productIds = products; // Keep productIds in sync with products
     }
 }

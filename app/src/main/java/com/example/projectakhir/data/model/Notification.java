@@ -14,6 +14,7 @@ public class Notification {
     public static final String TYPE_REVIEW_PUBLISHED = "REVIEW_PUBLISHED";
 
     // Action Types
+    public static final String ACTION_NONE = "NONE";
     public static final String ACTION_REVIEW = "REVIEW";
     public static final String ACTION_PROMO = "PROMO";
     public static final String ACTION_ORDER_CANCELLED = "ORDER_CANCELLED";

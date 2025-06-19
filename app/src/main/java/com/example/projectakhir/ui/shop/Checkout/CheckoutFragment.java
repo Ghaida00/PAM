@@ -32,11 +32,14 @@ import java.util.List;
 
 import com.example.projectakhir.ui.auth.AuthManager;
 import com.example.projectakhir.ui.shop.Checkout.CheckoutViewModelFactory;
+import com.example.projectakhir.ui.shop.Keranjang.KeranjangViewModel;
+import android.util.Log;
 
 public class CheckoutFragment extends Fragment {
 
     private FragmentCheckoutBinding binding;
     private CheckoutViewModel checkoutViewModel;
+    private KeranjangViewModel keranjangViewModel;
     private View rootView;
 
     @Nullable
@@ -55,6 +58,7 @@ public class CheckoutFragment extends Fragment {
         AuthManager auth = new AuthManager();
         CheckoutViewModelFactory factory = new CheckoutViewModelFactory(firestore, auth);
         checkoutViewModel = new ViewModelProvider(this, factory).get(CheckoutViewModel.class);
+        keranjangViewModel = new ViewModelProvider(this).get(KeranjangViewModel.class);
 
         // Set up back button
         binding.backButton.setOnClickListener(v -> {
@@ -109,6 +113,10 @@ public class CheckoutFragment extends Fragment {
                         paymentMethod,
                         productQuantities,
                         documentReference -> {
+                            Log.d("CheckoutDebug", "Order placed successfully, clearing cart");
+                            // Clear cart immediately after successful order
+                            keranjangViewModel.clearCartForCheckout();
+                            
                             binding.successContainer.setVisibility(View.VISIBLE);
                             binding.tvTitle.setVisibility(View.GONE);
                             binding.tvDeliveryAddress.setVisibility(View.GONE);
@@ -124,8 +132,10 @@ public class CheckoutFragment extends Fragment {
 
                             View finalSuccessView = successView;
                             successView.findViewById(R.id.btnBackToHome).setOnClickListener(btn -> {
+                                Log.d("CheckoutDebug", "Navigating back to home");
                                 NavController navController = Navigation.findNavController(finalSuccessView);
-                                navController.popBackStack(R.id.blankHomepageFragment, false);
+                                // Clear backstack completely before navigating to home
+                                navController.popBackStack(R.id.blankHomepageFragment, true);
                                 navController.navigate(R.id.blankHomepageFragment);
                             });
                         }

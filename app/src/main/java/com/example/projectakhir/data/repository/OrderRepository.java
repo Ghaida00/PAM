@@ -62,7 +62,7 @@ public class OrderRepository {
         String title;
         String message;
         String type;
-        String actionType = Notification.ACTION_REVIEW;
+        String actionType = Notification.ACTION_NONE; // Default to none
 
         // Selalu set status ke PAID untuk testing
         order.setStatus(Order.STATUS_PAID);
@@ -87,6 +87,7 @@ public class OrderRepository {
                 title = "Berikan Ulasan";
                 message = "Bagaimana pengalaman Anda dengan produk yang baru dibeli?";
                 type = Notification.TYPE_REVIEW_REQUEST;
+                actionType = Notification.ACTION_REVIEW; // Set action type to REVIEW for received orders
                 break;
             default:
                 return;

@@ -1,10 +1,14 @@
 package com.example.projectakhir.adapters;
 
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.projectakhir.R;
 import com.example.projectakhir.data.model.Notification;
@@ -91,7 +95,15 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
             if (notification.getActionType() != null && notification.getActionType().equals("REVIEW")) {
                 btnAction.setVisibility(View.VISIBLE);
                 btnAction.setText("Beri Penilaian");
-                btnAction.setOnClickListener(v -> listener.onNotificationClick(notification));
+                btnAction.setOnClickListener(v -> {
+                    Bundle bundle = new Bundle();
+                    // If there are multiple products, split them
+                    String[] productIds = notification.getProductId().split(",");
+                    bundle.putStringArray("productIds", productIds);
+                    
+                    NavController navController = Navigation.findNavController(v);
+                    navController.navigate(R.id.action_notificationFragment_to_reviewFragment, bundle);
+                });
             } else {
                 btnAction.setVisibility(View.GONE);
                 itemView.setOnClickListener(v -> listener.onNotificationClick(notification));
