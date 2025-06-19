@@ -31,6 +31,8 @@ public class RealtimeDbSource {
                 for (DataSnapshot postSnapshot: snapshot.getChildren()) {
                     Product product = postSnapshot.getValue(Product.class);
                     if (product != null) {
+                        // Set the document key as the product ID
+                        product.setId(postSnapshot.getKey());
                         products.add(product);
                     }
                 }
@@ -53,6 +55,10 @@ public class RealtimeDbSource {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 Product product = snapshot.getValue(Product.class);
+                if (product != null) {
+                    // Set the document key as the product ID
+                    product.setId(snapshot.getKey());
+                }
                 productLiveData.setValue(product);
             }
 

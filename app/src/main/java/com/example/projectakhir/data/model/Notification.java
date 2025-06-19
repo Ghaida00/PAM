@@ -4,24 +4,33 @@ public class Notification {
     private String id;
     private String title;
     private String message;
-    private String type; // e.g., "Order Status", "Promotion"
+    private String type;
+    private String actionType;
     private long timestamp;
     private boolean isRead;
-    private String imageUrl; // NEW: Menambahkan properti imageUrl
+    private String imageUrl;
 
     public Notification() {
         // Diperlukan untuk Firestore
     }
 
-    // UPDATED: Konstruktor baru dengan imageUrl
-    public Notification(String id, String title, String message, String type, long timestamp, boolean isRead, String imageUrl) {
+    public Notification(String id, String title, String message, String type, long timestamp, boolean isRead, String imageUrl, String actionType) {
         this.id = id;
         this.title = title;
         this.message = message;
         this.type = type;
         this.timestamp = timestamp;
         this.isRead = isRead;
-        this.imageUrl = imageUrl; // NEW: Inisialisasi imageUrl di konstruktor
+        this.imageUrl = imageUrl;
+        this.actionType = actionType;
+    }
+
+    public String getActionType() {
+        return actionType;
+    }
+
+    public void setActionType(String actionType) {
+        this.actionType = actionType;
     }
 
     public String getId() { return id; }

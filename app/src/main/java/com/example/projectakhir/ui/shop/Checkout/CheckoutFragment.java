@@ -43,18 +43,22 @@ public class CheckoutFragment extends Fragment {
         checkoutViewModel = new ViewModelProvider(this).get(CheckoutViewModel.class);
 
         checkoutViewModel.getTotalPrice().observe(getViewLifecycleOwner(), total -> {
-            binding.totalPaymentAmount.setText(String.format("Total Pembayaran: Rp %,.0f", total));
+            if (total != null) {
+                binding.totalPaymentAmount.setText(String.format("Total Pembayaran: Rp %,.0f", total));
+            }
         });
 
-        // Set up back button (jika ada di layout CheckoutFragment)
-        // Jika Anda memiliki tombol kembali di top bar fragment checkout Anda (mirip keranjang dan notifikasi),
-        // maka Anda perlu menambahkan listener di sini.
-        // Contoh:
-        // binding.backButton.setOnClickListener(v -> {
-        //     NavController navController = Navigation.findNavController(v);
-        //     navController.popBackStack();
-        // });
+        checkoutViewModel.getDeliveryAddress().observe(getViewLifecycleOwner(), address -> {
+            if (address != null) {
+                binding.tvDeliveryAddress.setText("Alamat Pengiriman: " + address);
+            }
+        });
 
+        // Set up back button
+        binding.backButton.setOnClickListener(v -> {
+            NavController navController = Navigation.findNavController(v);
+            navController.popBackStack();
+        });
 
         binding.btnPay.setOnClickListener(v -> {
             int selectedId = binding.rgPaymentMethods.getCheckedRadioButtonId();
@@ -68,16 +72,12 @@ public class CheckoutFragment extends Fragment {
                     paymentMethod = "Transfer Bank";
                 }
 
-                // Navigasi ke PaymentActivity (karena PaymentActivity tetap Activity)
-                // Atau ke PaymentFragment jika Payment juga diubah menjadi Fragment
+                // Navigasi ke PaymentFragment
                 NavController navController = Navigation.findNavController(v);
                 Bundle bundle = new Bundle();
                 bundle.putString("payment_method", paymentMethod);
-                // Anda juga bisa meneruskan total amount jika diperlukan
                 bundle.putDouble("total_amount", checkoutViewModel.getTotalPrice().getValue() != null ? checkoutViewModel.getTotalPrice().getValue() : 0.0);
-                // Asumsi PaymentActivity akan tetap menjadi Activity untuk saat ini
-                // Jika ingin PaymentActivity juga menjadi Fragment, maka action ini akan berubah ke PaymentFragment
-                navController.navigate(R.id.action_checkoutFragment_to_paymentFragment, bundle); // Perlu ditambahkan di nav_graph.xml
+                navController.navigate(R.id.action_checkoutFragment_to_paymentFragment, bundle);
             }
         });
 

@@ -28,10 +28,19 @@ public class CatalogViewModel extends ViewModel {
 
     public void addToCart(Product product) {
         String userId = FirebaseAuth.getInstance().getCurrentUser() != null ? FirebaseAuth.getInstance().getCurrentUser().getUid() : null;
-        if (userId != null) {
-            KeranjangItem cartItem = new KeranjangItem(product.getId(), product.getName(), product.getPrice(), product.getImageUrl(), 1);
-            cartRepository.addCartItem(userId, cartItem)
-                    .addOnCompleteListener(task -> _addToCartStatus.postValue(task.isSuccessful()));
+        if (userId != null && product != null && product.getId() != null && !product.getId().isEmpty()) {
+            try {
+                KeranjangItem cartItem = new KeranjangItem(product.getId(), product.getName(), product.getPrice(), product.getImageUrl(), 1);
+                cartRepository.addCartItem(userId, cartItem)
+                    .addOnSuccessListener(aVoid -> _addToCartStatus.postValue(true))
+                    .addOnFailureListener(e -> {
+                        _addToCartStatus.postValue(false);
+                        e.printStackTrace();
+                    });
+            } catch (Exception e) {
+                e.printStackTrace();
+                _addToCartStatus.postValue(false);
+            }
         } else {
             _addToCartStatus.postValue(false);
         }

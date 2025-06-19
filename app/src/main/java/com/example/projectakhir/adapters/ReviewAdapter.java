@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewViewHolder> {
 
@@ -53,26 +54,26 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
         TextView reviewerName;
         RatingBar reviewRatingBar;
         TextView reviewComment;
-        TextView reviewDate;
         ImageView reviewImage;
+        CircleImageView imgAvatar;
 
         public ReviewViewHolder(@NonNull View itemView) {
             super(itemView);
             reviewerName = itemView.findViewById(R.id.reviewer_name);
             reviewRatingBar = itemView.findViewById(R.id.review_rating_bar);
             reviewComment = itemView.findViewById(R.id.review_comment);
-            reviewDate = itemView.findViewById(R.id.review_date);
             reviewImage = itemView.findViewById(R.id.review_image);
+            imgAvatar = itemView.findViewById(R.id.imgAvatar);
         }
 
         public void bind(Review review) {
-            // Dalam aplikasi nyata, Anda mungkin akan mengambil nama pengguna dari ID pengguna
-            reviewerName.setText("Pengguna: " + review.getUserId().substring(0, 5) + "..."); // Singkat UID
+            // Dalam aplikasi nyata, ambil nama user dari userId jika ada user profile
+            reviewerName.setText(review.getUserId().length() > 10 ? review.getUserId().substring(0, 10) : review.getUserId());
             reviewRatingBar.setRating(review.getRating());
             reviewComment.setText(review.getComment());
-            SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy", Locale.getDefault());
-            reviewDate.setText(sdf.format(new Date(review.getTimestamp())));
-
+            // Avatar: jika ada URL avatar user, bisa pakai Glide, jika tidak pakai default
+            imgAvatar.setImageResource(R.drawable.ic_profile);
+            // Gambar review
             if (review.getImageUrl() != null && !review.getImageUrl().isEmpty()) {
                 reviewImage.setVisibility(View.VISIBLE);
                 Glide.with(itemView.getContext())

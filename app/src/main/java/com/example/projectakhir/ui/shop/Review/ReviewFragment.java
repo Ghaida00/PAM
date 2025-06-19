@@ -15,6 +15,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import com.bumptech.glide.Glide;
 import com.example.projectakhir.R;
@@ -68,6 +70,12 @@ public class ReviewFragment extends Fragment {
 
         reviewViewModel = new ViewModelProvider(this).get(ReviewViewModel.class);
 
+        // Setup back button
+        binding.backButton.setOnClickListener(v -> {
+            NavController navController = Navigation.findNavController(requireView());
+            navController.navigateUp();
+        });
+
         reviewAdapter = new ReviewAdapter(new ArrayList<>());
         binding.rvReviews.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.rvReviews.setAdapter(reviewAdapter);
@@ -103,17 +111,9 @@ public class ReviewFragment extends Fragment {
         reviewViewModel.reviewSubmissionStatus.observe(getViewLifecycleOwner(), isSuccess -> {
             if (isSuccess) {
                 Toast.makeText(getContext(), "Ulasan berhasil dikirim!", Toast.LENGTH_SHORT).show();
-                binding.reviewCommentEditText.setText("");
-                binding.reviewRatingBar.setRating(0.0f);
-                binding.reviewImagePreview.setVisibility(View.GONE);
-                selectedImageUri = null;
-                if (productId != null && !productId.isEmpty()) {
-                    reviewViewModel.getProductReviews(productId).observe(getViewLifecycleOwner(), reviews -> {
-                        if (reviews != null) {
-                            reviewAdapter.updateReviews(reviews);
-                        }
-                    });
-                }
+                // Navigate back to catalog
+                NavController navController = Navigation.findNavController(requireView());
+                navController.navigate(R.id.catalogFragment);
             } else {
                 Toast.makeText(getContext(), "Gagal mengirim ulasan. Coba lagi.", Toast.LENGTH_SHORT).show();
             }

@@ -61,10 +61,10 @@ public class AppActivity extends AppCompatActivity {
         // Fragmen-fragmen ini akan muncul di bottom navigation dan tidak memiliki tombol kembali di toolbar
         Set<Integer> topLevelDestinations = new HashSet<>();
         topLevelDestinations.add(R.id.blankHomepageFragment); // Home
-        topLevelDestinations.add(R.id.adoptHomeFragment);     // Paw (Adopsi)
-        topLevelDestinations.add(R.id.navigation_katalog);    // Katalog
-        topLevelDestinations.add(R.id.heartFragment);        // Heart (Grooming & Doctor)
-        topLevelDestinations.add(R.id.profileFragment);      // User (Profil)
+        topLevelDestinations.add(R.id.adoptHomeFragment);     // Adopt
+        topLevelDestinations.add(R.id.catalogFragment);       // Catalog
+        topLevelDestinations.add(R.id.keranjangFragment);     // Cart
+        topLevelDestinations.add(R.id.profileFragment);       // Profile
 
         // Konfigurasi AppBar (PENTING untuk tombol kembali otomatis)
         appBarConfiguration = new AppBarConfiguration.Builder(topLevelDestinations).build();
@@ -104,8 +104,8 @@ public class AppActivity extends AppCompatActivity {
             Set<Integer> topLevelDestinations = new HashSet<>();
             topLevelDestinations.add(R.id.blankHomepageFragment);
             topLevelDestinations.add(R.id.adoptHomeFragment);
-            topLevelDestinations.add(R.id.navigation_katalog);
-            topLevelDestinations.add(R.id.heartFragment);
+            topLevelDestinations.add(R.id.catalogFragment);
+            topLevelDestinations.add(R.id.keranjangFragment);
             topLevelDestinations.add(R.id.profileFragment);
 
             ActionBar actionBar = getSupportActionBar();
@@ -120,7 +120,6 @@ public class AppActivity extends AppCompatActivity {
             // Ini umumnya untuk layar penuh seperti checkout, pembayaran, detail item individual,
             // atau layar pengaturan yang tidak diakses dari bottom nav.
             boolean hideBoth = destination.getId() == R.id.reviewFragment ||
-                    destination.getId() == R.id.keranjangFragment ||
                     destination.getId() == R.id.notificationFragment ||
                     destination.getId() == R.id.checkoutFragment ||
                     destination.getId() == R.id.paymentFragment ||

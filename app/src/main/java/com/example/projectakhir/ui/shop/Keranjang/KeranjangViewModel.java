@@ -15,6 +15,16 @@ public class KeranjangViewModel extends ViewModel {
     private LiveData<List<KeranjangItem>> _cartItems;
     private MutableLiveData<Double> _totalPrice = new MutableLiveData<>();
     public LiveData<Double> totalPrice = _totalPrice;
+    
+    // Tambahan untuk checkout
+    private MutableLiveData<Double> _orderTotal = new MutableLiveData<>();
+    public LiveData<Double> orderTotal = _orderTotal;
+    
+    private MutableLiveData<Double> _deliveryFee = new MutableLiveData<>();
+    public LiveData<Double> deliveryFee = _deliveryFee;
+    
+    private MutableLiveData<Double> _discount = new MutableLiveData<>();
+    public LiveData<Double> discount = _discount;
 
     public KeranjangViewModel() {
         cartRepository = new KeranjangRepository();
@@ -34,6 +44,7 @@ public class KeranjangViewModel extends ViewModel {
     private void observeCartItems() {
         _cartItems.observeForever(cartItems -> {
             calculateTotalPrice(cartItems);
+            calculateOrderSummary(cartItems);
         });
     }
 
@@ -58,13 +69,45 @@ public class KeranjangViewModel extends ViewModel {
     }
 
     private void calculateTotalPrice(List<KeranjangItem> items) {
-        double total = 0.0;
+        double subtotal = 0.0;
         if (items != null) {
             for (KeranjangItem item : items) {
-                total += item.getProductPrice() * item.getQuantity();
+                subtotal += item.getProductPrice() * item.getQuantity();
             }
         }
-        _totalPrice.postValue(total);
+        
+        // Calculate delivery fee (flat rate Rp 10.000)
+        double deliveryFee = 10000.0;
+        
+        // Calculate discount (0 for now)
+        double discount = 0.0;
+        
+        // Calculate grand total
+        double grandTotal = subtotal + deliveryFee - discount;
+        
+        _totalPrice.postValue(grandTotal);
+    }
+    
+    private void calculateOrderSummary(List<KeranjangItem> items) {
+        double subtotal = 0.0;
+        if (items != null) {
+            for (KeranjangItem item : items) {
+                subtotal += item.getProductPrice() * item.getQuantity();
+            }
+        }
+        
+        // Set order total (subtotal)
+        _orderTotal.postValue(subtotal);
+        
+        // Set delivery fee (flat rate Rp 10.000)
+        double deliveryFee = 10000.0;
+        _deliveryFee.postValue(deliveryFee);
+        
+        // Set discount (0 for now, bisa diimplementasikan nanti)
+        double discount = 0.0;
+        _discount.postValue(discount);
+        
+        // Total price sudah dihitung di calculateTotalPrice
     }
 
     public void clearCartForCheckout() {

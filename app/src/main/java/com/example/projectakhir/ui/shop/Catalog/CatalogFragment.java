@@ -17,6 +17,7 @@ import com.example.projectakhir.adapters.ProductAdapter;
 import com.example.projectakhir.databinding.FragmentCatalogBinding;
 import com.example.projectakhir.data.model.Product;
 import com.example.projectakhir.ui.shop.Catalog.CatalogViewModel; // PERUBAHAN: dari ui.viewmodel ke ui.viewmodel.shop
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 
@@ -45,13 +46,21 @@ public class CatalogFragment extends Fragment implements ProductAdapter.OnItemCl
 
         // Setup click listeners for notification and cart icons
         binding.iconNotification.setOnClickListener(v -> {
-            NavController navController = Navigation.findNavController(requireView());
-            navController.navigate(R.id.notificationFragment);
+            try {
+                NavController navController = Navigation.findNavController(requireView());
+                navController.navigate(R.id.reviewFragment);
+            } catch (Exception e) {
+                Toast.makeText(getContext(), "Error navigating to review: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
         });
 
         binding.iconCart.setOnClickListener(v -> {
-            NavController navController = Navigation.findNavController(requireView());
-            navController.navigate(R.id.keranjangFragment);
+            try {
+                NavController navController = Navigation.findNavController(requireView());
+                navController.navigate(R.id.keranjangFragment);
+            } catch (Exception e) {
+                Toast.makeText(getContext(), "Error navigating to cart: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
         });
 
         catalogViewModel.products.observe(getViewLifecycleOwner(), products -> {
@@ -62,25 +71,39 @@ public class CatalogFragment extends Fragment implements ProductAdapter.OnItemCl
 
         catalogViewModel.addToCartStatus.observe(getViewLifecycleOwner(), isSuccess -> {
             if (isSuccess) {
-                Toast.makeText(getContext(), "Produk ditambahkan ke keranjang!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Produk berhasil ditambahkan ke keranjang!", Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(getContext(), "Gagal menambahkan produk ke keranjang. Pastikan Anda login.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Gagal menambahkan produk ke keranjang. Silakan coba lagi.", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     @Override
     public void onProductClick(Product product) {
-        Toast.makeText(getContext(), "Produk diklik: " + product.getName(), Toast.LENGTH_SHORT).show();
-        NavController navController = Navigation.findNavController(requireView());
         Bundle bundle = new Bundle();
         bundle.putString("productId", product.getId());
-        navController.navigate(R.id.action_navigation_katalog_to_reviewFragment, bundle);
+        NavController navController = Navigation.findNavController(requireView());
+        navController.navigate(R.id.action_catalogFragment_to_productDetailFragment, bundle);
     }
 
     @Override
     public void onAddToCartClick(Product product) {
-        catalogViewModel.addToCart(product);
+        if (product == null) {
+            Toast.makeText(getContext(), "Produk tidak valid", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+            Toast.makeText(getContext(), "Silakan login terlebih dahulu", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        try {
+            catalogViewModel.addToCart(product);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(getContext(), "Terjadi kesalahan saat menambahkan ke keranjang", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override

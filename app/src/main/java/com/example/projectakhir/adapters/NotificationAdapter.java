@@ -56,19 +56,42 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
         TextView notificationTitle;
         TextView notificationMessage;
         TextView notificationDate;
+        android.widget.ImageView imgProduct;
+        android.widget.Button btnAction;
 
         public NotificationViewHolder(@NonNull View itemView) {
             super(itemView);
             notificationTitle = itemView.findViewById(R.id.notification_title);
             notificationMessage = itemView.findViewById(R.id.notification_message);
             notificationDate = itemView.findViewById(R.id.notification_date);
+            imgProduct = itemView.findViewById(R.id.imgProduct);
+            btnAction = itemView.findViewById(R.id.btnAction);
         }
 
         public void bind(Notification notification) {
             notificationTitle.setText(notification.getTitle());
             notificationMessage.setText(notification.getMessage());
-            SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy HH:mm", Locale.getDefault());
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yy HH:mm", Locale.getDefault());
             notificationDate.setText(sdf.format(new Date(notification.getTimestamp())));
+
+            // Bind gambar produk jika ada (misal: notification.getImageUrl())
+            if (notification.getImageUrl() != null && !notification.getImageUrl().isEmpty()) {
+                imgProduct.setVisibility(View.VISIBLE);
+                // Glide.with(itemView.getContext()).load(notification.getImageUrl()).into(imgProduct);
+                // Jika tidak pakai Glide, bisa pakai setImageResource
+            } else {
+                imgProduct.setImageResource(R.drawable.ic_placeholder_image);
+            }
+
+            // Tampilkan tombol aksi jika tipe notifikasi membutuhkan aksi (misal: "Beri Penilaian")
+            if (notification.getActionType() != null && notification.getActionType().equals("REVIEW")) {
+                btnAction.setVisibility(View.VISIBLE);
+                btnAction.setText("Beri Penilaian");
+                btnAction.setOnClickListener(v -> listener.onNotificationClick(notification));
+            } else {
+                btnAction.setVisibility(View.GONE);
+                itemView.setOnClickListener(v -> listener.onNotificationClick(notification));
+            }
 
             // Tampilan berbeda jika belum dibaca
             if (!notification.isRead()) {
@@ -76,8 +99,6 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
             } else {
                 itemView.setBackgroundResource(android.R.color.transparent);
             }
-
-            itemView.setOnClickListener(v -> listener.onNotificationClick(notification));
         }
     }
 }
