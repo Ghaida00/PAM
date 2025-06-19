@@ -31,10 +31,19 @@ public class NotificationViewModel extends ViewModel {
     public void markNotificationAsRead(String notificationId) {
         String userId = FirebaseAuth.getInstance().getCurrentUser() != null ? FirebaseAuth.getInstance().getCurrentUser().getUid() : null;
         if (userId != null) {
-            notificationRepository.markNotificationAsRead(userId, notificationId)
-                    .addOnCompleteListener(task -> {
-                        // LiveData akan update otomatis
-                    });
+            notificationRepository.markNotificationAsRead(userId, notificationId);
         }
+    }
+
+    public void addNotification(Notification notification) {
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser != null) {
+            notification.setUserId(currentUser.getUid());
+            notificationRepository.addNotification(notification);
+        }
+    }
+
+    public void deleteNotification(String notificationId) {
+        notificationRepository.deleteNotification(notificationId);
     }
 }

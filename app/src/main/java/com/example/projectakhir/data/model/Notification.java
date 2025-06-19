@@ -9,12 +9,14 @@ public class Notification {
     private long timestamp;
     private boolean isRead;
     private String imageUrl;
+    private String productId;
+    private String userId;
 
     public Notification() {
         // Diperlukan untuk Firestore
     }
 
-    public Notification(String id, String title, String message, String type, long timestamp, boolean isRead, String imageUrl, String actionType) {
+    public Notification(String id, String title, String message, String type, long timestamp, boolean isRead, String imageUrl, String actionType, String productId, String userId) {
         this.id = id;
         this.title = title;
         this.message = message;
@@ -23,6 +25,8 @@ public class Notification {
         this.isRead = isRead;
         this.imageUrl = imageUrl;
         this.actionType = actionType;
+        this.productId = productId;
+        this.userId = userId;
     }
 
     public String getActionType() {
@@ -53,4 +57,10 @@ public class Notification {
 
     public String getImageUrl() { return imageUrl; } // NEW: Getter untuk imageUrl
     public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; } // NEW: Setter untuk imageUrl
+
+    public String getProductId() { return productId; }
+    public void setProductId(String productId) { this.productId = productId; }
+
+    public String getUserId() { return userId; }
+    public void setUserId(String userId) { this.userId = userId; }
 }

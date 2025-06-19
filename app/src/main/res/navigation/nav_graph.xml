@@ -56,8 +56,14 @@
             android:id="@+id/action_catalogFragment_to_reviewFragment"
             app:destination="@id/reviewFragment" />
         <action
+            android:id="@+id/action_catalogFragment_to_notificationFragment"
+            app:destination="@id/notificationFragment" />
+        <action
             android:id="@+id/action_catalogFragment_to_productDetailFragment"
             app:destination="@id/productDetailFragment" />
+        <action
+            android:id="@+id/action_catalogFragment_to_keranjangFragment"
+            app:destination="@id/keranjangFragment" />
     </fragment>
 
     <fragment
@@ -467,7 +473,11 @@
         android:id="@+id/notificationFragment"
         android:name="com.example.projectakhir.ui.shop.Notification.NotificationFragment"
         android:label="Notifikasi"
-        tools:layout="@layout/fragment_notification" />
+        tools:layout="@layout/fragment_notification">
+        <action
+            android:id="@+id/action_notificationFragment_to_reviewFragment"
+            app:destination="@id/reviewFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/reviewFragment"
@@ -478,6 +488,16 @@
             android:name="productId"
             app:argType="string"
             android:defaultValue="" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/penilaianProdukFragment"
+        android:name="com.example.projectakhir.ui.shop.Review.PenilaianProdukFragment"
+        android:label="Semua Penilaian"
+        tools:layout="@layout/fragment_penilaian_produk">
+        <argument
+            android:name="productId"
+            app:argType="string" />
     </fragment>
 
     <fragment
@@ -502,6 +522,9 @@
         <action
             android:id="@+id/action_productDetailFragment_to_reviewFragment"
             app:destination="@id/reviewFragment" />
+        <action
+            android:id="@+id/action_productDetailFragment_to_penilaianProdukFragment"
+            app:destination="@id/penilaianProdukFragment" />
     </fragment>
 
 </navigation>

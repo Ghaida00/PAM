@@ -66,7 +66,7 @@ public class ProductDetailFragment extends Fragment {
             if (currentProduct != null && currentProduct.getId() != null) {
                 Bundle bundle = new Bundle();
                 bundle.putString("productId", currentProduct.getId());
-                Navigation.findNavController(v).navigate(R.id.action_productDetailFragment_to_reviewFragment, bundle);
+                Navigation.findNavController(v).navigate(R.id.action_productDetailFragment_to_penilaianProdukFragment, bundle);
             } else {
                 Toast.makeText(getContext(), "Detail produk tidak lengkap untuk melihat penilaian.", Toast.LENGTH_SHORT).show();
             }

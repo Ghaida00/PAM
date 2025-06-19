@@ -1,7 +1,9 @@
-package com.example.projectakhir.ui.shop.Review; // PERUBAHAN: dari ui.fragments ke ui.shop
+package com.example.projectakhir.ui.shop.Review;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -13,6 +15,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
@@ -21,29 +24,46 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.bumptech.glide.Glide;
 import com.example.projectakhir.R;
 import com.example.projectakhir.adapters.ReviewAdapter;
+import com.example.projectakhir.adapters.ReviewInputAdapter;
 import com.example.projectakhir.databinding.FragmentReviewBinding;
 import com.example.projectakhir.data.model.Review;
-import com.example.projectakhir.ui.shop.Review.ReviewViewModel; // PERUBAHAN: dari ui.viewmodel ke ui.viewmodel.shop
+import com.example.projectakhir.data.model.Product;
+import com.example.projectakhir.ui.shop.Review.ReviewViewModel;
+import com.example.projectakhir.data.firebase.RealtimeDbSource;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class ReviewFragment extends Fragment {
+public class ReviewFragment extends Fragment implements ReviewInputAdapter.OnAddImageClickListener {
 
     private FragmentReviewBinding binding;
     private ReviewViewModel reviewViewModel;
-    private String productId;
-    private Uri selectedImageUri;
-    private ReviewAdapter reviewAdapter;
+    private ArrayList<Product> productsToReview = new ArrayList<>();
+    private ReviewInputAdapter reviewInputAdapter;
+    private int imagePickPosition = -1;
 
+    // Permission launcher
+    private final ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(
+            new ActivityResultContracts.RequestPermission(),
+            isGranted -> {
+                if (isGranted) {
+                    openImagePicker();
+                } else {
+                    Toast.makeText(getContext(), "Permission diperlukan untuk memilih gambar", Toast.LENGTH_SHORT).show();
+                }
+            }
+    );
+
+    // Image picker launcher
     private final ActivityResultLauncher<Intent> pickImageLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
-                if (result.getResultCode() == Activity.RESULT_OK) {
+                if (result.getResultCode() == Activity.RESULT_OK && imagePickPosition != -1) {
                     Intent data = result.getData();
                     if (data != null && data.getData() != null) {
-                        selectedImageUri = data.getData();
-                        binding.reviewImagePreview.setVisibility(View.VISIBLE);
-                        Glide.with(this).load(selectedImageUri).into(binding.reviewImagePreview);
+                        Product product = productsToReview.get(imagePickPosition);
+                        reviewInputAdapter.setImageUriForProduct(product.getId(), data.getData());
+                        Toast.makeText(getContext(), "Gambar berhasil ditambahkan", Toast.LENGTH_SHORT).show();
                     }
                 }
             }
@@ -52,8 +72,22 @@ public class ReviewFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // Inisialisasi productsToReview sebagai ArrayList kosong
+        productsToReview = new ArrayList<>();
+        
         if (getArguments() != null) {
-            productId = getArguments().getString("productId");
+            // Ambil list produk dari argument
+            ArrayList<Product> products = (ArrayList<Product>) getArguments().getSerializable("productsToReview");
+            if (products != null && !products.isEmpty()) {
+                productsToReview = products;
+            } else {
+                // Jika tidak ada productsToReview, coba ambil single productId
+                String productId = getArguments().getString("productId");
+                if (productId != null) {
+                    // Load single product dari Firebase
+                    loadSingleProduct(productId);
+                }
+            }
         }
     }
 
@@ -67,60 +101,80 @@ public class ReviewFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         reviewViewModel = new ViewModelProvider(this).get(ReviewViewModel.class);
 
         // Setup back button
-        binding.backButton.setOnClickListener(v -> {
-            NavController navController = Navigation.findNavController(requireView());
-            navController.navigateUp();
-        });
+        binding.backButton.setOnClickListener(v -> Navigation.findNavController(requireView()).navigateUp());
 
-        reviewAdapter = new ReviewAdapter(new ArrayList<>());
-        binding.rvReviews.setLayoutManager(new LinearLayoutManager(getContext()));
-        binding.rvReviews.setAdapter(reviewAdapter);
-
-        if (productId != null && !productId.isEmpty()) {
-            reviewViewModel.getProductReviews(productId).observe(getViewLifecycleOwner(), reviews -> {
-                if (reviews != null) {
-                    reviewAdapter.updateReviews(reviews);
-                }
-            });
+        // Setup adapter input review
+        if (productsToReview != null && !productsToReview.isEmpty()) {
+            setupReviewAdapter();
+        } else {
+            // Jika tidak ada produk untuk review, tampilkan pesan
+            Toast.makeText(getContext(), "Tidak ada produk untuk review", Toast.LENGTH_SHORT).show();
+            // Navigasi kembali
+            Navigation.findNavController(requireView()).navigateUp();
         }
 
-        binding.addImageButton.setOnClickListener(v -> openImageChooser());
-
-        binding.submitReviewButton.setOnClickListener(v -> {
-            float rating = binding.reviewRatingBar.getRating();
-            String comment = binding.reviewCommentEditText.getText().toString().trim();
-
-            if (productId == null || productId.isEmpty()) {
-                Toast.makeText(getContext(), "ID Produk tidak ditemukan.", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            if (comment.isEmpty() && selectedImageUri == null) {
-                Toast.makeText(getContext(), "Harap berikan komentar atau tambahkan gambar.", Toast.LENGTH_SHORT).show();
-            } else if (rating == 0.0f) {
-                Toast.makeText(getContext(), "Harap berikan rating.", Toast.LENGTH_SHORT).show();
-            } else {
-                reviewViewModel.submitReview(productId, rating, comment, selectedImageUri);
+        binding.btnSubmitAllReviews.setOnClickListener(v -> {
+            if (reviewInputAdapter != null) {
+                reviewViewModel.submitMultipleReviews(reviewInputAdapter.getAllReviewInputs());
             }
         });
 
         reviewViewModel.reviewSubmissionStatus.observe(getViewLifecycleOwner(), isSuccess -> {
             if (isSuccess) {
-                Toast.makeText(getContext(), "Ulasan berhasil dikirim!", Toast.LENGTH_SHORT).show();
-                // Navigate back to catalog
-                NavController navController = Navigation.findNavController(requireView());
-                navController.navigate(R.id.catalogFragment);
+                Toast.makeText(getContext(), "Semua ulasan berhasil dikirim!", Toast.LENGTH_SHORT).show();
+                Navigation.findNavController(requireView()).navigate(R.id.catalogFragment);
             } else {
                 Toast.makeText(getContext(), "Gagal mengirim ulasan. Coba lagi.", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    private void openImageChooser() {
+    private void setupReviewAdapter() {
+        reviewInputAdapter = new ReviewInputAdapter(requireContext(), productsToReview, this);
+        binding.rvInputReviews.setLayoutManager(new LinearLayoutManager(getContext()));
+        binding.rvInputReviews.setAdapter(reviewInputAdapter);
+    }
+
+    private void loadSingleProduct(String productId) {
+        // Load single product dari Firebase Realtime Database
+        RealtimeDbSource realtimeDbSource = new RealtimeDbSource();
+
+        // Gunakan getViewLifecycleOwnerLiveData agar observe hanya dilakukan saat view masih aktif
+        getViewLifecycleOwnerLiveData().observe(this, viewLifecycleOwner -> {
+            if (viewLifecycleOwner != null && isAdded() && getView() != null) {
+                realtimeDbSource.getProductById(productId).observe(viewLifecycleOwner, product -> {
+                    if (product != null) {
+                        productsToReview.clear();
+                        productsToReview.add(product);
+                        setupReviewAdapter();
+                    } else {
+                        Toast.makeText(getContext(), "Produk tidak ditemukan", Toast.LENGTH_SHORT).show();
+                        Navigation.findNavController(requireView()).navigateUp();
+                    }
+                });
+            }
+        });
+    }
+
+    @Override
+    public void onAddImageClick(int position) {
+        imagePickPosition = position;
+        checkPermissionAndPickImage();
+    }
+
+    private void checkPermissionAndPickImage() {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) 
+                == PackageManager.PERMISSION_GRANTED) {
+            openImagePicker();
+        } else {
+            requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE);
+        }
+    }
+
+    private void openImagePicker() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         pickImageLauncher.launch(intent);
     }

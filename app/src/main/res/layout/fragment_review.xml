@@ -165,6 +165,37 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 android:visibility="gone" />
 
+            <!-- RecyclerView untuk input review per produk -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvInputReviews"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:clipToPadding="false"
+                app:layout_constraintTop_toBottomOf="@id/topBar"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                tools:listitem="@layout/item_rating" />
+
+            <!-- Tombol submit semua review -->
+            <Button
+                android:id="@+id/btnSubmitAllReviews"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Simpan Semua Penilaian"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:backgroundTint="@color/yellow_primary"
+                android:layout_marginStart="24dp"
+                android:layout_marginEnd="24dp"
+                android:layout_marginBottom="16dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 

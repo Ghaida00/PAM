@@ -48,16 +48,16 @@ public class CatalogFragment extends Fragment implements ProductAdapter.OnItemCl
         binding.iconNotification.setOnClickListener(v -> {
             try {
                 NavController navController = Navigation.findNavController(requireView());
-                navController.navigate(R.id.reviewFragment);
+                navController.navigate(R.id.action_catalogFragment_to_notificationFragment);
             } catch (Exception e) {
-                Toast.makeText(getContext(), "Error navigating to review: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Error navigating to notification: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
 
         binding.iconCart.setOnClickListener(v -> {
             try {
                 NavController navController = Navigation.findNavController(requireView());
-                navController.navigate(R.id.keranjangFragment);
+                navController.navigate(R.id.action_catalogFragment_to_keranjangFragment);
             } catch (Exception e) {
                 Toast.makeText(getContext(), "Error navigating to cart: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
