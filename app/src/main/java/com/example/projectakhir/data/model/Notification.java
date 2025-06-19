@@ -1,34 +1,54 @@
 package com.example.projectakhir.data.model;
 
 public class Notification {
+    // Notification Types
+    public static final String TYPE_ORDER_RECEIVED = "ORDER_RECEIVED";
+    public static final String TYPE_ORDER_COMPLETED = "ORDER_COMPLETED";
+    public static final String TYPE_ORDER_SHIPPED = "ORDER_SHIPPED";
+    public static final String TYPE_REVIEW_REQUEST = "REVIEW_REQUEST";
+    public static final String TYPE_REVIEW_REMINDER = "REVIEW_REMINDER";
+    public static final String TYPE_MULTI_PRODUCT_ORDER = "MULTI_PRODUCT_ORDER";
+    public static final String TYPE_PROMOTION = "PROMOTION";
+    public static final String TYPE_ORDER_CANCELLED = "ORDER_CANCELLED";
+    public static final String TYPE_PRODUCT_AVAILABLE = "PRODUCT_AVAILABLE";
+    public static final String TYPE_REVIEW_PUBLISHED = "REVIEW_PUBLISHED";
+
+    // Action Types
+    public static final String ACTION_REVIEW = "REVIEW";
+    public static final String ACTION_PROMO = "PROMO";
+    public static final String ACTION_ORDER_CANCELLED = "ORDER_CANCELLED";
+    public static final String ACTION_PRODUCT_AVAILABLE = "PRODUCT_AVAILABLE";
+    public static final String ACTION_REVIEW_PUBLISHED = "REVIEW_PUBLISHED";
+
     private String id;
+    private String userId;
     private String title;
     private String message;
-    private String type;
     private String actionType;
+    private String productId;
     private long timestamp;
     private boolean isRead;
+    private String type;
     private String imageUrl;
-    private String productId;
-    private String userId;
     private String productName;
     private String productImageUrl;
 
     public Notification() {
-        // Diperlukan untuk Firestore
+        // Required empty constructor for Firestore
     }
 
-    public Notification(String id, String title, String message, String type, long timestamp, boolean isRead, String imageUrl, String actionType, String productId, String userId) {
+    public Notification(String id, String userId, String title, String message, 
+                       String actionType, String productId, long timestamp, 
+                       boolean isRead, String type) {
         this.id = id;
+        this.userId = userId;
         this.title = title;
         this.message = message;
-        this.type = type;
-        this.timestamp = timestamp;
-        this.isRead = isRead;
-        this.imageUrl = imageUrl;
         this.actionType = actionType;
         this.productId = productId;
-        this.userId = userId;
+        this.timestamp = timestamp;
+        this.isRead = isRead;
+        this.type = type;
     }
 
     public String getActionType() {
@@ -57,8 +77,8 @@ public class Notification {
     public boolean isRead() { return isRead; }
     public void setRead(boolean read) { isRead = read; }
 
-    public String getImageUrl() { return imageUrl; } // NEW: Getter untuk imageUrl
-    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; } // NEW: Setter untuk imageUrl
+    public String getImageUrl() { return imageUrl; }
+    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
 
     public String getProductId() { return productId; }
     public void setProductId(String productId) { this.productId = productId; }

@@ -10,7 +10,10 @@ import com.example.projectakhir.data.repository.OrderRepository;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class PaymentViewModel extends ViewModel {
 
@@ -35,17 +38,21 @@ public class PaymentViewModel extends ViewModel {
             return;
         }
 
-        // Buat objek Order
+        String userId = currentUser.getUid();
+        List<String> productIds = new ArrayList<>();
+        Map<String, Integer> productQuantities = new HashMap<>();
+        for (KeranjangItem item : cartItems) {
+            productIds.add(item.getProductId());
+            productQuantities.put(item.getProductId(), item.getQuantity());
+        }
         Order newOrder = new Order(
-                "order_" + System.currentTimeMillis(), // ID pesanan unik
-                currentUser.getUid(),
-                cartItems, // Daftar CartItem
-                totalAmount,
-                paymentMethod,
-                "Completed", // Status pesanan
-                System.currentTimeMillis() // Timestamp
+            null, // orderId
+            userId,
+            productIds,
+            totalAmount,
+            paymentMethod,
+            productQuantities
         );
-
         orderRepository.placeOrder(newOrder)
                 .addOnSuccessListener(aVoid -> {
                     _paymentProcessStatus.postValue(true);

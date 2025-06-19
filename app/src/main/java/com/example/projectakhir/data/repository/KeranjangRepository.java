@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData;
 import com.example.projectakhir.data.firebase.FirestoreSource;
 import com.example.projectakhir.data.model.KeranjangItem;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.OnSuccessListener;
 import java.util.List;
 
 public class KeranjangRepository {
@@ -31,5 +32,9 @@ public class KeranjangRepository {
 
     public Task<Void> clearCart(String userId) {
         return firestoreSource.clearCart(userId);
+    }
+
+    public void getCartItemsOnce(String userId, OnSuccessListener<List<KeranjangItem>> listener) {
+        firestoreSource.getCartItemsOnce(userId, listener);
     }
 }

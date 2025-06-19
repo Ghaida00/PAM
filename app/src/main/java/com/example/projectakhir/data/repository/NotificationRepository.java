@@ -43,4 +43,12 @@ public class NotificationRepository {
         notifRef.child(key).setValue(notif);
         android.util.Log.d("NotifDebug", "Notifikasi order dikirim ke user " + userId + ", notifId: " + key);
     }
+
+    public void addNotificationToFirestore(String userId, Notification notification) {
+        com.google.firebase.firestore.FirebaseFirestore.getInstance()
+            .collection("users")
+            .document(userId)
+            .collection("notifications")
+            .add(notification);
+    }
 }

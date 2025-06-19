@@ -3,6 +3,7 @@ package com.example.projectakhir.data.firebase;
 import android.net.Uri;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import android.util.Log;
 
 import com.example.projectakhir.data.model.KeranjangItem;
 import com.example.projectakhir.data.model.Notification;
@@ -11,6 +12,8 @@ import com.example.projectakhir.data.model.Product; // Perlu untuk CartItem
 import com.example.projectakhir.data.model.Review;
 import com.example.projectakhir.data.model.User;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -129,9 +132,26 @@ public class FirestoreSource {
         });
     }
 
+    public void getCartItemsOnce(String userId, OnSuccessListener<List<KeranjangItem>> listener) {
+        db.collection("users").document(userId).collection("cartItems")
+            .get()
+            .addOnSuccessListener(querySnapshot -> {
+                List<KeranjangItem> cartItems = new ArrayList<>();
+                for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
+                    String productId = doc.getString("productId");
+                    String productName = doc.getString("productName");
+                    double productPrice = doc.getDouble("productPrice") != null ? doc.getDouble("productPrice") : 0.0;
+                    String productImageUrl = doc.getString("productImageUrl");
+                    int quantity = doc.getLong("quantity") != null ? doc.getLong("quantity").intValue() : 0;
+                    cartItems.add(new KeranjangItem(productId, productName, productPrice, productImageUrl, quantity));
+                }
+                listener.onSuccess(cartItems);
+            });
+    }
+
     // --- Order Operations ---
     public Task<Void> placeOrder(Order order) {
-        return db.collection("orders").document(order.getId()).set(order);
+        return db.collection("orders").document(order.getOrderId()).set(order);
     }
 
     public LiveData<List<Order>> getOrderHistory(String userId) {
@@ -160,6 +180,104 @@ public class FirestoreSource {
         return ordersLiveData;
     }
 
+    public void addOrder(Order order, OnSuccessListener<DocumentReference> onSuccessListener, OnFailureListener onFailureListener) {
+        db.collection("orders")
+                .add(order)
+                .addOnSuccessListener(documentReference -> {
+                    // Update the order with its ID
+                    String orderId = documentReference.getId();
+                    order.setOrderId(orderId);
+                    documentReference.set(order)
+                            .addOnSuccessListener(aVoid -> {
+                                if (onSuccessListener != null) {
+                                    onSuccessListener.onSuccess(documentReference);
+                                }
+                                // Set up status listener for this order
+                                setupOrderStatusListener(orderId, order.getUserId());
+                            })
+                            .addOnFailureListener(onFailureListener);
+                })
+                .addOnFailureListener(onFailureListener);
+    }
+
+    private void setupOrderStatusListener(String orderId, String userId) {
+        db.collection("orders")
+                .document(orderId)
+                .addSnapshotListener((snapshot, error) -> {
+                    if (error != null) {
+                        Log.e("FirestoreSource", "Listen failed.", error);
+                        return;
+                    }
+
+                    if (snapshot != null && snapshot.exists()) {
+                        String status = snapshot.getString("status");
+                        if (status != null) {
+                            createStatusNotification(status, snapshot, userId);
+                        }
+                    }
+                });
+    }
+
+    private void createStatusNotification(String status, DocumentSnapshot orderSnapshot, String userId) {
+        String title;
+        String message;
+        String type;
+        String actionType = Notification.ACTION_REVIEW;
+
+        switch (status) {
+            case Order.STATUS_PAID:
+                title = "Pesanan Diterima";
+                message = "Pesanan #" + orderSnapshot.getId() + " telah diterima dan sedang diproses";
+                type = Notification.TYPE_ORDER_RECEIVED;
+                break;
+            case Order.STATUS_PACKED:
+                title = "Pesanan Diproses";
+                message = "Pesanan #" + orderSnapshot.getId() + " sedang dikemas";
+                type = Notification.TYPE_ORDER_COMPLETED;
+                break;
+            case Order.STATUS_SHIPPED:
+                title = "Pesanan Dikirim";
+                message = "Pesanan #" + orderSnapshot.getId() + " telah dikirim dan dalam perjalanan";
+                type = Notification.TYPE_ORDER_SHIPPED;
+                break;
+            case Order.STATUS_RECEIVED:
+                title = "Berikan Ulasan";
+                message = "Bagaimana pengalaman Anda dengan produk yang baru dibeli?";
+                type = Notification.TYPE_REVIEW_REQUEST;
+                break;
+            default:
+                return;
+        }
+
+        @SuppressWarnings("unchecked")
+        List<String> productIds = (List<String>) orderSnapshot.get("productIds");
+        String productId = productIds != null && !productIds.isEmpty() ? 
+            String.join(",", productIds) : null;
+
+        Notification notification = new Notification(
+                null, // id will be set by Firestore
+                userId,
+                title,
+                message,
+                actionType,
+                productId,
+                System.currentTimeMillis(),
+                false,
+                type
+        );
+
+        // Add notification to user's notifications collection
+        db.collection("users")
+                .document(userId)
+                .collection("notifications")
+                .add(notification)
+                .addOnSuccessListener(documentReference -> {
+                    // Update the notification with its ID
+                    notification.setId(documentReference.getId());
+                    documentReference.set(notification);
+                })
+                .addOnFailureListener(e -> Log.e("FirestoreSource", "Error adding notification", e));
+    }
 
     // --- Notification Operations ---
     public LiveData<List<Notification>> getNotifications(String userId) {
