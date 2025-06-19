@@ -60,7 +60,11 @@ public class RealtimeDbSource {
         productsRef.child(productId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
+                android.util.Log.d("NotifDebug", "productId: " + productId);
+                android.util.Log.d("NotifDebug", "snapshot.exists(): " + snapshot.exists());
+                android.util.Log.d("NotifDebug", "snapshot.getValue(): " + snapshot.getValue());
                 Product product = snapshot.getValue(Product.class);
+                android.util.Log.d("NotifDebug", "Product object: " + product);
                 if (product != null) {
                     // Set the document key as the product ID
                     product.setId(snapshot.getKey());
@@ -70,6 +74,7 @@ public class RealtimeDbSource {
 
             @Override
             public void onCancelled(DatabaseError error) {
+                android.util.Log.e("NotifDebug", "onCancelled: " + error.getMessage());
                 productLiveData.setValue(null);
             }
         });

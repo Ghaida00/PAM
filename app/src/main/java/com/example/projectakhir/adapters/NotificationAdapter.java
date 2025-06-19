@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import com.bumptech.glide.Glide;
 
 public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapter.NotificationViewHolder> {
 
@@ -74,13 +75,16 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yy HH:mm", Locale.getDefault());
             notificationDate.setText(sdf.format(new Date(notification.getTimestamp())));
 
-            // Bind gambar produk jika ada (misal: notification.getImageUrl())
-            if (notification.getImageUrl() != null && !notification.getImageUrl().isEmpty()) {
+            if (notification.getProductImageUrl() != null && !notification.getProductImageUrl().isEmpty()) {
                 imgProduct.setVisibility(View.VISIBLE);
-                // Glide.with(itemView.getContext()).load(notification.getImageUrl()).into(imgProduct);
-                // Jika tidak pakai Glide, bisa pakai setImageResource
+                Glide.with(itemView.getContext())
+                        .load(notification.getProductImageUrl())
+                        .placeholder(R.drawable.ic_placeholder_image) // Tambahkan placeholder
+                        .error(R.drawable.ic_error_image) // Tambahkan error image
+                        .into(imgProduct);
             } else {
-                imgProduct.setImageResource(R.drawable.ic_placeholder_image);
+                imgProduct.setVisibility(View.GONE); // Atau set default icon
+                // imgProduct.setImageResource(R.drawable.ic_placeholder_image);
             }
 
             // Tampilkan tombol aksi jika tipe notifikasi membutuhkan aksi (misal: "Beri Penilaian")

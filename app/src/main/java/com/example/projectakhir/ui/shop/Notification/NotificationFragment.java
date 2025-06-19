@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.bumptech.glide.Glide;
 import com.example.projectakhir.R;
 import com.example.projectakhir.adapters.NotificationAdapter;
 import com.example.projectakhir.databinding.FragmentNotificationBinding;
@@ -18,6 +19,11 @@ import com.example.projectakhir.data.model.Notification;
 import com.example.projectakhir.data.model.Product;
 import com.example.projectakhir.ui.shop.Notification.NotificationViewModel;
 import com.example.projectakhir.data.firebase.RealtimeDbSource;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,17 +66,18 @@ public class NotificationFragment extends Fragment implements NotificationAdapte
 
     @Override
     public void onNotificationClick(Notification notification) {
-        if ("REVIEW".equals(notification.getActionType()) && notification.getProductId() != null) {
-            // Handle multi-product review
-            if (notification.getProductId().contains(",")) {
+        String productIdString = notification.getProductId();
+        if (productIdString != null && !productIdString.equalsIgnoreCase("null")) {
+            if (productIdString.contains(",")) {
                 // Multiple products - load products from Firebase
-                loadProductsFromFirebase(notification.getProductId());
+                loadProductsFromFirebase(productIdString);
             } else {
                 // Single product
+                String singleProductId = productIdString.trim();
                 Bundle bundle = new Bundle();
-                bundle.putString("productId", notification.getProductId());
+                loadProductsFromFirebase(singleProductId);
+                bundle.putString("productId", singleProductId);
                 androidx.navigation.NavController navController = androidx.navigation.Navigation.findNavController(requireView());
-                navController.navigate(R.id.action_notificationFragment_to_reviewFragment, bundle);
             }
         } else {
             Toast.makeText(getContext(), "Notifikasi: " + notification.getTitle(), Toast.LENGTH_SHORT).show();
@@ -81,25 +88,36 @@ public class NotificationFragment extends Fragment implements NotificationAdapte
     private void loadProductsFromFirebase(String productIds) {
         String[] ids = productIds.split(",");
         List<Product> productsToReview = new ArrayList<>();
-        final int[] loadedCount = {0};
-        
+        final int totalIds = ids.length;
+        final int[] processedCount = {0};
+
         for (String id : ids) {
             String trimmedId = id.trim();
             realtimeDbSource.getProductById(trimmedId).observe(getViewLifecycleOwner(), product -> {
-                if (product != null) {
+                android.util.Log.d("ReviewDebug", "Memproses produk: " + trimmedId);
+                if (product != null && product.getName() != null) {
                     productsToReview.add(product);
+                    android.util.Log.d("ReviewDebug", "Produk ditambahkan: " + product.getName());
+                } else {
+                    android.util.Log.d("ReviewDebug", "Produk NULL atau tanpa nama: " + trimmedId);
                 }
-                loadedCount[0]++;
-                
-                // If all products are loaded, navigate to review
-                if (loadedCount[0] == ids.length) {
+
+                processedCount[0]++;
+                if (processedCount[0] == totalIds) {
+                    android.util.Log.d("ReviewDebug", "Total processed: " + processedCount[0]);
                     if (!productsToReview.isEmpty()) {
                         Bundle bundle = new Bundle();
                         bundle.putSerializable("productsToReview", new ArrayList<>(productsToReview));
-                        androidx.navigation.NavController navController = androidx.navigation.Navigation.findNavController(requireView());
-                        navController.navigate(R.id.action_notificationFragment_to_reviewFragment, bundle);
+                        if (getViewLifecycleOwner().getLifecycle().getCurrentState().isAtLeast(androidx.lifecycle.Lifecycle.State.RESUMED)) {
+                            androidx.navigation.NavController navController =
+                                androidx.navigation.Navigation.findNavController(requireView());
+                            navController.navigate(R.id.action_notificationFragment_to_reviewFragment, bundle);
+                        } else {
+                            android.util.Log.d("ReviewDebug", "Fragment sudah tidak aktif saat navigasi.");
+                        }
                     } else {
-                        Toast.makeText(getContext(), "Produk tidak ditemukan", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Tidak ada produk untuk review", Toast.LENGTH_SHORT).show();
+                        android.util.Log.d("ReviewDebug", "productsToReview kosong meskipun sudah diproses semua.");
                     }
                 }
             });

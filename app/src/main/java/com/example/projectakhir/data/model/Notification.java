@@ -11,6 +11,8 @@ public class Notification {
     private String imageUrl;
     private String productId;
     private String userId;
+    private String productName;
+    private String productImageUrl;
 
     public Notification() {
         // Diperlukan untuk Firestore
@@ -60,6 +62,11 @@ public class Notification {
 
     public String getProductId() { return productId; }
     public void setProductId(String productId) { this.productId = productId; }
+
+    public String getProductName() { return productName; }
+    public void setProductName(String productName) { this.productName = productName; }
+    public String getProductImageUrl() { return productImageUrl; }
+    public void setProductImageUrl(String productImageUrl) { this.productImageUrl = productImageUrl; }
 
     public String getUserId() { return userId; }
     public void setUserId(String userId) { this.userId = userId; }

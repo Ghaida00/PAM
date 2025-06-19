@@ -78,6 +78,11 @@ public class PaymentFragment extends Fragment {
         navController.navigate(R.id.blankHomepageFragment); // Navigasi ke homepage untuk refresh UI
     }
 
+    private void onPaymentSuccess(String method, double total) {
+        android.util.Log.d("PaymentDebug", "Pembayaran sukses dengan metode: " + method + ", total: " + total);
+        // ... lanjutkan ke pencatatan order
+    }
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();

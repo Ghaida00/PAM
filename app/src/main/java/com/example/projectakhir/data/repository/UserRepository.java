@@ -1,67 +1,54 @@
 package com.example.projectakhir.data.repository;
 
-import com.example.projectakhir.data.source.FirestoreSource;
-import com.example.projectakhir.data.model.User;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class UserRepository {
-    private final FirestoreSource firestoreSource;
+    private final FirebaseAuth firebaseAuth;
 
     public UserRepository() {
-        this.firestoreSource = new FirestoreSource();
+        this.firebaseAuth = FirebaseAuth.getInstance();
     }
 
     /**
-     * Mengambil data profil pengguna dari Firestore.
-     * @param userId ID pengguna Firebase.
-     * @return Task<User> yang akan selesai dengan objek User atau null jika tidak ditemukan.
+     * Mendapatkan user yang sedang login.
+     * @return FirebaseUser atau null jika belum login.
      */
-    public Task<User> getUserProfile(String userId) {
-        return firestoreSource.getUserDocument(userId)
-                .continueWith(task -> {
-                    if (task.isSuccessful()) {
-                        DocumentSnapshot document = task.getResult();
-                        if (document != null && document.exists()) {
-                            // Konversi DocumentSnapshot ke objek User
-                            return document.toObject(User.class);
-                        }
-                    }
-                    return null; // Pengguna tidak ditemukan atau task gagal
-                });
+    public FirebaseUser getCurrentUser() {
+        return firebaseAuth.getCurrentUser();
     }
 
     /**
-     * Memperbarui alamat pengguna di Firestore.
-     * @param userId ID pengguna Firebase.
-     * @param newAddress Alamat baru pengguna.
-     * @return Task<Void> yang menandakan keberhasilan atau kegagalan operasi.
+     * Mendapatkan UID user yang sedang login.
+     * @return UID sebagai String, atau null jika belum login.
      */
-    public Task<Void> updateAddress(String userId, String newAddress) {
-        return firestoreSource.getUserDocument(userId)
-                .continueWithTask(task -> {
-                    if (task.isSuccessful() && task.getResult() != null) {
-                        return task.getResult().getReference()
-                                .update("address", newAddress);
-                    }
-                    throw new RuntimeException("Failed to update address");
-                });
+    public String getCurrentUserId() {
+        FirebaseUser user = firebaseAuth.getCurrentUser();
+        return user != null ? user.getUid() : null;
     }
 
     /**
-     * Memperbarui profil pengguna di Firestore.
-     * @param userId ID pengguna Firebase.
-     * @param updates Map yang berisi field dan nilai yang akan diperbarui.
-     * @return Task<Void> yang menandakan keberhasilan atau kegagalan operasi.
+     * Mendapatkan email user yang sedang login.
+     * @return Email sebagai String, atau null jika belum login.
      */
-    public Task<Void> updateProfile(String userId, java.util.Map<String, Object> updates) {
-        return firestoreSource.getUserDocument(userId)
-                .continueWithTask(task -> {
-                    if (task.isSuccessful() && task.getResult() != null) {
-                        return task.getResult().getReference()
-                                .update(updates);
-                    }
-                    throw new RuntimeException("Failed to update profile");
-                });
+    public String getCurrentUserEmail() {
+        FirebaseUser user = firebaseAuth.getCurrentUser();
+        return user != null ? user.getEmail() : null;
+    }
+
+    /**
+     * Mendapatkan display name user yang sedang login.
+     * @return Display name sebagai String, atau null jika belum login.
+     */
+    public String getCurrentUserDisplayName() {
+        FirebaseUser user = firebaseAuth.getCurrentUser();
+        return user != null ? user.getDisplayName() : null;
+    }
+
+    /**
+     * Logout user dari aplikasi.
+     */
+    public void signOut() {
+        firebaseAuth.signOut();
     }
 }

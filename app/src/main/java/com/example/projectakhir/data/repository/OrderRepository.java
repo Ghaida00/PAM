@@ -20,4 +20,10 @@ public class OrderRepository {
     public LiveData<List<Order>> getOrderHistory(String userId) {
         return firestoreSource.getOrderHistory(userId);
     }
+
+    public void saveOrder(Order order) {
+        com.google.firebase.firestore.FirebaseFirestore.getInstance().collection("orders").document(order.getId()).set(order)
+            .addOnSuccessListener(aVoid -> android.util.Log.d("OrderDebug", "Order " + order.getId() + " berhasil dicatat"))
+            .addOnFailureListener(e -> android.util.Log.e("OrderDebug", "Gagal mencatat order: " + e.getMessage()));
+    }
 }

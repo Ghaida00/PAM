@@ -93,11 +93,12 @@ public class CatalogFragment extends Fragment implements ProductAdapter.OnItemCl
             return;
         }
 
-        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+        String userId = com.google.firebase.auth.FirebaseAuth.getInstance().getCurrentUser() != null ? com.google.firebase.auth.FirebaseAuth.getInstance().getCurrentUser().getUid() : null;
+        if (userId == null) {
             Toast.makeText(getContext(), "Silakan login terlebih dahulu", Toast.LENGTH_SHORT).show();
             return;
         }
-
+        android.util.Log.d("CartDebug", "Produk " + product.getId() + " ditambahkan ke keranjang user " + userId);
         try {
             catalogViewModel.addToCart(product);
         } catch (Exception e) {

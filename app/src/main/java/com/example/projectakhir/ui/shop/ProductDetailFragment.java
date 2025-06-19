@@ -107,9 +107,6 @@ public class ProductDetailFragment extends Fragment {
         NumberFormat formatRupiah = NumberFormat.getCurrencyInstance(new Locale("in", "ID"));
         binding.productPrice.setText(formatRupiah.format(product.getPrice()));
 
-        binding.ratingBar.setRating(0f);
-        binding.tvRatingText.setText("Belum ada rating");
-
         binding.productDescription.setText(product.getDescription());
         binding.productStock.setText("Stok: " + product.getStock());
 

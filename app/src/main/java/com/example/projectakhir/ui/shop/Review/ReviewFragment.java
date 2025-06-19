@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,6 +42,7 @@ public class ReviewFragment extends Fragment implements ReviewInputAdapter.OnAdd
     private ArrayList<Product> productsToReview = new ArrayList<>();
     private ReviewInputAdapter reviewInputAdapter;
     private int imagePickPosition = -1;
+    private static final String TAG = "ProductDetailFetcher";
 
     // Permission launcher
     private final ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(
@@ -103,18 +105,37 @@ public class ReviewFragment extends Fragment implements ReviewInputAdapter.OnAdd
         super.onViewCreated(view, savedInstanceState);
         reviewViewModel = new ViewModelProvider(this).get(ReviewViewModel.class);
 
+        Bundle bundle = getArguments();
+        if (bundle != null && bundle.containsKey("productsToReview")) {
+            List<Product> productList = (List<Product>) bundle.getSerializable("productsToReview");
+            if (productList != null && !productList.isEmpty()) {
+                productsToReview = new ArrayList<>(productList);
+                android.util.Log.d("ReviewFragment", "Produk diterima: " + productsToReview.size());
+                setupReviewAdapter();
+                // Tampilkan input review, sembunyikan list review & empty state
+                binding.rvInputReviews.setVisibility(View.VISIBLE);
+                binding.btnSubmitAllReviews.setVisibility(View.VISIBLE);
+                binding.rvReviews.setVisibility(View.GONE);
+                binding.tvNoReviewsPenilaian.setVisibility(View.GONE);
+            } else {
+                android.util.Log.d("ReviewFragment", "Produk kosong di ReviewFragment!");
+                binding.rvInputReviews.setVisibility(View.GONE);
+                binding.btnSubmitAllReviews.setVisibility(View.GONE);
+                binding.rvReviews.setVisibility(View.GONE);
+                binding.tvNoReviewsPenilaian.setVisibility(View.VISIBLE);
+                Toast.makeText(getContext(), "Belum ada produk untuk review", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            android.util.Log.d("ReviewFragment", "Bundle kosong atau tidak mengandung 'productsToReview'");
+            binding.rvInputReviews.setVisibility(View.GONE);
+            binding.btnSubmitAllReviews.setVisibility(View.GONE);
+            binding.rvReviews.setVisibility(View.GONE);
+            binding.tvNoReviewsPenilaian.setVisibility(View.VISIBLE);
+            Toast.makeText(getContext(), "Belum ada produk untuk review", Toast.LENGTH_SHORT).show();
+        }
+
         // Setup back button
         binding.backButton.setOnClickListener(v -> Navigation.findNavController(requireView()).navigateUp());
-
-        // Setup adapter input review
-        if (productsToReview != null && !productsToReview.isEmpty()) {
-            setupReviewAdapter();
-        } else {
-            // Jika tidak ada produk untuk review, tampilkan pesan
-            Toast.makeText(getContext(), "Tidak ada produk untuk review", Toast.LENGTH_SHORT).show();
-            // Navigasi kembali
-            Navigation.findNavController(requireView()).navigateUp();
-        }
 
         binding.btnSubmitAllReviews.setOnClickListener(v -> {
             if (reviewInputAdapter != null) {
@@ -150,6 +171,7 @@ public class ReviewFragment extends Fragment implements ReviewInputAdapter.OnAdd
                         productsToReview.clear();
                         productsToReview.add(product);
                         setupReviewAdapter();
+                        fetchProductDetails(productId);
                     } else {
                         Toast.makeText(getContext(), "Produk tidak ditemukan", Toast.LENGTH_SHORT).show();
                         Navigation.findNavController(requireView()).navigateUp();
@@ -166,11 +188,20 @@ public class ReviewFragment extends Fragment implements ReviewInputAdapter.OnAdd
     }
 
     private void checkPermissionAndPickImage() {
-        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) 
-                == PackageManager.PERMISSION_GRANTED) {
-            openImagePicker();
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_MEDIA_IMAGES)
+                    == PackageManager.PERMISSION_GRANTED) {
+                openImagePicker();
+            } else {
+                requestPermissionLauncher.launch(Manifest.permission.READ_MEDIA_IMAGES);
+            }
         } else {
-            requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE);
+            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
+                    == PackageManager.PERMISSION_GRANTED) {
+                openImagePicker();
+            } else {
+                requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE);
+            }
         }
     }
 
@@ -183,5 +214,63 @@ public class ReviewFragment extends Fragment implements ReviewInputAdapter.OnAdd
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    private void submitReview(Review review) {
+        com.google.firebase.firestore.FirebaseFirestore.getInstance().collection("productReviews").document(review.getId()).set(review)
+            .addOnSuccessListener(aVoid -> android.util.Log.d("ReviewDebug", "Review " + review.getId() + " berhasil dikirim"))
+            .addOnFailureListener(e -> android.util.Log.e("ReviewDebug", "Gagal kirim review: " + e.getMessage()));
+    }
+
+    // Fungsi untuk mengambil detail produk dari Firebase Realtime Database
+    private void fetchProductDetails(String productId) {
+        if (productId == null || productId.isEmpty()) {
+            android.util.Log.e(TAG, "Product ID is null or empty, cannot fetch details.");
+            return;
+        }
+
+        Bundle bundle = getArguments();
+        if (bundle != null && bundle.containsKey("productsToReview")) {
+            List<Product> productList = (List<Product>) bundle.getSerializable("productsToReview");
+            Log.d("ReviewFragment", "Isi bundle: " + productList);
+            if (productList != null) {
+                Log.d("ReviewFragment", "Jumlah produk: " + productList.size());
+            } else {
+                Log.d("ReviewFragment", "Bundle ada, tapi productList null");
+            }
+        }
+
+
+        com.google.firebase.database.DatabaseReference productRef = com.google.firebase.database.FirebaseDatabase.getInstance().getReference("products").child(productId);
+
+        productRef.addListenerForSingleValueEvent(new com.google.firebase.database.ValueEventListener() {
+            @Override
+            public void onDataChange(com.google.firebase.database.DataSnapshot productSnapshot) {
+                if (productSnapshot.exists()) {
+                    String productName = productSnapshot.child("name").getValue(String.class);
+                    Long productPrice = productSnapshot.child("price").getValue(Long.class);
+                    String imageUrl = productSnapshot.child("imageUrl").getValue(String.class);
+                    String category = productSnapshot.child("category").getValue(String.class);
+                    String description = productSnapshot.child("description").getValue(String.class);
+                    Long stock = productSnapshot.child("stock").getValue(Long.class);
+
+                    android.util.Log.d(TAG, "Product Details for " + productId + ":");
+                    android.util.Log.d(TAG, "Name: " + productName);
+                    android.util.Log.d(TAG, "Price: " + productPrice);
+                    android.util.Log.d(TAG, "Image URL: " + imageUrl);
+                    android.util.Log.d(TAG, "Category: " + category);
+                    android.util.Log.d(TAG, "Description: " + description);
+                    android.util.Log.d(TAG, "Stock: " + stock);
+
+                } else {
+                    android.util.Log.d(TAG, "Product with ID " + productId + " does not exist in the database.");
+                }
+            }
+
+            @Override
+            public void onCancelled(com.google.firebase.database.DatabaseError databaseError) {
+                android.util.Log.e(TAG, "Error fetching product details for " + productId + ": " + databaseError.getMessage());
+            }
+        });
     }
 }

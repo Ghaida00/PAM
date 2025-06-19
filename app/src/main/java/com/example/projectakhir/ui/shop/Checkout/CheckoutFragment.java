@@ -93,4 +93,9 @@ public class CheckoutFragment extends Fragment {
         super.onDestroyView();
         binding = null;
     }
+
+    private void onCheckout(List<KeranjangItem> cartItems, double total) {
+        android.util.Log.d("CheckoutDebug", "User checkout dengan total: " + total);
+        // ... lanjutkan proses pembayaran
+    }
 }

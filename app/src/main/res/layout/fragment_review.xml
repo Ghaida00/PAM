@@ -67,73 +67,6 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent">
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:padding="16dp">
-
-                    <!-- Preview gambar yang dipilih -->
-                    <ImageView
-                        android:id="@+id/reviewImagePreview"
-                        android:layout_width="100dp"
-                        android:layout_height="100dp"
-                        android:layout_marginTop="16dp"
-                        android:visibility="gone"
-                        app:layout_constraintTop_toBottomOf="@id/tvNoReviewsPenilaian"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        android:contentDescription="Preview Gambar Ulasan"
-                        tools:ignore="NotSibling" />
-
-                    <!-- Tombol tambah gambar -->
-                    <Button
-                        android:id="@+id/addImageButton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Tambah Gambar"
-                        app:layout_constraintTop_toBottomOf="@id/reviewImagePreview"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        android:layout_marginTop="8dp" />
-
-                    <!-- RatingBar untuk penilaian -->
-                    <RatingBar
-                        android:id="@+id/reviewRatingBar"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:numStars="5"
-                        android:stepSize="1"
-                        app:layout_constraintTop_toBottomOf="@id/addImageButton"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        android:layout_marginTop="8dp" />
-
-                    <!-- EditText untuk komentar -->
-                    <EditText
-                        android:id="@+id/reviewCommentEditText"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:hint="Tulis komentar..."
-                        app:layout_constraintTop_toBottomOf="@id/reviewRatingBar"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginEnd="16dp" />
-
-                    <!-- Tombol submit ulasan -->
-                    <Button
-                        android:id="@+id/submitReviewButton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Kirim Ulasan"
-                        app:layout_constraintTop_toBottomOf="@id/reviewCommentEditText"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        android:layout_marginTop="8dp" />
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
             </com.google.android.material.card.MaterialCardView>
 
             <!-- RecyclerView untuk Ulasan -->
@@ -174,7 +107,7 @@
                 android:paddingStart="16dp"
                 android:paddingEnd="16dp"
                 android:clipToPadding="false"
-                app:layout_constraintTop_toBottomOf="@id/topBar"
+                app:layout_constraintTop_toBottomOf="@id/productInfoCard"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 tools:listitem="@layout/item_rating" />
@@ -192,7 +125,7 @@
                 android:layout_marginStart="24dp"
                 android:layout_marginEnd="24dp"
                 android:layout_marginBottom="16dp"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toBottomOf="@id/rvInputReviews"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"/>
 

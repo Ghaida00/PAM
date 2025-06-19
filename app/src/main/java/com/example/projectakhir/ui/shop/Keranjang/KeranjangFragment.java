@@ -46,6 +46,7 @@ public class KeranjangFragment extends Fragment implements KeranjangAdapter.OnCa
         binding.rvCartItems.setAdapter(cartAdapter);
 
         cartViewModel.getCartItems().observe(getViewLifecycleOwner(), cartItems -> {
+            android.util.Log.d("CartDebug", "Keranjang user berisi " + (cartItems != null ? cartItems.size() : 0) + " item");
             if (cartItems != null) {
                 cartAdapter.updateCartItems(cartItems);
             }

@@ -35,4 +35,12 @@ public class NotificationRepository {
     public Task<Void> markNotificationAsReadTask(String userId, String notificationId) {
         return firestoreSource.markNotificationAsRead(userId, notificationId);
     }
+
+    public void sendOrderNotification(String userId, com.example.projectakhir.data.model.Notification notif) {
+        com.google.firebase.database.DatabaseReference notifRef = com.google.firebase.database.FirebaseDatabase.getInstance().getReference("notifications").child("notifications");
+        String key = notifRef.push().getKey();
+        notif.setId(key);
+        notifRef.child(key).setValue(notif);
+        android.util.Log.d("NotifDebug", "Notifikasi order dikirim ke user " + userId + ", notifId: " + key);
+    }
 }

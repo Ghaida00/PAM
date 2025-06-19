@@ -15,6 +15,7 @@ import com.example.projectakhir.R;
 import com.example.projectakhir.adapters.ReviewAdapter;
 import com.example.projectakhir.databinding.FragmentPenilaianProdukBinding;
 import com.example.projectakhir.ui.shop.Review.ReviewViewModel;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 
@@ -46,15 +47,6 @@ public class PenilaianProdukFragment extends Fragment {
         
         reviewViewModel = new ViewModelProvider(this).get(ReviewViewModel.class);
 
-        // Setup back button
-        binding.backButton.setOnClickListener(v -> Navigation.findNavController(requireView()).navigateUp());
-
-        // Setup seed button for testing
-        binding.btnSeedReviews.setOnClickListener(v -> {
-            com.example.projectakhir.data.ReviewDataSeeder.seedReviews();
-            Toast.makeText(getContext(), "Data review berhasil ditambahkan!", Toast.LENGTH_SHORT).show();
-        });
-
         // Setup RecyclerView
         reviewAdapter = new ReviewAdapter(new ArrayList<>());
         binding.rvReviews.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -69,16 +61,24 @@ public class PenilaianProdukFragment extends Fragment {
     }
 
     private void loadReviews() {
-        reviewViewModel.getProductReviews(productId).observe(getViewLifecycleOwner(), reviews -> {
-            if (reviews != null && !reviews.isEmpty()) {
-                reviewAdapter.updateReviews(reviews);
-                binding.tvNoReviews.setVisibility(View.GONE);
-                binding.rvReviews.setVisibility(View.VISIBLE);
-            } else {
-                binding.tvNoReviews.setVisibility(View.VISIBLE);
-                binding.rvReviews.setVisibility(View.GONE);
-            }
-        });
+        FirebaseFirestore.getInstance().collection("productReviews")
+            .whereEqualTo("productId", productId)
+            .get()
+            .addOnSuccessListener(querySnapshot -> {
+                java.util.List<com.example.projectakhir.data.model.Review> reviews = new java.util.ArrayList<>();
+                for (com.google.firebase.firestore.DocumentSnapshot doc : querySnapshot.getDocuments()) {
+                    reviews.add(doc.toObject(com.example.projectakhir.data.model.Review.class));
+                }
+                android.util.Log.d("ReviewDebug", "Ada " + reviews.size() + " review untuk produk " + productId);
+                if (reviews != null && !reviews.isEmpty()) {
+                    reviewAdapter.updateReviews(reviews);
+                    binding.tvNoReviews.setVisibility(View.GONE);
+                    binding.rvReviews.setVisibility(View.VISIBLE);
+                } else {
+                    binding.tvNoReviews.setVisibility(View.VISIBLE);
+                    binding.rvReviews.setVisibility(View.GONE);
+                }
+            });
     }
 
     @Override
