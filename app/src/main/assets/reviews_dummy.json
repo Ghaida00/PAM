@@ -1,0 +1,112 @@
+{
+  "productReviews": {
+    "review_001": {
+      "id": "review_001",
+      "productId": "prod_001",
+      "userId": "user123",
+      "rating": 4.5,
+      "comment": "Makanan kucing yang sangat bagus! Anak kucing saya suka sekali. Pengiriman cepat dan produk original. Akan beli lagi nanti.",
+      "timestamp": 1703123456789,
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/pawpal0.appspot.com/o/review_images%2Freview_001_1703123456789.jpg?alt=media"
+    },
+    "review_002": {
+      "id": "review_002",
+      "productId": "prod_001",
+      "userId": "user456",
+      "rating": 5.0,
+      "comment": "Royal Canin memang premium! Kucing saya jadi lebih sehat dan bulunya mengkilap. Worth it banget untuk investasi kesehatan kucing.",
+      "timestamp": 1703123456788,
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/pawpal0.appspot.com/o/review_images%2Freview_002_1703123456788.jpg?alt=media"
+    },
+    "review_003": {
+      "id": "review_003",
+      "productId": "prod_002",
+      "userId": "user789",
+      "rating": 4.0,
+      "comment": "Pedigree untuk anjing dewasa sangat bagus. Anjing saya suka dan tidak ada masalah pencernaan. Harga terjangkau untuk kualitas bagus.",
+      "timestamp": 1703123456787,
+      "imageUrl": null
+    },
+    "review_004": {
+      "id": "review_004",
+      "productId": "prod_002",
+      "userId": "user101",
+      "rating": 4.2,
+      "comment": "Makanan yang bagus untuk anjing saya. Nutrisi lengkap dan anjing jadi lebih aktif. Pengiriman cepat dan packing aman.",
+      "timestamp": 1703123456786,
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/pawpal0.appspot.com/o/review_images%2Freview_004_1703123456786.jpg?alt=media"
+    },
+    "review_005": {
+      "id": "review_005",
+      "productId": "prod_003",
+      "userId": "user202",
+      "rating": 4.7,
+      "comment": "Litter box premium yang sangat bagus! Filter bau bekerja dengan baik dan tutupnya rapat. Kucing saya nyaman menggunakannya.",
+      "timestamp": 1703123456785,
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/pawpal0.appspot.com/o/review_images%2Freview_005_1703123456785.jpg?alt=media"
+    },
+    "review_006": {
+      "id": "review_006",
+      "productId": "prod_004",
+      "userId": "user303",
+      "rating": 4.3,
+      "comment": "Kalung kulit yang berkualitas tinggi. Gesper stainless steel tidak mudah rusak dan ukurannya pas untuk anjing saya.",
+      "timestamp": 1703123456784,
+      "imageUrl": null
+    },
+    "review_007": {
+      "id": "review_007",
+      "productId": "prod_005",
+      "userId": "user404",
+      "rating": 4.6,
+      "comment": "Tiang garukan yang sangat bagus! Kucing saya suka sekali dan tidak lagi menggaruk sofa. Ada tempat tidur di atasnya juga.",
+      "timestamp": 1703123456783,
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/pawpal0.appspot.com/o/review_images%2Freview_007_1703123456783.jpg?alt=media"
+    },
+    "review_008": {
+      "id": "review_008",
+      "productId": "prod_006",
+      "userId": "user505",
+      "rating": 4.4,
+      "comment": "Snack Whiskas yang enak! Kucing saya langsung suka dengan rasa tuna dan salmon. Bagus untuk treat harian.",
+      "timestamp": 1703123456782,
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/pawpal0.appspot.com/o/review_images%2Freview_008_1703123456782.jpg?alt=media"
+    },
+    "review_009": {
+      "id": "review_009",
+      "productId": "prod_007",
+      "userId": "user606",
+      "rating": 4.1,
+      "comment": "Shampoo anti kutu yang efektif. Anjing saya jadi bersih dan tidak ada kutu lagi. Formula lembut tidak membuat kulit kering.",
+      "timestamp": 1703123456781,
+      "imageUrl": null
+    },
+    "review_010": {
+      "id": "review_010",
+      "productId": "prod_008",
+      "userId": "user707",
+      "rating": 4.8,
+      "comment": "Carrier kucing yang sangat bagus! Ventilasi baik dan kucing tidak stres saat perjalanan. Ukuran pas untuk kucing dewasa.",
+      "timestamp": 1703123456780,
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/pawpal0.appspot.com/o/review_images%2Freview_010_1703123456780.jpg?alt=media"
+    },
+    "review_011": {
+      "id": "review_011",
+      "productId": "prod_009",
+      "userId": "user808",
+      "rating": 4.9,
+      "comment": "Tempat tidur memory foam yang sangat nyaman! Anjing saya langsung tidur nyenyak. Kualitas premium dan tahan lama.",
+      "timestamp": 1703123456779,
+      "imageUrl": "https://firebasestorage.googleapis.com/v0/b/pawpal0.appspot.com/o/review_images%2Freview_011_1703123456779.jpg?alt=media"
+    },
+    "review_012": {
+      "id": "review_012",
+      "productId": "prod_010",
+      "userId": "user909",
+      "rating": 4.0,
+      "comment": "Vitamin kucing yang bagus untuk kesehatan. Kucing saya jadi lebih aktif dan nafsu makan meningkat. Akan beli lagi.",
+      "timestamp": 1703123456778,
+      "imageUrl": null
+    }
+  }
+} 
