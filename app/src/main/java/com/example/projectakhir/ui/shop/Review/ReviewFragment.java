@@ -34,6 +34,9 @@ import com.example.projectakhir.data.firebase.RealtimeDbSource;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import com.example.projectakhir.adapters.ReviewInputAdapter.ReviewInput;
 
 public class ReviewFragment extends Fragment implements ReviewInputAdapter.OnAddImageClickListener {
 
@@ -78,16 +81,25 @@ public class ReviewFragment extends Fragment implements ReviewInputAdapter.OnAdd
         productsToReview = new ArrayList<>();
         
         if (getArguments() != null) {
-            // Ambil list produk dari argument
-            ArrayList<Product> products = (ArrayList<Product>) getArguments().getSerializable("productsToReview");
-            if (products != null && !products.isEmpty()) {
-                productsToReview = products;
+            // Cek apakah ada array productIds dari notifikasi
+            String[] productIds = getArguments().getStringArray("productIds");
+            if (productIds != null && productIds.length > 0) {
+                // Load semua produk dari array productIds
+                for (String productId : productIds) {
+                    loadSingleProduct(productId.trim()); // trim untuk menghilangkan whitespace
+                }
             } else {
-                // Jika tidak ada productsToReview, coba ambil single productId
-                String productId = getArguments().getString("productId");
-                if (productId != null) {
-                    // Load single product dari Firebase
-                    loadSingleProduct(productId);
+                // Jika tidak ada productIds array, coba cara lama
+                ArrayList<Product> products = (ArrayList<Product>) getArguments().getSerializable("productsToReview");
+                if (products != null && !products.isEmpty()) {
+                    productsToReview = products;
+                } else {
+                    // Jika tidak ada productsToReview, coba ambil single productId
+                    String productId = getArguments().getString("productId");
+                    if (productId != null) {
+                        // Load single product dari Firebase
+                        loadSingleProduct(productId);
+                    }
                 }
             }
         }
@@ -105,35 +117,6 @@ public class ReviewFragment extends Fragment implements ReviewInputAdapter.OnAdd
         super.onViewCreated(view, savedInstanceState);
         reviewViewModel = new ViewModelProvider(this).get(ReviewViewModel.class);
 
-        Bundle bundle = getArguments();
-        if (bundle != null && bundle.containsKey("productsToReview")) {
-            List<Product> productList = (List<Product>) bundle.getSerializable("productsToReview");
-            if (productList != null && !productList.isEmpty()) {
-                productsToReview = new ArrayList<>(productList);
-                android.util.Log.d("ReviewFragment", "Produk diterima: " + productsToReview.size());
-                setupReviewAdapter();
-                // Tampilkan input review, sembunyikan list review & empty state
-                binding.rvInputReviews.setVisibility(View.VISIBLE);
-                binding.btnSubmitAllReviews.setVisibility(View.VISIBLE);
-                binding.rvReviews.setVisibility(View.GONE);
-                binding.tvNoReviewsPenilaian.setVisibility(View.GONE);
-            } else {
-                android.util.Log.d("ReviewFragment", "Produk kosong di ReviewFragment!");
-                binding.rvInputReviews.setVisibility(View.GONE);
-                binding.btnSubmitAllReviews.setVisibility(View.GONE);
-                binding.rvReviews.setVisibility(View.GONE);
-                binding.tvNoReviewsPenilaian.setVisibility(View.VISIBLE);
-                Toast.makeText(getContext(), "Belum ada produk untuk review", Toast.LENGTH_SHORT).show();
-            }
-        } else {
-            android.util.Log.d("ReviewFragment", "Bundle kosong atau tidak mengandung 'productsToReview'");
-            binding.rvInputReviews.setVisibility(View.GONE);
-            binding.btnSubmitAllReviews.setVisibility(View.GONE);
-            binding.rvReviews.setVisibility(View.GONE);
-            binding.tvNoReviewsPenilaian.setVisibility(View.VISIBLE);
-            Toast.makeText(getContext(), "Belum ada produk untuk review", Toast.LENGTH_SHORT).show();
-        }
-
         // Setup back button
         binding.backButton.setOnClickListener(v -> Navigation.findNavController(requireView()).navigateUp());
 
@@ -141,7 +124,29 @@ public class ReviewFragment extends Fragment implements ReviewInputAdapter.OnAdd
             if (reviewInputAdapter != null) {
                 // Paksa update semua EditText ke ReviewInput
                 binding.rvInputReviews.clearFocus();
-                reviewViewModel.submitMultipleReviews(reviewInputAdapter.getAllReviewInputs());
+                
+                // Convert ReviewInput to Review objects
+                List<Review> reviewList = new ArrayList<>();
+                Map<String, ReviewInput> inputMap = reviewInputAdapter.getAllReviewInputs();
+
+                for (Map.Entry<String, ReviewInput> entry : inputMap.entrySet()) {
+                    String productId = entry.getKey();
+                    ReviewInput input = entry.getValue();
+
+                    Review review = new Review(
+                        UUID.randomUUID().toString(),
+                        productId,
+                        null, // userId akan di-set oleh ViewModel
+                        input.getRating(),
+                        input.getComment(),
+                        System.currentTimeMillis(),
+                        input.getImageUrl() // atau null jika tak ada gambar
+                    );
+
+                    reviewList.add(review);
+                }
+
+                reviewViewModel.submitMultipleReviews(reviewList);
             }
         });
 
@@ -153,32 +158,48 @@ public class ReviewFragment extends Fragment implements ReviewInputAdapter.OnAdd
                 Toast.makeText(getContext(), "Gagal mengirim ulasan. Coba lagi.", Toast.LENGTH_SHORT).show();
             }
         });
+
+        // Observe productsToReview size changes
+        reviewViewModel.getProductsToReviewCount().observe(getViewLifecycleOwner(), count -> {
+            if (count > 0) {
+                binding.rvInputReviews.setVisibility(View.VISIBLE);
+                binding.btnSubmitAllReviews.setVisibility(View.VISIBLE);
+                binding.rvReviews.setVisibility(View.GONE);
+                binding.tvNoReviewsPenilaian.setVisibility(View.GONE);
+                setupReviewAdapter();
+            } else {
+                binding.rvInputReviews.setVisibility(View.GONE);
+                binding.btnSubmitAllReviews.setVisibility(View.GONE);
+                binding.rvReviews.setVisibility(View.GONE);
+                binding.tvNoReviewsPenilaian.setVisibility(View.VISIBLE);
+            }
+        });
     }
 
     private void setupReviewAdapter() {
-        reviewInputAdapter = new ReviewInputAdapter(requireContext(), productsToReview, this);
+        reviewInputAdapter = new ReviewInputAdapter(
+            0f, // default rating
+            "", // default comment
+            null, // default imageUrl
+            requireContext(),
+            productsToReview,
+            this
+        );
         binding.rvInputReviews.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.rvInputReviews.setAdapter(reviewInputAdapter);
     }
 
     private void loadSingleProduct(String productId) {
-        // Load single product dari Firebase Realtime Database
         RealtimeDbSource realtimeDbSource = new RealtimeDbSource();
-
-        // Gunakan getViewLifecycleOwnerLiveData agar observe hanya dilakukan saat view masih aktif
-        getViewLifecycleOwnerLiveData().observe(this, viewLifecycleOwner -> {
-            if (viewLifecycleOwner != null && isAdded() && getView() != null) {
-                realtimeDbSource.getProductById(productId).observe(viewLifecycleOwner, product -> {
-                    if (product != null) {
-                        productsToReview.clear();
-                        productsToReview.add(product);
-                        setupReviewAdapter();
-                        fetchProductDetails(productId);
-                    } else {
-                        Toast.makeText(getContext(), "Produk tidak ditemukan", Toast.LENGTH_SHORT).show();
-                        Navigation.findNavController(requireView()).navigateUp();
-                    }
-                });
+        realtimeDbSource.getProductById(productId).observe(this, product -> {
+            if (product != null) {
+                if (!productsToReview.contains(product)) {
+                    productsToReview.add(product);
+                    reviewViewModel.setProductsToReview(productsToReview);
+                    Log.d("ReviewFragment", "Product loaded: " + product.getName());
+                }
+            } else {
+                Log.e("ReviewFragment", "Product not found: " + productId);
             }
         });
     }

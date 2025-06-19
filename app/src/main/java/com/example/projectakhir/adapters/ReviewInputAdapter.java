@@ -31,12 +31,41 @@ public class ReviewInputAdapter extends RecyclerView.Adapter<ReviewInputAdapter.
     }
 
     public static class ReviewInput {
-        public float rating = 0f;
-        public String comment = "";
-        public Uri imageUri = null;
+        private float rating = 0f;
+        private String comment = "";
+        private Uri imageUri = null;
+
+        public float getRating() {
+            return rating;
+        }
+
+        public String getComment() {
+            return comment;
+        }
+
+        public String getImageUrl() {
+            return imageUri != null ? imageUri.toString() : null;
+        }
+
+        public void setRating(float rating) {
+            this.rating = rating;
+        }
+
+        public void setComment(String comment) {
+            this.comment = comment;
+        }
+
+        public void setImageUri(Uri imageUri) {
+            this.imageUri = imageUri;
+        }
+
+        public Uri getImageUri() {
+            return imageUri;
+        }
     }
 
-    public ReviewInputAdapter(Context context, List<Product> products, OnAddImageClickListener addImageClickListener) {
+
+    public ReviewInputAdapter(float rating, String comment, String imageUrl, Context context, List<Product> products, OnAddImageClickListener addImageClickListener) {
         this.context = context;
         this.products = products;
         this.addImageClickListener = addImageClickListener;
