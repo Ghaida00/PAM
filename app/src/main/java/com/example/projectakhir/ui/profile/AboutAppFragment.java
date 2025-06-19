@@ -30,11 +30,6 @@ public class AboutAppFragment extends Fragment {
 
         // Setup listener untuk tombol kembali
         setupActionListeners();
-
-        // Catatan: Jika kamu perlu memanipulasi ivAppLogo atau tvAppDescription dari kode,
-        // kamu bisa melakukannya di sini. Misalnya:
-        // binding.ivAppLogo.setImageResource(R.drawable.another_logo);
-        // binding.tvAppDescription.setText("Deskripsi baru dari kode.");
     }
 
     private void setupActionListeners() {
@@ -44,9 +39,6 @@ public class AboutAppFragment extends Fragment {
             if (NavHostFragment.findNavController(AboutAppFragment.this).popBackStack()) {
                 // Berhasil kembali
             } else {
-                // Opsional: Fallback jika popBackStack() mengembalikan false
-                // (misalnya jika ini adalah start destination atau ada masalah navigasi)
-                // requireActivity().finish(); // Atau tangani sesuai kebutuhan
             }
         });
     }
