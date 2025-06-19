@@ -139,6 +139,8 @@ public class ReviewFragment extends Fragment implements ReviewInputAdapter.OnAdd
 
         binding.btnSubmitAllReviews.setOnClickListener(v -> {
             if (reviewInputAdapter != null) {
+                // Paksa update semua EditText ke ReviewInput
+                binding.rvInputReviews.clearFocus();
                 reviewViewModel.submitMultipleReviews(reviewInputAdapter.getAllReviewInputs());
             }
         });

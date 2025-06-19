@@ -40,14 +40,28 @@ public class ReviewViewModel extends ViewModel {
             reviewRepository.uploadReviewImage(imageUri, reviewId)
                     .addOnSuccessListener(imageUrl -> {
                         Review review = new Review(reviewId, productId, userId, rating, comment, System.currentTimeMillis(), imageUrl);
-                        realtimeDbSource.addReview(review);
-                        _reviewSubmissionStatus.postValue(true);
+                        reviewRepository.submitReview(review)
+                            .addOnSuccessListener(aVoid -> {
+                                android.util.Log.d("ReviewDebug", "Review berhasil dikirim ke Firestore: " + reviewId);
+                                _reviewSubmissionStatus.postValue(true);
+                            })
+                            .addOnFailureListener(e -> {
+                                android.util.Log.e("ReviewDebug", "Gagal kirim review ke Firestore: " + e.getMessage());
+                                _reviewSubmissionStatus.postValue(false);
+                            });
                     })
                     .addOnFailureListener(e -> _reviewSubmissionStatus.postValue(false));
         } else {
             Review review = new Review(reviewId, productId, userId, rating, comment, System.currentTimeMillis(), null);
-            realtimeDbSource.addReview(review);
-            _reviewSubmissionStatus.postValue(true);
+            reviewRepository.submitReview(review)
+                .addOnSuccessListener(aVoid -> {
+                    android.util.Log.d("ReviewDebug", "Review berhasil dikirim ke Firestore: " + reviewId);
+                    _reviewSubmissionStatus.postValue(true);
+                })
+                .addOnFailureListener(e -> {
+                    android.util.Log.e("ReviewDebug", "Gagal kirim review ke Firestore: " + e.getMessage());
+                    _reviewSubmissionStatus.postValue(false);
+                });
         }
     }
 
@@ -61,21 +75,29 @@ public class ReviewViewModel extends ViewModel {
         int total = reviewInputs.size();
         int[] successCount = {0};
         int[] failCount = {0};
-        
         for (Map.Entry<String, com.example.projectakhir.adapters.ReviewInputAdapter.ReviewInput> entry : reviewInputs.entrySet()) {
             String productId = entry.getKey();
             com.example.projectakhir.adapters.ReviewInputAdapter.ReviewInput input = entry.getValue();
             String reviewId = UUID.randomUUID().toString();
-            
             if (input.imageUri != null) {
                 reviewRepository.uploadReviewImage(input.imageUri, reviewId)
                     .addOnSuccessListener(imageUrl -> {
                         Review review = new Review(reviewId, productId, userId, input.rating, input.comment, System.currentTimeMillis(), imageUrl);
-                        realtimeDbSource.addReview(review);
-                        successCount[0]++;
-                        if (successCount[0] + failCount[0] == total) {
-                            _reviewSubmissionStatus.postValue(failCount[0] == 0);
-                        }
+                        reviewRepository.submitReview(review)
+                            .addOnSuccessListener(aVoid -> {
+                                android.util.Log.d("ReviewDebug", "Review berhasil dikirim ke Firestore: " + reviewId);
+                                successCount[0]++;
+                                if (successCount[0] + failCount[0] == total) {
+                                    _reviewSubmissionStatus.postValue(failCount[0] == 0);
+                                }
+                            })
+                            .addOnFailureListener(e -> {
+                                android.util.Log.e("ReviewDebug", "Gagal kirim review ke Firestore: " + e.getMessage());
+                                failCount[0]++;
+                                if (successCount[0] + failCount[0] == total) {
+                                    _reviewSubmissionStatus.postValue(false);
+                                }
+                            });
                     })
                     .addOnFailureListener(e -> {
                         failCount[0]++;
@@ -85,11 +107,21 @@ public class ReviewViewModel extends ViewModel {
                     });
             } else {
                 Review review = new Review(reviewId, productId, userId, input.rating, input.comment, System.currentTimeMillis(), null);
-                realtimeDbSource.addReview(review);
-                successCount[0]++;
-                if (successCount[0] + failCount[0] == total) {
-                    _reviewSubmissionStatus.postValue(failCount[0] == 0);
-                }
+                reviewRepository.submitReview(review)
+                    .addOnSuccessListener(aVoid -> {
+                        android.util.Log.d("ReviewDebug", "Review berhasil dikirim ke Firestore: " + reviewId);
+                        successCount[0]++;
+                        if (successCount[0] + failCount[0] == total) {
+                            _reviewSubmissionStatus.postValue(failCount[0] == 0);
+                        }
+                    })
+                    .addOnFailureListener(e -> {
+                        android.util.Log.e("ReviewDebug", "Gagal kirim review ke Firestore: " + e.getMessage());
+                        failCount[0]++;
+                        if (successCount[0] + failCount[0] == total) {
+                            _reviewSubmissionStatus.postValue(false);
+                        }
+                    });
             }
         }
     }
