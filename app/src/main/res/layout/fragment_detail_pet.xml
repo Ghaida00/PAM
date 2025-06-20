@@ -102,6 +102,20 @@
                 android:textColor="#555"
                 android:textSize="14sp"
                 tools:text="Bambang ditemukan duduk sendirian di depan warung, pura-pura kuat padahal kakinya pincang. Setelah dirawat, sekarang dia sudah lincah lagi..." />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnDeletePet"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="24dp"
+                android:backgroundTint="@android:color/holo_red_dark"
+                android:text="Delete This Pet"
+                android:textColor="@android:color/white"
+                app:icon="@drawable/ic_delete"
+                app:iconTint="@android:color/white"
+                app:cornerRadius="20dp"/>
+
         </LinearLayout>
     </ScrollView>
 

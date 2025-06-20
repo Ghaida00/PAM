@@ -147,6 +147,9 @@ public class AppActivity extends AppCompatActivity {
                     destination.getId() == R.id.makeYourOwnMenuFragment||
                     destination.getId() == R.id.customizedMenuFragment||
                     destination.getId() == R.id.foodSelectionFragment||
+                    destination.getId() == R.id.adminFragment||
+                    destination.getId() == R.id.profileFragment||
+                    destination.getId() == R.id.detailPetFragment||
                     destination.getId() == R.id.cartFragment;
 
             if (isAuthScreen || hideBoth) {

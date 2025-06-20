@@ -348,4 +348,21 @@ public class AdoptionRepository {
                     callback.onError(e);
                 });
     }
+
+    public void deletePetById(String petId, FirestoreCallback<Void> callback) {
+        if (petId == null || petId.isEmpty()) {
+            callback.onError(new Exception("Pet ID is invalid."));
+            return;
+        }
+        petsCollection.document(petId)
+                .delete()
+                .addOnSuccessListener(aVoid -> {
+                    Log.d(TAG, "Pet with ID: " + petId + " successfully deleted.");
+                    callback.onSuccess(null);
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Error deleting pet with ID: " + petId, e);
+                    callback.onError(e);
+                });
+    }
 }

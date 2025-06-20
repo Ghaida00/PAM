@@ -1,5 +1,6 @@
 package com.example.projectakhir.ui.profile;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -55,6 +56,11 @@ public class DetailPetFragment extends Fragment {
 
         viewModel.hewanDetail.observe(getViewLifecycleOwner(), this::displayHewanDetails);
 
+        // Setup listener for the new delete button
+        binding.btnDeletePet.setOnClickListener(v -> {
+            showDeleteConfirmationDialog();
+        });
+
         viewModel.isLoading.observe(getViewLifecycleOwner(), isLoading -> {
             binding.progressBarDetailHewan.setVisibility(isLoading ? View.VISIBLE : View.GONE);
             binding.contentLayoutDetailHewan.setVisibility(isLoading ? View.GONE : View.VISIBLE);
@@ -67,12 +73,32 @@ public class DetailPetFragment extends Fragment {
             }
         });
 
+        viewModel.deleteStatus.observe(getViewLifecycleOwner(), isSuccess -> {
+            if (isSuccess != null && isSuccess) {
+                Toast.makeText(getContext(), "Pet deleted successfully.", Toast.LENGTH_SHORT).show();
+                NavHostFragment.findNavController(this).popBackStack();
+            }
+            // Error case is handled by the existing error observer
+        });
+
         if (petId != null && !petId.isEmpty()) {
             viewModel.fetchHewanDetailsById(petId);
         } else {
             Toast.makeText(getContext(), "Error: Pet ID tidak valid.", Toast.LENGTH_SHORT).show();
             NavHostFragment.findNavController(this).popBackStack();
         }
+    }
+
+    private void showDeleteConfirmationDialog() {
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Delete Pet")
+                .setMessage("Are you sure you want to delete this pet permanently? This action cannot be undone.")
+                .setIcon(R.drawable.ic_delete)
+                .setPositiveButton("Delete", (dialog, which) -> {
+                    viewModel.deletePet();
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
     }
 
     private void displayHewanDetails(Hewan hewan) {
